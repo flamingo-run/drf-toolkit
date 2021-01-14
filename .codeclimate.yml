@@ -1,0 +1,11 @@
+version: "2"
+plugins:
+  bandit:
+    enabled: true
+checks:
+  method-complexity:
+    config:
+      threshold: 7
+  argument-count:
+    config:
+      enabled: false
