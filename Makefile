@@ -19,7 +19,7 @@ check:
 
 lint:
 	@echo "Checking code style ..."
-	DJANGO_SETTINGS_MODULE=test_app.settings poetry run pylint drf_toolkit test_app
+	DJANGO_SETTINGS_MODULE=test_app.settings poetry run pylint drf_kit test_app
 
 unit:
 	@echo "Running unit tests ..."

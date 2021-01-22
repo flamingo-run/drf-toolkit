@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from drf_toolkit import exceptions
-from drf_toolkit.tests import BaseApiTest
+from drf_kit import exceptions
+from drf_kit.tests import BaseApiTest
 from test_app.models import Wizard, House, Spell, CombatSpell, EnvironmentalSpell, Memory, TriWizardPlacement
 from test_app.tests.tests_base import HogwartsTestMixin
 

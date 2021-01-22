@@ -5,8 +5,8 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
-from drf_toolkit.cache import cache_response, cache_key_constructor
-from drf_toolkit.exceptions import DuplicatedRecord
+from drf_kit.cache import cache_response, cache_key_constructor
+from drf_kit.exceptions import DuplicatedRecord
 
 logger = logging.getLogger(__name__)
 

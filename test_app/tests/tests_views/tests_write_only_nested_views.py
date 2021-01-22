@@ -1,6 +1,6 @@
 from unittest.mock import ANY
 
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.tests import BaseApiTest
 from test_app.models import Memory
 from test_app.tests.tests_base import HogwartsTestMixin
 

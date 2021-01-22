@@ -8,8 +8,8 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from ordered_model.models import OrderedModelBase as _OrderedModelBase
 
-from drf_toolkit import exceptions, managers, signals
-from drf_toolkit.serializers import as_dict
+from drf_kit import exceptions, managers, signals
+from drf_kit.serializers import as_dict
 
 logger = logging.getLogger(__name__)
 

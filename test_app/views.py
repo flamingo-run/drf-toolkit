@@ -1,6 +1,6 @@
 from django.db.models import Count
 
-from drf_toolkit.views import (
+from drf_kit.views import (
     CachedModelViewSet,
     ModelViewSet,
     NestedModelViewSet,

@@ -120,10 +120,10 @@ STATIC_URL = '/static/'
 
 # DRF
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'drf_toolkit.pagination.CustomPagePagination',
+    'DEFAULT_PAGINATION_CLASS': 'drf_kit.pagination.CustomPagePagination',
     'PAGE_SIZE': os.environ.get('PAGE_SIZE', 50),
     'DEFAULT_FILTER_BACKENDS': (
-        'drf_toolkit.filters.FilterBackend',
+        'drf_kit.filters.FilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
@@ -140,7 +140,7 @@ CACHE_TTL = os.environ.get('CACHE_TTL', 5 * 60)
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': CACHE_TTL,
     'DEFAULT_CACHE_ERRORS': False,
-    'DEFAULT_CACHE_KEY_FUNC': 'drf_toolkit.cache.cache_key_constructor',
-    'DEFAULT_OBJECT_CACHE_KEY_FUNC': 'drf_toolkit.cache.cache_key_constructor',
-    'DEFAULT_LIST_CACHE_KEY_FUNC': 'drf_toolkit.cache.cache_key_constructor',
+    'DEFAULT_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
+    'DEFAULT_OBJECT_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
+    'DEFAULT_LIST_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
 }

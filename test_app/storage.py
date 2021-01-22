@@ -1,4 +1,4 @@
-from drf_toolkit.storage import BaseDataStoragePath
+from drf_kit.storage import BaseDataStoragePath
 
 
 class StoragePath(BaseDataStoragePath):

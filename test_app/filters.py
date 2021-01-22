@@ -1,4 +1,4 @@
-from drf_toolkit import filters
+from drf_kit import filters
 from test_app import models
 
 

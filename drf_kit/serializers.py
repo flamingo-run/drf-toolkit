@@ -9,7 +9,7 @@ from django.db.models.fields.files import FieldFile
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
-from drf_toolkit import fields
+from drf_kit import fields
 
 
 class BaseModelSerializer(serializers.ModelSerializer):

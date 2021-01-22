@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 
-from drf_toolkit import signals
+from drf_kit import signals
 from test_app import models, tasks
 
 

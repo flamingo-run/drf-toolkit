@@ -3,8 +3,8 @@ import logging
 from django.http import Http404
 from rest_framework.exceptions import ValidationError
 
-from drf_toolkit import UNSET
-from drf_toolkit.views.viewsets import (
+from drf_kit import UNSET
+from drf_kit.views.viewsets import (
     ModelViewSet,
     CacheResponseMixin,
     ReadOnlyModelViewSet,

@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "drf-toolkit"
+name = "drf-kit"
 version = "1.0.0"
 description = "DRF Toolkit"
 authors = ["eduK <pd@eduk.com>"]
 packages = [
-    { include = "drf_toolkit" },
+    { include = "drf_kit" },
 ]
 
 

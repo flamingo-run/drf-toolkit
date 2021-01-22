@@ -1,20 +1,20 @@
-from drf_toolkit.views.nested_viewsets import (
+from drf_kit.views.nested_viewsets import (
     NestedModelViewSet,
     CachedNestedModelViewSet,
     ReadOnlyNestedModelViewSet,
     CachedReadOnlyNestedModelViewSet,
     WriteOnlyNestedModelViewSet,
 )
-from drf_toolkit.views.single_nested_viewsets import (
+from drf_kit.views.single_nested_viewsets import (
     SingleNestedModelViewSet,
     CachedSingleNestedModelViewSet,
     ReadOnlySingleNestedModelViewSet,
     CachedReadOnlySingleNestedModelViewSet,
 )
-from drf_toolkit.views.stats_views import (
+from drf_kit.views.stats_views import (
     StatsViewMixin,
 )
-from drf_toolkit.views.viewsets import (
+from drf_kit.views.viewsets import (
     ModelViewSet,
     CachedModelViewSet,
     ReadOnlyModelViewSet,

@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 import pytz
 
-from drf_toolkit import serializers
-from drf_toolkit.tests import BaseApiTest
+from drf_kit import serializers
+from drf_kit.tests import BaseApiTest
 
 
 class TestFormatAsStr(BaseApiTest):

@@ -2,7 +2,7 @@ from unittest.mock import ANY, patch
 
 from django.db import IntegrityError
 
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.tests import BaseApiTest
 from test_app import models
 from test_app.tests.tests_base import HogwartsTestMixin
 
@@ -66,7 +66,7 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         # IntegrityError by duplicate key is a very rare exception because the serializer
         # validators pre-check before committing them to the database
         # Then we have to simulate this error happening
-        klass_name = 'drf_toolkit.serializers.BaseModelSerializer.save'
+        klass_name = 'drf_kit.serializers.BaseModelSerializer.save'
         error = IntegrityError(
             'duplicate key value violates unique constraint potato\n'
             'DETAIL:  Key (id)=(42) already exists.'

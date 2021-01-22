@@ -1,4 +1,4 @@
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.tests import BaseApiTest
 from test_app.tests.tests_base import HogwartsTestMixin
 
 

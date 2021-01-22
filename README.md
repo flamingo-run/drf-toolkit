@@ -6,4 +6,4 @@
 
 ## Installation
 
-``pip install drf-toolkit``
+``pip install drf-kit``

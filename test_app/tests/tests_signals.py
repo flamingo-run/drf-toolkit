@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from django.db.models.signals import post_save
 
-from drf_toolkit.signals import UnplugSignal
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.signals import UnplugSignal
+from drf_kit.tests import BaseApiTest
 from test_app import signals, models
 from test_app.models import Wizard, Spell, SpellCast
 from test_app.tests.tests_base import HogwartsTestMixin

@@ -1,6 +1,6 @@
 from rest_framework.fields import IntegerField, CharField
 
-from drf_toolkit import serializers
+from drf_kit import serializers
 from test_app import models
 
 

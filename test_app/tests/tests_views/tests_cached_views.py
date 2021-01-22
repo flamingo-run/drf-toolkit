@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from django.core.cache import cache
 
-from drf_toolkit.cache import CacheResponse
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.cache import CacheResponse
+from drf_kit.tests import BaseApiTest
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -29,7 +29,7 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         key_method = CacheResponse().calculate_key
-        with patch('drf_toolkit.cache.CacheResponse.calculate_key', wraps=key_method) as calc:
+        with patch('drf_kit.cache.CacheResponse.calculate_key', wraps=key_method) as calc:
             # Call the first time to get the response
             response = self.client.get(url)
 

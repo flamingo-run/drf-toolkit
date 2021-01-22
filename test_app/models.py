@@ -1,6 +1,6 @@
 from django.db import models
 
-from drf_toolkit.models import BaseModel, SoftDeleteModel, InheritanceModel, BaseOrderedModel
+from drf_kit.models import BaseModel, SoftDeleteModel, InheritanceModel, BaseOrderedModel
 from test_app import managers
 from test_app.storage import StoragePath
 

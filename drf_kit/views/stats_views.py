@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 
-from drf_toolkit.filters import IntBooleanFilter
+from drf_kit.filters import IntBooleanFilter
 
 
 class StatsViewMixin:

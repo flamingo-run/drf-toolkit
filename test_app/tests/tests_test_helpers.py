@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from drf_toolkit.tests import BaseApiTest
+from drf_kit.tests import BaseApiTest
 
 
 class TestPendingMigrations(BaseApiTest):
@@ -11,7 +11,7 @@ class TestPendingMigrations(BaseApiTest):
             if error:
                 raise SystemExit()
 
-        return patch('drf_toolkit.tests.call_command', side_effect=call_command)
+        return patch('drf_kit.tests.call_command', side_effect=call_command)
 
     def test_migrations_done(self):
         with self._mock_command(error=False) as mocked:
