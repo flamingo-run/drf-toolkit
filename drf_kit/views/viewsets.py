@@ -177,3 +177,12 @@ class UpsertMixin(MultiSerializerMixin):
 
         data = self.get_response_serializer(obj).data
         return Response(data, status=self.upsert_status_code)
+
+
+class BulkMixin(MultiSerializerMixin):
+    def _get_serializer_extra_kwargs(self):
+        if not self._is_request_to_detail_endpoint():
+            return {
+                'many': True
+            }
+        return {}
