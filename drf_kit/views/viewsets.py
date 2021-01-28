@@ -36,6 +36,12 @@ class MultiSerializerMixin:
             klass = super().get_serializer_class()
         return klass
 
+    def get_response_serializer_class(self):
+        return self.serializer_detail_class or self.serializer_class
+
+    def get_response_serializer(self, obj, **kwargs):
+        return self.get_response_serializer_class()(obj, **kwargs)
+
     def get_queryset(self, *args, **kwargs):
         queryset = None
         verb = self.request.method.lower()
@@ -58,14 +64,29 @@ class MultiSerializerMixin:
             lookup = self.lookup_url_kwarg or self.lookup_field
         return lookup and lookup in self.kwargs
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_response_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_response_serializer(instance)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         obj = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        detail_serializer_klass = self.serializer_detail_class or self.serializer_class
-        data = detail_serializer_klass(obj).data
+        data = self.get_response_serializer(obj).data
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
@@ -80,8 +101,7 @@ class MultiSerializerMixin:
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
-        detail_serializer_klass = self.serializer_detail_class or self.serializer_class
-        data = detail_serializer_klass(obj).data
+        data = self.get_response_serializer(obj=obj).data
         return Response(data, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
@@ -147,6 +167,5 @@ class UpsertMixin(MultiSerializerMixin):
         serializer.is_valid(raise_exception=True)
         obj = self.perform_update(serializer)
 
-        detail_serializer_klass = self.serializer_detail_class or self.serializer_class
-        data = detail_serializer_klass(obj).data
+        data = self.get_response_serializer(obj).data
         return Response(data, status=self.upsert_status_code)
