@@ -63,4 +63,10 @@ router.register(
     'tri-wizard-placements',
 )
 
+router.register(
+    r'houses-bulk',
+    views.HouseBulkViewSet,
+    'house-bulk',
+)
+
 urlpatterns = router.urls

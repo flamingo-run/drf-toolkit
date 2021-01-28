@@ -21,6 +21,7 @@ from drf_kit.views.viewsets import (
     CachedReadOnlyModelViewSet,
     WriteOnlyModelViewSet,
     UpsertMixin,
+    BulkMixin,
 )
 
 __all__ = (

@@ -10,6 +10,7 @@ from drf_kit.views import (
     WriteOnlyModelViewSet,
     WriteOnlyNestedModelViewSet,
     UpsertMixin,
+    BulkMixin,
 )
 from test_app import filters, models, serializers
 
@@ -96,3 +97,8 @@ class WizardToMemoryViewSet(WriteOnlyNestedModelViewSet):
 class TriWizardPlacementViewSet(UpsertMixin, ModelViewSet):
     queryset = models.TriWizardPlacement.objects.all()
     serializer_class = serializers.TriWizardPlacementSerializer
+
+
+class HouseBulkViewSet(BulkMixin, ModelViewSet):
+    queryset = models.House.objects.all()
+    serializer_class = serializers.HouseSerializer
