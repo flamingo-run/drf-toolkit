@@ -10,7 +10,7 @@ logger = logging.getLogger()
 class DuplicatedRecord(ValidationError):
     def __init__(self, serializer, integrity_error):
         self.integrity_error = integrity_error
-        self.model = serializer.Meta.model
+        self.model = serializer.Meta.model if not hasattr(serializer, 'child') else serializer.child.Meta.model
         self.data = serializer.initial_data
         self.engine = self._get_engine(integrity_error=self.integrity_error)
         self.constraints, self.values = self._parse_error()

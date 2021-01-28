@@ -66,7 +66,7 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         # IntegrityError by duplicate key is a very rare exception because the serializer
         # validators pre-check before committing them to the database
         # Then we have to simulate this error happening
-        klass_name = 'drf_kit.serializers.BaseModelSerializer.save'
+        klass_name = 'drf_kit.serializers.BaseModelSerializer.create'
         error = IntegrityError(
             'duplicate key value violates unique constraint potato\n'
             'DETAIL:  Key (id)=(42) already exists.'
