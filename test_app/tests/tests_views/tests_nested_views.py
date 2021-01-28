@@ -26,9 +26,12 @@ class TestNestedView(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(2, len(data['results']))
 
         expected_data = [
-            self.expected_wizards[1],
-            self.expected_wizards[0],
+            self.expected_detailed_wizards[1],
+            self.expected_detailed_wizards[0],
         ]
+        expected_data[1]['house'] = self.expected_houses[0]
+        expected_data[0]['house'] = self.expected_houses[0]
+
         self.assertEqual(expected_data, data['results'])
 
     def test_detail_endpoint(self):

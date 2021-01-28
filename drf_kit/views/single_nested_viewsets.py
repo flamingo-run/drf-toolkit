@@ -56,7 +56,7 @@ class SingleNestedViewMixin(NestedViewMixin):
         obj = self.get_object()
         if obj is None:
             raise Http404()
-        serializer = self.get_serializer(instance=obj)
+        serializer = self.get_response_serializer(obj)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
