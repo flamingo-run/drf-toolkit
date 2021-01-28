@@ -21,6 +21,9 @@ class MultiSerializerMixin:
     serializer_update_class = None
     queryset_update = None
 
+    def _get_serializer_extra_kwargs(self):
+        return {}
+
     def get_serializer_class(self):
         klass = None
         verb = self.request.method.lower()
@@ -36,10 +39,15 @@ class MultiSerializerMixin:
             klass = super().get_serializer_class()
         return klass
 
+    def get_serializer(self, *args, **kwargs):
+        kwargs.update(self._get_serializer_extra_kwargs())
+        return super().get_serializer(*args, **kwargs)
+
     def get_response_serializer_class(self):
         return self.serializer_detail_class or self.serializer_class
 
     def get_response_serializer(self, obj, **kwargs):
+        kwargs.update(self._get_serializer_extra_kwargs())
         return self.get_response_serializer_class()(obj, **kwargs)
 
     def get_queryset(self, *args, **kwargs):
