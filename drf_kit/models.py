@@ -91,7 +91,7 @@ class BaseModel(ModelDiffMixin, BoundedFileMixin, models.Model):
     )
     updated_at = models.DateTimeField(
         auto_now=True,
-        verbose_name=_("updated_at"),
+        verbose_name=_("updated at"),
     )
 
     objects = models.Manager()
