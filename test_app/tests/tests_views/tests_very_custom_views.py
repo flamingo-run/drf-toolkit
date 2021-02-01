@@ -20,7 +20,7 @@ class TestVeryCustomView(HogwartsTestMixin, BaseApiTest):
         data = response.json()
         self.assertEqual(4, len(data['results']))
 
-        expected = list(reversed(self.expected_detailed_wizards))
+        expected = list(reversed(self.expected_wizards))
         self.assertEqual(expected, data['results'])
 
     def test_detail_endpoint_out_of_queryset(self):
