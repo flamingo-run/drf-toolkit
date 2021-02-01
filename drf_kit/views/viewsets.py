@@ -2,6 +2,7 @@ import logging
 
 from django.db.utils import IntegrityError
 from rest_framework import status, viewsets
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
@@ -21,19 +22,20 @@ class MultiSerializerMixin:
     serializer_update_class = None
     queryset_update = None
 
+    serializer_list_class = None
+
     def _get_serializer_extra_kwargs(self):
         return {}
 
     def get_serializer_class(self):
-        klass = None
-        verb = self.request.method.lower()
+        SERIALIZERS = {
+            'retrieve': self.serializer_detail_class,
+            'create': self.serializer_create_class,
+            'update': self.serializer_update_class or self.serializer_create_class,
+        }
+        action = self._get_action()
 
-        if verb == 'get' and self._is_request_to_detail_endpoint():
-            klass = self.serializer_detail_class
-        elif verb == 'post':
-            klass = self.serializer_create_class
-        elif verb == 'patch':
-            klass = self.serializer_update_class or self.serializer_create_class
+        klass = SERIALIZERS.get(action)
 
         if not klass:
             klass = super().get_serializer_class()
@@ -44,33 +46,52 @@ class MultiSerializerMixin:
         return super().get_serializer(*args, **kwargs)
 
     def get_response_serializer_class(self):
-        return self.serializer_detail_class or self.serializer_class
+        SERIALIZERS = {
+            'retrieve': self.serializer_detail_class,
+            'create': self.serializer_detail_class,
+            'update': self.serializer_detail_class,
+        }
+        action = self._get_action()
+
+        klass = SERIALIZERS.get(action)
+
+        if not klass:
+            klass = super().get_serializer_class()
+        return klass
 
     def get_response_serializer(self, obj, **kwargs):
         kwargs.update(self._get_serializer_extra_kwargs())
         return self.get_response_serializer_class()(obj, **kwargs)
 
     def get_queryset(self, *args, **kwargs):
-        queryset = None
-        verb = self.request.method.lower()
+        QUERYSETS = {
+            'retrieve': self.queryset_detail,
+            'create': self.queryset_create,
+            'update': self.queryset_update or self.queryset_create,
+        }
+        action = self._get_action()
 
-        if verb == 'get' and self._is_request_to_detail_endpoint():
-            queryset = self.queryset_detail
-        elif verb == 'post':
-            queryset = self.queryset_create
-        elif verb == 'patch':
-            queryset = self.queryset_update or self.queryset_create
-
+        queryset = QUERYSETS.get(action)
         if not queryset:
             queryset = super().get_queryset(*args, **kwargs)
         else:
             queryset = queryset.all()
         return queryset
 
-    def _is_request_to_detail_endpoint(self):
-        if hasattr(self, 'lookup_url_kwarg'):
-            lookup = self.lookup_url_kwarg or self.lookup_field
-        return lookup and lookup in self.kwargs
+    def _get_action(self):
+        def _is_request_to_detail_endpoint():
+            if hasattr(self, 'lookup_url_kwarg'):
+                lookup = self.lookup_url_kwarg or self.lookup_field
+            return bool(lookup and lookup in self.kwargs)
+
+        verb = self.request.method.lower()
+        if verb == 'get' and _is_request_to_detail_endpoint():
+            return 'retrieve'
+        if verb == 'post':
+            return 'create'
+        if verb == 'patch':
+            return 'update'
+        return 'list'
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -181,11 +202,25 @@ class UpsertMixin(MultiSerializerMixin):
 
 class BulkMixin(MultiSerializerMixin):
     def _get_serializer_extra_kwargs(self):
-        if not self._is_request_to_detail_endpoint():
+        if self._get_action() != 'retrieve':
             return {
                 'many': True
             }
         return {}
+
+    def get_response_serializer_class(self):
+        SERIALIZERS = {
+            'retrieve': self.serializer_detail_class,
+            'create': self.serializer_list_class,
+            'update': self.serializer_list_class,
+        }
+        action = self._get_action()
+
+        klass = SERIALIZERS.get(action)
+
+        if not klass:
+            klass = super().get_serializer_class()
+        return klass
 
     def update(self, request, *args, **kwargs):
         raise MethodNotAllowed(method='patch')
