@@ -70,14 +70,7 @@ class TestBulkView(TestCRUDView):
             'points_boost': 3.14,
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(200, response.status_code)
-
-        expected_house = self.expected_houses[0]
-        expected_house['points_boost'] = "3.14"
-        self.assertEqual(expected_house, response.json())
-
-        houses = models.House.objects.all()
-        self.assertEqual(4, houses.count())
+        self.assertEqual(405, response.status_code)
 
     def test_put_endpoint(self):
         house = self.houses[0]

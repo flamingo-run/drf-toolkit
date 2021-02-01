@@ -186,3 +186,6 @@ class BulkMixin(MultiSerializerMixin):
                 'many': True
             }
         return {}
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed(method='patch')
