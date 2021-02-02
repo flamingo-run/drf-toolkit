@@ -16,7 +16,7 @@ from test_app import filters, models, serializers
 
 
 class HouseViewSet(StatsViewMixin, ModelViewSet):
-    queryset = models.House.objects.all()
+    queryset = models.House.objects.all().order_by('name')
     serializer_class = serializers.HouseSerializer
     serializer_stats_class = serializers.HouseStatsSerializer
     ordering_fields = ('name', 'id')
@@ -100,5 +100,5 @@ class TriWizardPlacementViewSet(UpsertMixin, ModelViewSet):
 
 
 class HouseBulkViewSet(BulkMixin, ModelViewSet):
-    queryset = models.House.objects.all()
+    queryset = models.House.objects.all().order_by('name')
     serializer_class = serializers.HouseSerializer

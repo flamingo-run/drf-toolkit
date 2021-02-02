@@ -19,7 +19,13 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
 
         data = response.json()
 
-        expected = list(reversed(self.expected_stats_houses))
+        # sorted by name ASC
+        expected = [
+            self.expected_stats_houses[0],
+            self.expected_stats_houses[3],
+            self.expected_stats_houses[2],
+            self.expected_stats_houses[1],
+        ]
         self.assertEqual(expected, data['results'])
 
     def test_detail_endpoint(self):
