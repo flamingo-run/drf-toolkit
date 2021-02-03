@@ -12,9 +12,9 @@ packages = [
 python = "^3.8"
 Django = "^3"
 djangorestframework = "^3"
-drf-extensions = { git = "https://github.com/chibisov/drf-extensions", branch = "master" }
 django-filter = "^2"
 django-ordered-model = "^3"
+drf-extensions = "^0"
 
 
 [tool.poetry.dev-dependencies]

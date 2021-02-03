@@ -95,16 +95,9 @@ description = "Extensions for Django REST Framework"
 category = "main"
 optional = false
 python-versions = "*"
-develop = false
 
 [package.dependencies]
 djangorestframework = ">=3.9.3"
-
-[package.source]
-type = "git"
-url = "https://github.com/chibisov/drf-extensions"
-reference = "master"
-resolved_reference = "19efac2ede0eef82aac4785d47a405454fb48225"
 
 [[package]]
 name = "isort"
@@ -201,7 +194,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "9bfe58cb9810cb1edddfceb22f9052295060718e7393e11c3cfd9b0cf9545537"
+content-hash = "1a69133c3e4e6c267145a0b87f4511adac2a948762aa1838ae1431998a43aa73"
 
 [metadata.files]
 asgiref = [
@@ -283,7 +276,10 @@ djangorestframework = [
     {file = "djangorestframework-3.12.2-py3-none-any.whl", hash = "sha256:0209bafcb7b5010fdfec784034f059d512256424de2a0f084cb82b096d6dd6a7"},
     {file = "djangorestframework-3.12.2.tar.gz", hash = "sha256:0898182b4737a7b584a2c73735d89816343369f259fea932d90dc78e35d8ac33"},
 ]
-drf-extensions = []
+drf-extensions = [
+    {file = "drf-extensions-0.6.0.tar.gz", hash = "sha256:9a76d59c8ecc2814860e94a0c96a26a824e392cd4550f2efa928af43c002a750"},
+    {file = "drf_extensions-0.6.0-py2.py3-none-any.whl", hash = "sha256:a04cf188d27fdc13a1083a3ac9e4d72d3d93fcef76b3584191489c75d550c10d"},
+]
 isort = [
     {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
     {file = "isort-5.7.0.tar.gz", hash = "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e"},
