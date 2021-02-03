@@ -62,6 +62,7 @@ class MultiSerializerMixin:
 
     def get_response_serializer(self, obj, **kwargs):
         kwargs.update(self._get_serializer_extra_kwargs())
+        kwargs.setdefault('context', self.get_serializer_context())
         return self.get_response_serializer_class()(obj, **kwargs)
 
     def get_queryset(self, *args, **kwargs):
