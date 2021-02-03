@@ -43,6 +43,7 @@ class MultiSerializerMixin:
 
     def get_serializer(self, *args, **kwargs):
         kwargs.update(self._get_serializer_extra_kwargs())
+        kwargs.setdefault('context', self.get_serializer_context())
         return super().get_serializer(*args, **kwargs)
 
     def get_response_serializer_class(self):
