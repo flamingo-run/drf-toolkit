@@ -19,6 +19,11 @@ class Wizard(BaseModel):
         null=True,
         blank=True,
     )
+    extra_picture = models.FileField(
+        **StoragePath.another_pic(),
+        null=True,
+        blank=True,
+    )
     house = models.ForeignKey(
         to='test_app.House',
         related_name='wizards',

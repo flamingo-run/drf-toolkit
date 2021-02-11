@@ -84,7 +84,7 @@ class TestModelDiff(BaseApiTest):
 
 class TestModelStorage(BaseApiTest):
     def test_file_path(self):
-        a_file = SimpleUploadedFile('harry.jpg', '○⚡︎○'.encode())
+        a_file = SimpleUploadedFile('./pics/harry.jpg', '○⚡︎○'.encode())
 
         wizard = Wizard.objects.create(
             id=100,
@@ -98,6 +98,23 @@ class TestModelStorage(BaseApiTest):
             extension='jpg',
             pk=100,
             file=wizard.picture,
+        )
+
+    def test_file_path_preserve_name(self):
+        a_file = SimpleUploadedFile('./pics/harryyyyy.cdr', '○⚡︎○'.encode())
+
+        wizard = Wizard.objects.create(
+            id=100,
+            name='Harry Potter',
+            extra_picture=a_file,
+        )
+
+        self.assertUUIDFilePath(
+            prefix='wizard',
+            name='harryyyyy',
+            extension='cdr',
+            pk=100,
+            file=wizard.extra_picture,
         )
 
     def test_invalid_file_path(self):

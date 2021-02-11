@@ -18,3 +18,20 @@ class StoragePath(BaseDataStoragePath):
         return cls._build_kwargs(
             upload_to=cls._media_thumb_upload,
         )
+
+    @classmethod
+    def _preserve_name_upload(cls, instance, filename):
+        if not filename:
+            return None
+        parts = [
+            'wizard',
+            cls._get_pk(instance),
+            cls.rename(filename),
+        ]
+        return '/'.join(parts)
+
+    @classmethod
+    def another_pic(cls):
+        return cls._build_kwargs(
+            upload_to=cls._preserve_name_upload,
+        )

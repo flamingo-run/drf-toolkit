@@ -1,9 +1,12 @@
 import uuid
+from pathlib import Path
 
 from django.core.exceptions import ValidationError
 
 
 class BaseDataStoragePath:
+    SUFFIX_DELIMITER = '_'
+
     @classmethod
     def _build_kwargs(cls, upload_to):
         return {
@@ -11,16 +14,19 @@ class BaseDataStoragePath:
         }
 
     @classmethod
-    def rename(cls, filename, new_name, unique=True):
-        parts = filename.split('.')
-        if len(parts) == 1:
+    def rename(cls, filename, new_name=None, unique=True):
+        filepath = Path(filename)
+        previous_name = filepath.stem
+        extension = filepath.suffix
+
+        if not extension:
             raise ValidationError("Filename must have and extension")
 
-        extension = parts[-1]
+        new_name = new_name or previous_name
         if unique:
             suffix = uuid.uuid4()
-            new_name = f'{new_name}_{suffix}'
-        return f'{new_name}.{extension}'
+            new_name = f'{new_name}{cls.SUFFIX_DELIMITER}{suffix}'
+        return f'{new_name}{extension}'
 
     @classmethod
     def _get_pk(cls, instance):
