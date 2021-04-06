@@ -68,7 +68,7 @@ class CacheResponse(decorators.CacheResponse):
                 response_dict = (
                     response.rendered_content,
                     response.status_code,
-                    response._headers.copy(),
+                    response.headers.copy(),
                 )
 
                 self.cache.set(key, response_dict, self.timeout)
@@ -77,7 +77,7 @@ class CacheResponse(decorators.CacheResponse):
             try:
                 content, status, headers = response_dict
                 response = HttpResponse(content=content, status=status)
-                response._headers = headers
+                response.headers = headers
             except ValueError:
                 response = response_dict
 
