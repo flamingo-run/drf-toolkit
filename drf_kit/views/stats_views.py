@@ -16,10 +16,13 @@ class StatsViewMixin:
         return IntBooleanFilter.get_logic(stats_value)
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        queryset = super().get_queryset()
         if self.with_stats:
-            qs = self.add_stats_to_queryset(queryset=qs)
-        return qs
+            qs = self.add_stats_to_queryset(queryset=queryset)
+            if not qs.ordered and queryset.ordered:
+                qs = qs.order_by(*queryset.query.get_meta().ordering)
+            queryset = qs
+        return queryset
 
     def get_response_serializer_class(self):
         klass = getattr(self, 'serializer_stats_class', None)
