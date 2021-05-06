@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from django.db import models
 from django.db.models import Max
@@ -66,7 +67,7 @@ class BoundedFileMixin:
                 file = getattr(self, field.name)
                 if file:
                     old_file = file.name
-                    new_file = file.field.generate_filename(self, old_file)
+                    new_file = file.field.generate_filename(self, Path(old_file).name)
 
                     if new_file != old_file:
                         changed = True
