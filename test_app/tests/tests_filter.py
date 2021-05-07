@@ -4,48 +4,48 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestIntBooleanFilter(HogwartsTestMixin, BaseApiTest):
-    url = '/teachers'
+    url = "/teachers"
 
     def setUp(self):
         super().setUp()
         self.teachers = self._set_up_teachers()
 
     def test_filter_true(self):
-        url = f'{self.url}?is_half_blood=1'
+        url = f"{self.url}?is_half_blood=1"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
 
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(1, len(results))
 
     def test_filter_false(self):
-        url = f'{self.url}?is_half_blood=0'
+        url = f"{self.url}?is_half_blood=0"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(3, len(results))
 
     def test_filter_fail(self):
-        url = f'{self.url}?is_half_blood=yes'
+        url = f"{self.url}?is_half_blood=yes"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(4, len(results))
 
     def test_filter_not_boolean(self):
-        url = f'{self.url}?is_half_blood=666'
+        url = f"{self.url}?is_half_blood=666"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(4, len(results))
 
 
 class TestIncludeUnavailableFilterSet(HogwartsTestMixin, BaseApiTest):
-    url = '/teachers'
+    url = "/teachers"
 
     def setUp(self):
         super().setUp()
@@ -62,31 +62,31 @@ class TestIncludeUnavailableFilterSet(HogwartsTestMixin, BaseApiTest):
         return teachers
 
     def test_filter_default(self):
-        url = f'{self.url}'
+        url = f"{self.url}"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(4, len(results))
 
     def test_filter_true(self):
-        url = f'{self.url}?include_unavailable=1'
+        url = f"{self.url}?include_unavailable=1"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(5, len(results))
 
     def test_filter_false(self):
-        url = f'{self.url}?include_unavailable=0'
+        url = f"{self.url}?include_unavailable=0"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
-        results = response.json()['results']
+        results = response.json()["results"]
         self.assertEqual(4, len(results))
 
     def test_filter_fail(self):
-        url = f'{self.url}?include_unavailable=potato'
+        url = f"{self.url}?include_unavailable=potato"
         response = self.client.get(url)
 
         self.assertEqual(400, response.status_code)
@@ -99,29 +99,29 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.teachers = self._set_up_houses()
 
     def test_filter_with_wrong_param_type(self):
-        url = f'/teachers?id=potato'
+        url = f"/teachers?id=potato"
         response = self.client.get(url)
 
         self.assertEqual(400, response.status_code)
 
     def test_filter_with_unknown_param(self):
-        url = f'/teachers?shining_vampires=no'
+        url = f"/teachers?shining_vampires=no"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(
             list(reversed(self.expected_teachers)),
-            response.json()['results'],
+            response.json()["results"],
         )
 
     def test_filter_with_list_param(self):
-        url = f'/teachers?id=no'
+        url = f"/teachers?id=no"
         response = self.client.get(url)
 
         self.assertEqual(400, response.status_code)
 
     def test_order_with_param(self):
-        url = f'/houses?sort=-name'
+        url = f"/houses?sort=-name"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -134,19 +134,19 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
             self.expected_houses[3],
             self.expected_houses[0],
         ]
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_order_with_unknown_param(self):
-        url = f'/houses?ordering=-shining_vampire'
+        url = f"/houses?ordering=-shining_vampire"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
 
         data = response.json()
-        self.assertEqual(len(self.expected_houses), len(data['results']))
+        self.assertEqual(len(self.expected_houses), len(data["results"]))
 
     def test_search_with_param(self):
-        url = f'/houses?q=yff'
+        url = f"/houses?q=yff"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -156,10 +156,10 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         expected = [
             self.expected_houses[0],
         ]
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_order_search_results(self):
-        url = f'/houses?q=ff&sort=name'
+        url = f"/houses?q=ff&sort=name"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -170,13 +170,13 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
             self.expected_houses[0],
             self.expected_houses[3],
         ]
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_search_on_disabled_view(self):
-        url = f'/teachers?q=yff'
+        url = f"/teachers?q=yff"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
 
         data = response.json()
-        self.assertEqual(len(self.expected_teachers), len(data['results']))
+        self.assertEqual(len(self.expected_teachers), len(data["results"]))

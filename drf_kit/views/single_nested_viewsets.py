@@ -30,9 +30,7 @@ class SingleNestedViewMixin(NestedViewMixin):
         return super().partial_update(request, *args, **kwargs)
 
     def http_pk_not_allowed(self):
-        error = {
-            'error': "There's no need to provide a PK since there's no more than 1 object"
-        }
+        error = {"error": "There's no need to provide a PK since there's no more than 1 object"}
         return Response(
             data=error,
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
@@ -42,10 +40,7 @@ class SingleNestedViewMixin(NestedViewMixin):
     def create(self, request, **kwargs):
         instance = self.get_object()
         if instance:
-            error = {
-                'error': "Already exists and only one is allowed."
-                         " Use PUT to override existing relationship."
-            }
+            error = {"error": "Already exists and only one is allowed." " Use PUT to override existing relationship."}
             return Response(status=status.HTTP_409_CONFLICT, data=error)
 
         return super().create(request, **kwargs)

@@ -10,8 +10,8 @@ class FilterBackend(DjangoFilterBackend):
     def filter_queryset(self, request, queryset, view):
         try:
             return super().filter_queryset(request, queryset, view)
-        except (ValueError, AttributeError) as e:
-            raise ValidationError(str(e)) from e
+        except (ValueError, AttributeError) as exc:
+            raise ValidationError(str(exc)) from exc
 
 
 class IntBooleanFilter(Filter):
@@ -38,8 +38,8 @@ class BaseFilterSet(FilterSet):
         if data is not None:
             data = data.copy()
 
-            for name, f in self.base_filters.items():
-                initial = f.extra.get('initial', None)
+            for name, filter_obj in self.base_filters.items():  # pylint: disable=no-member
+                initial = filter_obj.extra.get("initial", None)
                 if not data.get(name) and initial is not None:
                     data[name] = initial
 
@@ -62,15 +62,15 @@ class AnyOfFilter(MultipleChoiceFilter):
             return qs
 
         if not self.conjoined:
-            predicate = {f'{self.field_name}__in': value}
-            q = Q(**predicate)
-            qs = self.get_method(qs)(q)
+            predicate = {f"{self.field_name}__in": value}
+            query_filter = Q(**predicate)
+            qs = self.get_method(qs)(query_filter)
 
         return qs.distinct() if self.distinct else qs
 
 
 class IncludeUnavailableFilterSet(BaseFilterSet):
-    include_unavailable = IntBooleanFilter(method='filter_include_unavailable', initial=0)
+    include_unavailable = IntBooleanFilter(method="filter_include_unavailable", initial=0)
 
     def filter_include_unavailable(self, qs, name, value):
         available = self.Meta.model.availables.get_filter()
@@ -78,9 +78,8 @@ class IncludeUnavailableFilterSet(BaseFilterSet):
         boolean_value = IntBooleanFilter.get_logic(value)
         if boolean_value is None or boolean_value is True:
             return qs
-        else:
-            filtering = available
-            return qs.filter(filtering).distinct()
+        filtering = available
+        return qs.filter(filtering).distinct()
 
     class Meta:
         model = None

@@ -25,16 +25,16 @@ class Wizard(BaseModel):
         blank=True,
     )
     house = models.ForeignKey(
-        to='test_app.House',
-        related_name='wizards',
+        to="test_app.House",
+        related_name="wizards",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
     spells = models.ManyToManyField(
-        to='test_app.Spell',
-        through='SpellCast',
-        related_name='wizards',
+        to="test_app.Spell",
+        through="SpellCast",
+        related_name="wizards",
     )
     received_letter_at = models.DateTimeField(
         blank=True,
@@ -52,7 +52,7 @@ class House(BaseModel):
         max_digits=4,
     )
 
-    _PUBSUB_NAME = 'team'
+    _PUBSUB_NAME = "team"
 
 
 class Patronus(BaseModel):
@@ -64,7 +64,7 @@ class Patronus(BaseModel):
         null=True,
     )
     wizard = models.OneToOneField(
-        to='test_app.Wizard',
+        to="test_app.Wizard",
         on_delete=models.CASCADE,
     )
 
@@ -97,14 +97,14 @@ class EnvironmentalSpell(Spell):
 
 class SpellCast(BaseModel):
     wizard = models.ForeignKey(
-        to='test_app.Wizard',
+        to="test_app.Wizard",
         on_delete=models.CASCADE,
-        related_name='spell_casts',
+        related_name="spell_casts",
     )
     spell = models.ForeignKey(
-        to='test_app.Spell',
+        to="test_app.Spell",
         on_delete=models.CASCADE,
-        related_name='spell_casts',
+        related_name="spell_casts",
     )
     is_successful = models.BooleanField(
         default=True,
@@ -116,22 +116,22 @@ class Wand(BaseModel):
         max_length=50,
     )
     holder = models.ForeignKey(
-        to='test_app.Wizard',
+        to="test_app.Wizard",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='wands',
+        related_name="wands",
     )
 
     class Meta(BaseModel.Meta):
-        verbose_name = 'varinha'
+        verbose_name = "varinha"
 
 
 class Memory(SoftDeleteModel):
     owner = models.ForeignKey(
-        to='test_app.Wizard',
+        to="test_app.Wizard",
         on_delete=models.CASCADE,
-        related_name='memories',
+        related_name="memories",
     )
     description = models.TextField()
 
@@ -139,28 +139,28 @@ class Memory(SoftDeleteModel):
 class TriWizardPlacement(BaseOrderedModel):
     year = models.IntegerField()
     wizard = models.ForeignKey(
-        to='test_app.Wizard',
+        to="test_app.Wizard",
         on_delete=models.CASCADE,
-        related_name='placements',
+        related_name="placements",
     )
     prize = models.CharField(
         max_length=100,
     )
 
-    order_with_respect_to = 'year'
+    order_with_respect_to = "year"
 
     class Meta(BaseOrderedModel.Meta):
         constraints = [
             models.UniqueConstraint(
-                fields=['wizard', 'year'],
-                name='unique_wizard',
+                fields=["wizard", "year"],
+                name="unique_wizard",
             ),
             models.UniqueConstraint(
-                fields=['prize'],
-                name='unique_prize',
+                fields=["prize"],
+                name="unique_prize",
             ),
         ]
         ordering = [
-            'year',
-            'order',
+            "year",
+            "order",
         ]

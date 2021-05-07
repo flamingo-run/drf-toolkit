@@ -5,12 +5,12 @@ from django.core.exceptions import ValidationError
 
 
 class BaseDataStoragePath:
-    SUFFIX_DELIMITER = '_'
+    SUFFIX_DELIMITER = "_"
 
     @classmethod
     def _build_kwargs(cls, upload_to):
         return {
-            'upload_to': upload_to,
+            "upload_to": upload_to,
         }
 
     @classmethod
@@ -25,13 +25,13 @@ class BaseDataStoragePath:
         new_name = new_name or previous_name
         if unique:
             suffix = uuid.uuid4()
-            new_name = f'{new_name}{cls.SUFFIX_DELIMITER}{suffix}'
-        return f'{new_name}{extension}'
+            new_name = f"{new_name}{cls.SUFFIX_DELIMITER}{suffix}"
+        return f"{new_name}{extension}"
 
     @classmethod
     def _get_pk(cls, instance):
         if isinstance(instance, dict):
-            pk = instance.get('id')
+            pk = instance.get("id")
         else:
             pk = instance.pk
 

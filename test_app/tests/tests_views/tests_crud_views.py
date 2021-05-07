@@ -8,7 +8,7 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestCRUDView(HogwartsTestMixin, BaseApiTest):
-    url = '/houses'
+    url = "/houses"
 
     def setUp(self):
         super().setUp()
@@ -18,10 +18,9 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         # IntegrityError by duplicate key is a very rare exception because the serializer
         # validators pre-check before committing them to the database
         # Then we have to simulate this error happening
-        klass_name = 'drf_kit.serializers.BaseModelSerializer.create'
+        klass_name = "drf_kit.serializers.BaseModelSerializer.create"
         error = IntegrityError(
-            'duplicate key value violates unique constraint potato\n'
-            'DETAIL:  Key (id)=(42) already exists.'
+            "duplicate key value violates unique constraint potato\n" "DETAIL:  Key (id)=(42) already exists."
         )
         return patch(klass_name, side_effect=error)
 
@@ -40,11 +39,11 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             self.expected_houses[2],
             self.expected_houses[1],
         ]
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_detail_endpoint(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}'
+        url = f"{self.url}/{house.pk}"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -55,18 +54,18 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
     def test_post_endpoint(self):
         url = self.url
         data = {
-            'name': "#Always",
-            'points_boost': 3.1,
+            "name": "#Always",
+            "points_boost": 3.1,
         }
         response = self.client.post(url, data=data)
         self.assertEqual(201, response.status_code)
 
         data = response.json()
         expected = {
-            'id': ANY,
-            'name': "#Always",
-            'points_boost': "3.10",
-            'created_at': ANY,
+            "id": ANY,
+            "name": "#Always",
+            "points_boost": "3.10",
+            "created_at": ANY,
         }
         self.assertEqual(expected, data)
 
@@ -76,8 +75,8 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
     def test_post_endpoint_with_existing(self):
         url = self.url
         data = {
-            'name': "Gryffindor",
-            'points_boost': 66.6,
+            "name": "Gryffindor",
+            "points_boost": 66.6,
         }
 
         with self._simulate_integrity_error():
@@ -90,15 +89,15 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
 
     def test_patch_endpoint(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}'
+        url = f"{self.url}/{house.pk}"
         data = {
-            'points_boost': 3.14,
+            "points_boost": 3.14,
         }
         response = self.client.patch(url, data=data)
         self.assertEqual(200, response.status_code)
 
         expected_house = self.expected_houses[0]
-        expected_house['points_boost'] = "3.14"
+        expected_house["points_boost"] = "3.14"
         self.assertEqual(expected_house, response.json())
 
         houses = models.House.objects.all()
@@ -106,16 +105,16 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
 
     def test_put_endpoint(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}'
+        url = f"{self.url}/{house.pk}"
         data = {
-            'name': "Not Griffindor",
+            "name": "Not Griffindor",
         }
         response = self.client.put(url, data=data)
         self.assertEqual(405, response.status_code)
 
     def test_delete_endpoint(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}'
+        url = f"{self.url}/{house.pk}"
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code)
 

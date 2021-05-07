@@ -12,7 +12,7 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         self.patronus = self._set_up_patronus(wizards=self.wizards)
 
     def url(self, wizard_pk=None):
-        return '/wizards/{id}/patronus'.format(id=wizard_pk or self.wizards[0].pk)
+        return "/wizards/{id}/patronus".format(id=wizard_pk or self.wizards[0].pk)
 
     def test_list_endpoint(self):
         url = self.url()
@@ -28,7 +28,7 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
 
     def test_detail_endpoint(self):
         pk = self.patronus[0].pk
-        url = f'{self.url()}/{pk}'
+        url = f"{self.url()}/{pk}"
 
         response = self.client.get(url)
         self.assertEqual(405, response.status_code)
@@ -38,13 +38,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'Snake',
+            "name": "Snake",
         }
         response = self.client.post(url, data)
         self.assertEqual(201, response.status_code)
 
         wizard.refresh_from_db()
-        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual("Snake", wizard.patronus.name)
         self.assertEqual(None, wizard.patronus.color)
 
         self.assertEqual(4, models.Patronus.objects.count())
@@ -54,13 +54,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'Snake',
+            "name": "Snake",
         }
         response = self.client.post(url, data)
         self.assertEqual(409, response.status_code)
 
         wizard.refresh_from_db()
-        self.assertNotEqual('Snake', wizard.patronus.name)
+        self.assertNotEqual("Snake", wizard.patronus.name)
 
         self.assertEqual(3, models.Patronus.objects.count())
 
@@ -69,13 +69,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'Snake',
+            "name": "Snake",
         }
         response = self.client.put(url, data)
         self.assertEqual(201, response.status_code)
 
         wizard.refresh_from_db()
-        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual("Snake", wizard.patronus.name)
         self.assertEqual(None, wizard.patronus.color)
 
         self.assertEqual(4, models.Patronus.objects.count())
@@ -85,13 +85,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'Snake',
+            "name": "Snake",
         }
         response = self.client.put(url, data)
         self.assertEqual(200, response.status_code)
 
         wizard.refresh_from_db()
-        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual("Snake", wizard.patronus.name)
         self.assertEqual(None, wizard.patronus.color)
 
         self.assertEqual(3, models.Patronus.objects.count())
@@ -101,22 +101,22 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'Snake',
+            "name": "Snake",
         }
         response = self.client.patch(url, data)
         self.assertEqual(200, response.status_code)
 
         data = response.json()
         expected_data = {
-            'id': ANY,
-            'name': 'Snake',
-            'color': None,
-            'wizard': self.expected_wizards[2],
+            "id": ANY,
+            "name": "Snake",
+            "color": None,
+            "wizard": self.expected_wizards[2],
         }
         self.assertEqual(expected_data, data)
 
         wizard.refresh_from_db()
-        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual("Snake", wizard.patronus.name)
         self.assertEqual(None, wizard.patronus.color)
 
         self.assertEqual(4, models.Patronus.objects.count())
@@ -126,32 +126,32 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         url = self.url(wizard_pk=wizard.pk)
 
         data = {
-            'name': 'White Stag',
+            "name": "White Stag",
         }
         response = self.client.patch(url, data)
         self.assertEqual(200, response.status_code)
 
         data = response.json()
         expected_data = {
-            'id': ANY,
-            'name': 'White Stag',
-            'color': 'purple',
-            'wizard': self.expected_wizards[0],
+            "id": ANY,
+            "name": "White Stag",
+            "color": "purple",
+            "wizard": self.expected_wizards[0],
         }
         self.assertEqual(expected_data, data)
 
         wizard.refresh_from_db()
-        self.assertEqual('White Stag', wizard.patronus.name)
-        self.assertEqual('purple', wizard.patronus.color)
+        self.assertEqual("White Stag", wizard.patronus.name)
+        self.assertEqual("purple", wizard.patronus.color)
 
         self.assertEqual(3, models.Patronus.objects.count())
 
     def test_patch_endpoint_with_pk(self):
         pk = self.patronus[0].pk
-        url = f'{self.url()}/{pk}'
+        url = f"{self.url()}/{pk}"
 
         data = {
-            'name': 'White Stag',
+            "name": "White Stag",
         }
         response = self.client.patch(url, data)
         self.assertEqual(405, response.status_code)
@@ -170,7 +170,7 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
     def test_delete_endpoint_with_pk(self):
         wizard = self.wizards[0]
         patronus = self.patronus[0]
-        url = f'{self.url(wizard_pk=wizard.pk)}/{patronus.pk}'
+        url = f"{self.url(wizard_pk=wizard.pk)}/{patronus.pk}"
 
         response = self.client.delete(url)
         self.assertEqual(405, response.status_code)

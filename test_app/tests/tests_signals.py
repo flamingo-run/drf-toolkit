@@ -11,7 +11,7 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 class TestUnplugSignal(BaseApiTest):
     def patch_signal_trigger(self, **kwargs):
-        return patch('test_app.tasks.NotifyMinisterOfMagicTask.run', **kwargs)
+        return patch("test_app.tasks.NotifyMinisterOfMagicTask.run", **kwargs)
 
     def unplug(self):
         return UnplugSignal(
@@ -48,7 +48,7 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         self.wizards = self._set_up_wizards()
 
     def patch_notify_task(self):
-        return patch('test_app.tasks.NotifyMinisterOfMagicTask.run')
+        return patch("test_app.tasks.NotifyMinisterOfMagicTask.run")
 
     def test_soft_delete_model(self):
         memory = models.Memory.objects.create(owner=self.wizards[0])
@@ -59,7 +59,7 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         some_task.assert_called_once_with(recovered=False)
 
         memory.refresh_from_db()
-        self.assertIn('[ERASED]', memory.description)
+        self.assertIn("[ERASED]", memory.description)
 
     def test_undelete_model(self):
         memory = models.Memory.objects.create(owner=self.wizards[0])
@@ -71,4 +71,4 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         some_task.assert_called_once_with(recovered=True)
 
         memory.refresh_from_db()
-        self.assertIn('[RECOVERED]', memory.description)
+        self.assertIn("[RECOVERED]", memory.description)

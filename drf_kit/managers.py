@@ -9,19 +9,23 @@ class SoftDeleteQuerySet(query.QuerySet):
         qs.__class__ = SoftDeleteQuerySet
         return qs
 
-    def delete(self, *args, using='default', **kwargs):
+    def delete(self):
         if not bool(self):
             return
         self.update(deleted_at=timezone.now())
 
-    def undelete(self, *args, using='default', **kwargs):
+    def undelete(self, *args, using="default", **kwargs):
         self.update(deleted_at=None)
 
 
 class SoftDeleteManager(models.Manager):
     def get_queryset(self):
-        qs = super().get_queryset().filter(
-            deleted_at__isnull=True,
+        qs = (
+            super()
+            .get_queryset()
+            .filter(
+                deleted_at__isnull=True,
+            )
         )
         qs.__class__ = SoftDeleteQuerySet
         return qs
@@ -37,7 +41,7 @@ class SoftDeleteManager(models.Manager):
         return self._get_base_queryset(*args, **kwargs).filter(*args, **kwargs)
 
     def _get_base_queryset(self, *args, **kwargs):
-        if 'pk' in kwargs:
+        if "pk" in kwargs:
             qs = self.all_with_deleted()
         else:
             qs = self.all()

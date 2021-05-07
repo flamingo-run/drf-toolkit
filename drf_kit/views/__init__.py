@@ -25,23 +25,20 @@ from drf_kit.views.viewsets import (
 )
 
 __all__ = (
-    'NestedModelViewSet',
-    'CachedNestedModelViewSet',
-    'ReadOnlyNestedModelViewSet',
-    'CachedReadOnlyNestedModelViewSet',
-    'WriteOnlyNestedModelViewSet',
-
-    'SingleNestedModelViewSet',
-    'CachedSingleNestedModelViewSet',
-    'ReadOnlySingleNestedModelViewSet',
-    'CachedReadOnlySingleNestedModelViewSet',
-
-    'ModelViewSet',
-    'CachedModelViewSet',
-    'ReadOnlyModelViewSet',
-    'CachedReadOnlyModelViewSet',
-    'WriteOnlyModelViewSet',
-    'UpsertMixin',
-
-    'StatsViewMixin',
+    "NestedModelViewSet",
+    "CachedNestedModelViewSet",
+    "ReadOnlyNestedModelViewSet",
+    "CachedReadOnlyNestedModelViewSet",
+    "WriteOnlyNestedModelViewSet",
+    "SingleNestedModelViewSet",
+    "CachedSingleNestedModelViewSet",
+    "ReadOnlySingleNestedModelViewSet",
+    "CachedReadOnlySingleNestedModelViewSet",
+    "ModelViewSet",
+    "CachedModelViewSet",
+    "ReadOnlyModelViewSet",
+    "CachedReadOnlyModelViewSet",
+    "WriteOnlyModelViewSet",
+    "UpsertMixin",
+    "StatsViewMixin",
 )

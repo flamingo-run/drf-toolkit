@@ -9,8 +9,13 @@ from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 
 class CustomPagePagination(PageNumberPagination):
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     page_start = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.page = None
+        self.request = None
 
     @property
     def _shift(self):
@@ -33,8 +38,9 @@ class CustomPagePagination(PageNumberPagination):
         try:
             self.page = paginator.page(int(page_number) + self._shift)
         except InvalidPage as exc:
-            msg = self.invalid_page_message.format(
-                page_number=page_number, message=str(exc)
+            msg = self.invalid_page_message.format(  # pylint: disable=no-member
+                page_number=page_number,
+                message=str(exc),
             )
             raise NotFound(msg) from exc
 
@@ -67,16 +73,11 @@ class CustomPagePagination(PageNumberPagination):
         def page_number_to_url(page_number):
             if page_number == self.page_start:
                 return remove_query_param(base_url, self.page_query_param)
-            else:
-                return replace_query_param(base_url, self.page_query_param, page_number)
+            return replace_query_param(base_url, self.page_query_param, page_number)
 
         current = self.page.number
         final = self.page.paginator.num_pages
         page_numbers = _get_displayed_page_numbers(current, final)
         page_links = _get_page_links(page_numbers, current, page_number_to_url)
 
-        return {
-            'previous_url': self.get_previous_link(),
-            'next_url': self.get_next_link(),
-            'page_links': page_links
-        }
+        return {"previous_url": self.get_previous_link(), "next_url": self.get_next_link(), "page_links": page_links}

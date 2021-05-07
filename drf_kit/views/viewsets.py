@@ -29,9 +29,9 @@ class MultiSerializerMixin:
 
     def get_serializer_class(self):
         SERIALIZERS = {
-            'retrieve': self.serializer_detail_class,
-            'create': self.serializer_create_class,
-            'update': self.serializer_update_class or self.serializer_create_class,
+            "retrieve": self.serializer_detail_class,
+            "create": self.serializer_create_class,
+            "update": self.serializer_update_class or self.serializer_create_class,
         }
         action = self._get_action()
 
@@ -43,14 +43,14 @@ class MultiSerializerMixin:
 
     def get_serializer(self, *args, **kwargs):
         kwargs.update(self._get_serializer_extra_kwargs())
-        kwargs.setdefault('context', self.get_serializer_context())
+        kwargs.setdefault("context", self.get_serializer_context())
         return super().get_serializer(*args, **kwargs)
 
     def get_response_serializer_class(self):
         SERIALIZERS = {
-            'retrieve': self.serializer_detail_class,
-            'create': self.serializer_detail_class,
-            'update': self.serializer_detail_class,
+            "retrieve": self.serializer_detail_class,
+            "create": self.serializer_detail_class,
+            "update": self.serializer_detail_class,
         }
         action = self._get_action()
 
@@ -62,14 +62,14 @@ class MultiSerializerMixin:
 
     def get_response_serializer(self, obj, **kwargs):
         kwargs.update(self._get_serializer_extra_kwargs())
-        kwargs.setdefault('context', self.get_serializer_context())
+        kwargs.setdefault("context", self.get_serializer_context())
         return self.get_response_serializer_class()(obj, **kwargs)
 
     def get_queryset(self, *args, **kwargs):
         QUERYSETS = {
-            'retrieve': self.queryset_detail,
-            'create': self.queryset_create,
-            'update': self.queryset_update or self.queryset_create,
+            "retrieve": self.queryset_detail,
+            "create": self.queryset_create,
+            "update": self.queryset_update or self.queryset_create,
         }
         action = self._get_action()
 
@@ -82,18 +82,18 @@ class MultiSerializerMixin:
 
     def _get_action(self):
         def _is_request_to_detail_endpoint():
-            if hasattr(self, 'lookup_url_kwarg'):
+            if hasattr(self, "lookup_url_kwarg"):
                 lookup = self.lookup_url_kwarg or self.lookup_field
             return bool(lookup and lookup in self.kwargs)
 
         verb = self.request.method.lower()
-        if verb == 'get' and _is_request_to_detail_endpoint():
-            return 'retrieve'
-        if verb == 'post':
-            return 'create'
-        if verb == 'patch':
-            return 'update'
-        return 'list'
+        if verb == "get" and _is_request_to_detail_endpoint():
+            return "retrieve"
+        if verb == "post":
+            return "create"
+        if verb == "patch":
+            return "update"
+        return "list"
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -121,13 +121,13 @@ class MultiSerializerMixin:
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         obj = self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
@@ -153,11 +153,11 @@ class MultiSerializerMixin:
 
 
 class ModelViewSet(MultiSerializerMixin, viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
 
 class ReadOnlyModelViewSet(MultiSerializerMixin, viewsets.ReadOnlyModelViewSet):
-    http_method_names = ['get', 'head', 'options']
+    http_method_names = ["get", "head", "options"]
 
 
 class CacheResponseMixin(BaseCacheResponseMixin):
@@ -179,7 +179,7 @@ class CachedReadOnlyModelViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 class WriteOnlyModelViewSet(MultiSerializerMixin, viewsets.ModelViewSet):
-    http_method_names = ['post', 'patch', 'delete']
+    http_method_names = ["post", "patch", "delete"]
 
 
 class UpsertMixin(MultiSerializerMixin):
@@ -204,17 +204,15 @@ class UpsertMixin(MultiSerializerMixin):
 
 class BulkMixin(MultiSerializerMixin):
     def _get_serializer_extra_kwargs(self):
-        if self._get_action() != 'retrieve':
-            return {
-                'many': True
-            }
+        if self._get_action() != "retrieve":
+            return {"many": True}
         return {}
 
     def get_response_serializer_class(self):
         SERIALIZERS = {
-            'retrieve': self.serializer_detail_class,
-            'create': self.serializer_list_class,
-            'update': self.serializer_list_class,
+            "retrieve": self.serializer_detail_class,
+            "create": self.serializer_list_class,
+            "update": self.serializer_list_class,
         }
         action = self._get_action()
 
@@ -225,4 +223,4 @@ class BulkMixin(MultiSerializerMixin):
         return klass
 
     def update(self, request, *args, **kwargs):
-        raise MethodNotAllowed(method='patch')
+        raise MethodNotAllowed(method="patch")

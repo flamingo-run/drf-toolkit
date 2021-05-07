@@ -16,15 +16,15 @@ from test_app import filters, models, serializers
 
 
 class HouseViewSet(StatsViewMixin, ModelViewSet):
-    queryset = models.House.objects.all().order_by('name')
+    queryset = models.House.objects.all().order_by("name")
     serializer_class = serializers.HouseSerializer
     serializer_stats_class = serializers.HouseStatsSerializer
-    ordering_fields = ('name', 'id')
-    search_fields = ['name']
+    ordering_fields = ("name", "id")
+    search_fields = ["name"]
 
     def add_stats_to_queryset(self, queryset):
         return queryset.annotate(
-            wizard_count=Count('wizards__id'),
+            wizard_count=Count("wizards__id"),
         )
 
 
@@ -32,7 +32,7 @@ class TeacherViewSet(CachedModelViewSet):
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
     filterset_class = filters.TeacherFilterSet
-    ordering_fields = ('name', 'id')
+    ordering_fields = ("name", "id")
 
 
 class WizardViewSet(ModelViewSet):
@@ -51,7 +51,7 @@ class WizardViewSet(ModelViewSet):
 
 class HouseWizardsViewSet(NestedModelViewSet):
     queryset_nest = models.House.objects.all()
-    lookup_url_kwarg_nest = 'house_id'
+    lookup_url_kwarg_nest = "house_id"
 
     queryset = models.Wizard.objects.all()
     serializer_class = serializers.WizardShortSerializer
@@ -62,14 +62,14 @@ class HouseWizardsViewSet(NestedModelViewSet):
 
 class WizardPatronusViewSet(SingleNestedModelViewSet):
     queryset_nest = models.Wizard.objects.all()
-    lookup_url_kwarg_nest = 'wizard_id'
+    lookup_url_kwarg_nest = "wizard_id"
 
     queryset = models.Patronus.objects.all()
     serializer_class = serializers.PatronusSerializer
 
 
 class SpellViewSet(ReadOnlyModelViewSet):
-    queryset = models.Spell.objects.all().order_by('name')
+    queryset = models.Spell.objects.all().order_by("name")
     serializer_class = serializers.SpellSerializer
 
     queryset_detail = models.Spell.objects.all()
@@ -88,7 +88,7 @@ class MemoryViewSet(WriteOnlyModelViewSet):
 
 class WizardToMemoryViewSet(WriteOnlyNestedModelViewSet):
     queryset_nest = models.Wizard.objects.all()
-    lookup_field_nest = 'owner_id'
+    lookup_field_nest = "owner_id"
 
     queryset = models.Memory.objects.all()
     serializer_class = serializers.MemorySerializer
@@ -100,5 +100,5 @@ class TriWizardPlacementViewSet(UpsertMixin, ModelViewSet):
 
 
 class HouseBulkViewSet(BulkMixin, ModelViewSet):
-    queryset = models.House.objects.all().order_by('name')
+    queryset = models.House.objects.all().order_by("name")
     serializer_class = serializers.HouseSerializer

@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'j0&cjrqq3dt1if3)^gz4xx6tq%!pil2y@f&)5%vsm4e4%-1vda'
+SECRET_KEY = "j0&cjrqq3dt1if3)^gz4xx6tq%!pil2y@f&)5%vsm4e4%-1vda"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,56 +29,54 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'rest_framework',
-    'django_filters',
-
-    'test_app.apps.SampleAppConfig',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "django_filters",
+    "test_app.apps.SampleAppConfig",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'test_app.urls'
+ROOT_URLCONF = "test_app.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'test_app.wsgi.application'
+WSGI_APPLICATION = "test_app.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": str(BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -87,25 +85,25 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -116,31 +114,31 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # DRF
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'drf_kit.pagination.CustomPagePagination',
-    'PAGE_SIZE': os.environ.get('PAGE_SIZE', 50),
-    'DEFAULT_FILTER_BACKENDS': (
-        'drf_kit.filters.FilterBackend',
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
+    "DEFAULT_PAGINATION_CLASS": "drf_kit.pagination.CustomPagePagination",
+    "PAGE_SIZE": os.environ.get("PAGE_SIZE", 50),
+    "DEFAULT_FILTER_BACKENDS": (
+        "drf_kit.filters.FilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
     ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
     ),
-    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%SZ',
-    'SEARCH_PARAM': 'q',
-    'ORDERING_PARAM': 'sort',
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%SZ",
+    "SEARCH_PARAM": "q",
+    "ORDERING_PARAM": "sort",
 }
 
-CACHE_TTL = os.environ.get('CACHE_TTL', 5 * 60)
+CACHE_TTL = os.environ.get("CACHE_TTL", 5 * 60)
 REST_FRAMEWORK_EXTENSIONS = {
-    'DEFAULT_CACHE_RESPONSE_TIMEOUT': CACHE_TTL,
-    'DEFAULT_CACHE_ERRORS': False,
-    'DEFAULT_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
-    'DEFAULT_OBJECT_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
-    'DEFAULT_LIST_CACHE_KEY_FUNC': 'drf_kit.cache.cache_key_constructor',
+    "DEFAULT_CACHE_RESPONSE_TIMEOUT": CACHE_TTL,
+    "DEFAULT_CACHE_ERRORS": False,
+    "DEFAULT_CACHE_KEY_FUNC": "drf_kit.cache.cache_key_constructor",
+    "DEFAULT_OBJECT_CACHE_KEY_FUNC": "drf_kit.cache.cache_key_constructor",
+    "DEFAULT_LIST_CACHE_KEY_FUNC": "drf_kit.cache.cache_key_constructor",
 }

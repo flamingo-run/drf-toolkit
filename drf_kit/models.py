@@ -22,9 +22,9 @@ class ModelDiffMixin:
 
     @property
     def _diff(self):
-        d1 = self._initial
-        d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        initial_dict = self._initial
+        current_dict = self._dict
+        diffs = [(k, (v, current_dict[k])) for k, v in initial_dict.items() if v != current_dict[k]]
         return dict(diffs)
 
     @property
@@ -44,10 +44,12 @@ class ModelDiffMixin:
 
     @property
     def _dict(self):
-        return as_dict(model_to_dict(
-            self,
-            fields=[field.name for field in self._meta.fields],
-        ))
+        return as_dict(
+            model_to_dict(
+                self,
+                fields=[field.name for field in self._meta.fields],
+            )
+        )
 
 
 class BoundedFileMixin:
@@ -72,7 +74,7 @@ class BoundedFileMixin:
                     if new_file != old_file:
                         changed = True
 
-                        if hasattr(file.storage, 'move'):
+                        if hasattr(file.storage, "move"):
                             file.storage.move(previous_name=old_file, new_name=new_file)
                         else:  # still works when using local filesystem
                             file.storage.save(new_file, file)
@@ -81,7 +83,7 @@ class BoundedFileMixin:
                         file.close()
 
             if changed:
-                kwargs.pop('force_insert', None)
+                kwargs.pop("force_insert", None)
                 super().save(*args, **kwargs)
 
 
@@ -99,20 +101,20 @@ class BaseModel(ModelDiffMixin, BoundedFileMixin, models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('-updated_at',)
-        get_latest_by = 'updated_at'
+        ordering = ("-updated_at",)
+        get_latest_by = "updated_at"
         indexes = [
-            models.Index(fields=['updated_at']),
+            models.Index(fields=["updated_at"]),
         ]
 
     def admin_edit_url(self):
         return reverse(
-            'admin:{}_{}_change'.format(self._meta.app_label, self._meta.model_name),
+            f"admin:{self._meta.app_label}_{self._meta.model_name}_change",  # pylint: disable=no-member
             args=[self.pk],
         )
 
     def __repr__(self):
-        return f'<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>'
+        return f"<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>"  # pylint: disable=no-member
 
 
 class OrderedModelMixin(_OrderedModelBase):
@@ -123,14 +125,14 @@ class OrderedModelMixin(_OrderedModelBase):
         blank=True,
         verbose_name=_("order"),
     )
-    order_field_name = 'order'
+    order_field_name = "order"
 
     def save(self, *args, **kwargs):
         if getattr(self, self.order_field_name) is None:
-            c = self.get_ordering_queryset().aggregate(
+            highest_order = self.get_ordering_queryset().aggregate(
                 Max(self.order_field_name)
-            ).get(self.order_field_name + '__max')
-            new_order = 0 if c is None else c + 1
+            ).get(self.order_field_name + "__max")
+            new_order = 0 if highest_order is None else highest_order + 1
             setattr(self, self.order_field_name, new_order)
         super().save(*args, **kwargs)
 
@@ -138,9 +140,7 @@ class OrderedModelMixin(_OrderedModelBase):
         if not new_order:
             return
 
-        clash = self.get_ordering_queryset().filter(
-            **{self.order_field_name: new_order}
-        ).exclude(pk=self.pk).first()
+        clash = self.get_ordering_queryset().filter(**{self.order_field_name: new_order}).exclude(pk=self.pk).first()
         if not clash:
             return
 
@@ -149,7 +149,7 @@ class OrderedModelMixin(_OrderedModelBase):
 
     class Meta:
         abstract = True
-        ordering = ('order',)
+        ordering = ("order",)
 
 
 class BaseOrderedModel(OrderedModelMixin, BaseModel):
@@ -182,7 +182,7 @@ class SoftDeleteModel(BaseModel):
     class Meta(BaseModel.Meta):
         abstract = True
         indexes = BaseModel.Meta.indexes + [
-            models.Index(fields=['deleted_at']),
+            models.Index(fields=["deleted_at"]),
         ]
 
     objects = managers.SoftDeleteManager()
@@ -191,7 +191,7 @@ class SoftDeleteModel(BaseModel):
     def is_deleted(self):
         return self.deleted_at is not None
 
-    def save(self, *args, soft_deleting=False, **kwargs):
+    def save(self, *args, soft_deleting=False, **kwargs):  # pylint: disable=arguments-differ
         if self.is_deleted and not soft_deleting:
             raise exceptions.UpdatingSoftDeletedException()
         return super().save(*args, **kwargs)

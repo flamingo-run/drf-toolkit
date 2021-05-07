@@ -16,18 +16,16 @@ logger = logging.getLogger(__name__)
 
 class NestedViewMixin:
     queryset_nest = UNSET
-    pk_field_nest = 'pk'
+    pk_field_nest = "pk"
     lookup_url_kwarg_nest = UNSET
     lookup_field_nest = UNSET
     serializer_field_nest = UNSET
 
     def __init__(self, *args, **kwargs):
         if self.queryset_nest is UNSET:
-            raise NotImplementedError('NestedViewSet must contain a queryset_nest')
+            raise NotImplementedError("NestedViewSet must contain a queryset_nest")
         if self.lookup_url_kwarg_nest is UNSET and self.lookup_field_nest is UNSET:
-            raise NotImplementedError(
-                'NestedViewSet must contain either lookup_url_kwarg_nest or lookup_field_nest'
-            )
+            raise NotImplementedError("NestedViewSet must contain either lookup_url_kwarg_nest or lookup_field_nest")
         if self.lookup_field_nest is UNSET:
             self.lookup_field_nest = self.lookup_url_kwarg_nest
         if self.lookup_url_kwarg_nest is UNSET:
@@ -38,24 +36,24 @@ class NestedViewMixin:
         super().__init__(*args, **kwargs)
 
     def get_serializer(self, *args, **kwargs):
-        if 'data' in kwargs:
+        if "data" in kwargs:
             # The data parameter might be a QueryDict (immutable),
             # so we assure it's a common dict (mutable) to add custom data
-            kwargs['data'] = dict(kwargs['data'].items())
+            kwargs["data"] = dict(kwargs["data"].items())
 
             # Proactively add the parent field value extracted from the URL to re-use serializers.
             # Avoid passing it by context and creating a new serializer
             # capable of reading the context
             nest_pk = self.get_nest_object().pk
-            if self.lookup_field_nest in kwargs['data']:
-                provided_nest_pk = kwargs['data'][self.serializer_field_nest]
+            if self.lookup_field_nest in kwargs["data"]:
+                provided_nest_pk = kwargs["data"][self.serializer_field_nest]
                 if str(provided_nest_pk) != str(nest_pk):
                     raise ValidationError(
                         f"{self.serializer_field_nest} provided in the body ({provided_nest_pk})"
                         f"differs from the URL's ({nest_pk}). "
                         f"You can omit it from the request body."
                     )
-            kwargs['data'][self.serializer_field_nest] = nest_pk
+            kwargs["data"][self.serializer_field_nest] = nest_pk
         return super().get_serializer(*args, **kwargs)
 
     def get_nest_object(self):
@@ -94,4 +92,4 @@ class CachedReadOnlyNestedModelViewSet(NestedViewMixin, CachedReadOnlyModelViewS
 
 
 class WriteOnlyNestedModelViewSet(NestedViewMixin, ModelViewSet):
-    http_method_names = ['post', 'patch', 'delete']
+    http_method_names = ["post", "patch", "delete"]

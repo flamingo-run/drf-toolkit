@@ -13,19 +13,19 @@ def notify_minister_of_magic(sender, instance, created, **kwargs):
 
 @receiver(pre_save, sender=models.Wizard)
 def check_the_name(sender, instance, **kwargs):
-    if instance.name == 'Voldemort':
+    if instance.name == "Voldemort":
         raise ValidationError("You can't say YOU-KNOW-WHO's name")
 
 
 @receiver(pre_delete, sender=models.Wizard)
 def harry_forever(sender, instance, **kwargs):
-    if instance.name == 'Harry Potter':
+    if instance.name == "Harry Potter":
         raise ValidationError("Harry can never die")
 
 
 @receiver(signals.pre_soft_delete, sender=models.Memory)
 def almost_erasing_memory(sender, instance, **kwargs):
-    instance.description += ' [ERASED]'
+    instance.description += " [ERASED]"
 
 
 @receiver(signals.post_soft_delete, sender=models.Memory)
@@ -35,7 +35,7 @@ def memory_has_been_erased(sender, instance, **kwargs):
 
 @receiver(signals.pre_undelete, sender=models.Memory)
 def almost_recovering_memory(sender, instance, **kwargs):
-    instance.description += ' [RECOVERED]'
+    instance.description += " [RECOVERED]"
 
 
 @receiver(signals.post_undelete, sender=models.Memory)

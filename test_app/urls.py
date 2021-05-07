@@ -5,68 +5,68 @@ from test_app import views
 router = DefaultRouter(trailing_slash=False)
 
 router.register(
-    r'wizards',
+    r"wizards",
     views.WizardViewSet,
-    'wizard',
+    "wizard",
 )
 
 router.register(
-    r'houses',
+    r"houses",
     views.HouseViewSet,
-    'house',
+    "house",
 )
 
 router.register(
-    r'teachers',
+    r"teachers",
     views.TeacherViewSet,
-    'teacher',
+    "teacher",
 )
 
 router.register(
-    r'spells',
+    r"spells",
     views.SpellViewSet,
-    'spell',
+    "spell",
 )
 
 router.register(
-    r'wizards/(?P<wizard_id>[^/.]+)/patronus',
+    r"wizards/(?P<wizard_id>[^/.]+)/patronus",
     views.WizardPatronusViewSet,
-    'wizard-to-patronus',
+    "wizard-to-patronus",
 )
 
 router.register(
-    r'houses/(?P<house_id>[^/.]+)/wizards',
+    r"houses/(?P<house_id>[^/.]+)/wizards",
     views.HouseWizardsViewSet,
-    'house-to-wizard',
+    "house-to-wizard",
 )
 
 router.register(
-    r'spell-casts',
+    r"spell-casts",
     views.SpellCastViewSet,
-    'spell-cast',
+    "spell-cast",
 )
 
 router.register(
-    r'memories',
+    r"memories",
     views.MemoryViewSet,
-    'memories',
+    "memories",
 )
 router.register(
-    r'wizards/(?P<owner_id>[^/.]+)/memories',
+    r"wizards/(?P<owner_id>[^/.]+)/memories",
     views.WizardToMemoryViewSet,
-    'wizard-to-memories',
+    "wizard-to-memories",
 )
 
 router.register(
-    r'tri-wizard-placements',
+    r"tri-wizard-placements",
     views.TriWizardPlacementViewSet,
-    'tri-wizard-placements',
+    "tri-wizard-placements",
 )
 
 router.register(
-    r'houses-bulk',
+    r"houses-bulk",
     views.HouseBulkViewSet,
-    'house-bulk',
+    "house-bulk",
 )
 
 urlpatterns = router.urls

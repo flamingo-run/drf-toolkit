@@ -8,11 +8,11 @@ class StatsViewMixin:
 
     @property
     def with_stats(self):
-        stats_param = self.request.query_params.get('stats', '0')
+        stats_param = self.request.query_params.get("stats", "0")
         try:
             stats_value = int(stats_param)
         except ValueError as e:
-            raise ValidationError({'stats': "Stats parameter must be an integer"}) from e
+            raise ValidationError({"stats": "Stats parameter must be an integer"}) from e
         return IntBooleanFilter.get_logic(stats_value)
 
     def get_queryset(self):
@@ -25,7 +25,7 @@ class StatsViewMixin:
         return queryset
 
     def get_response_serializer_class(self):
-        klass = getattr(self, 'serializer_stats_class', None)
+        klass = getattr(self, "serializer_stats_class", None)
         if not klass or not self.with_stats:
             klass = super().get_serializer_class()
         return klass

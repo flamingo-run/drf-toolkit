@@ -6,7 +6,7 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestUpsertView(HogwartsTestMixin, BaseApiTest):
-    url = '/tri-wizard-placements'
+    url = "/tri-wizard-placements"
 
     def setUp(self):
         super().setUp()
@@ -22,11 +22,11 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
         data = response.json()
 
         expected = list(self.expected_placements)
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_detail_endpoint(self):
         house = self.placements[0]
-        url = f'{self.url}/{house.pk}'
+        url = f"{self.url}/{house.pk}"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -39,18 +39,18 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
         url = self.url
         data = {
-            'year': 2000,
-            'wizard_id': wizard.pk,
-            'prize': 'wand',
+            "year": 2000,
+            "wizard_id": wizard.pk,
+            "prize": "wand",
         }
         response = self.client.post(url, data=data)
         self.assertEqual(201, response.status_code)
 
         data = response.json()
         expected = {
-            'id': ANY,
-            'year': 2000,
-            'wizard_id': wizard.pk,
+            "id": ANY,
+            "year": 2000,
+            "wizard_id": wizard.pk,
         }
         self.assertEqual(expected, data)
 
@@ -62,9 +62,9 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
         url = self.url
         data = {
-            'wizard_id': placement.wizard.pk,
-            'year': placement.year,
-            'prize': 'stone',
+            "wizard_id": placement.wizard.pk,
+            "year": placement.year,
+            "prize": "stone",
         }
 
         response = self.client.post(url, data=data)
@@ -78,9 +78,9 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
         url = self.url
         data = {
-            'year': 2000,
-            'wizard_id': placement.wizard.pk,
-            'prize': placement.prize,
+            "year": 2000,
+            "wizard_id": placement.wizard.pk,
+            "prize": placement.prize,
         }
 
         response = self.client.post(url, data=data)
@@ -91,15 +91,15 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
     def test_patch_endpoint(self):
         placements = self.placements[0]
-        url = f'{self.url}/{placements.pk}'
+        url = f"{self.url}/{placements.pk}"
         data = {
-            'year': 1951,
+            "year": 1951,
         }
         response = self.client.patch(url, data=data)
         self.assertEqual(200, response.status_code)
 
         expected_placement = self.expected_placements[0]
-        expected_placement['year'] = 1951
+        expected_placement["year"] = 1951
         self.assertEqual(expected_placement, response.json())
 
         placements = models.TriWizardPlacement.objects.all()
@@ -107,17 +107,17 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
     def test_put_endpoint(self):
         placement = self.placements[0]
-        url = f'{self.url}/{placement.pk}'
+        url = f"{self.url}/{placement.pk}"
         data = {
-            'wizard_id': placement.wizard.pk,
-            'year': 2000,
+            "wizard_id": placement.wizard.pk,
+            "year": 2000,
         }
         response = self.client.put(url, data=data)
         self.assertEqual(405, response.status_code)
 
     def test_delete_endpoint(self):
         placement = self.placements[0]
-        url = f'{self.url}/{placement.pk}'
+        url = f"{self.url}/{placement.pk}"
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code)
 

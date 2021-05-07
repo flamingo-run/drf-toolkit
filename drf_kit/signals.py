@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class UnplugSignal:
-    """ Temporarily disconnect a model from a signal """
+    """Temporarily disconnect a model from a signal"""
 
     def __init__(self, signal, func, model, dispatch_uid=None):
         self.signal = signal
@@ -36,7 +36,7 @@ class UnplugSignal:
         self.stop()
 
 
-pre_soft_delete = Signal(providing_args=['instance'])
-post_soft_delete = Signal(providing_args=['instance'])
-pre_undelete = Signal(providing_args=['instance'])
-post_undelete = Signal(providing_args=['instance'])
+pre_soft_delete = Signal(providing_args=["instance"])
+post_soft_delete = Signal(providing_args=["instance"])
+pre_undelete = Signal(providing_args=["instance"])
+post_undelete = Signal(providing_args=["instance"])

@@ -21,8 +21,8 @@ class BaseModelSerializer(serializers.ModelSerializer):
         return serializer_field_mapping
 
     class Meta:
-        fields = '__all__'
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
 
 
 class ForeignKeyField(PrimaryKeyRelatedField):
@@ -33,14 +33,14 @@ class ForeignKeyField(PrimaryKeyRelatedField):
         return super().to_internal_value(data=data).pk
 
 
-DATETIME_FORMAT = settings.REST_FRAMEWORK.get('DATETIME_FORMAT', '%Y-%m-%dT%H:%M:%SZ')
+DATETIME_FORMAT = settings.REST_FRAMEWORK.get("DATETIME_FORMAT", "%Y-%m-%dT%H:%M:%SZ")
 DEFAULT_TIMEZONE = pytz.timezone(settings.TIME_ZONE)
 
 
 def as_str(value):
     if value is None:
         return None
-    elif isinstance(value, datetime):
+    if isinstance(value, datetime):
         value = assure_tz(value.astimezone(tz=DEFAULT_TIMEZONE))
         return value.strftime(DATETIME_FORMAT)
     return str(value)
@@ -58,13 +58,12 @@ class JSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         if o is None:
             return None
-        elif isinstance(o, datetime):
+        if isinstance(o, datetime):
             value = assure_tz(o.astimezone(tz=DEFAULT_TIMEZONE))
             return value.strftime(DATETIME_FORMAT)
-        elif issubclass(o.__class__, FieldFile):
+        if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
-        else:
-            return super().default(o)
+        return super().default(o)
 
 
 def as_dict(items):

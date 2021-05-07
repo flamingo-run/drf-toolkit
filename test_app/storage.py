@@ -7,11 +7,11 @@ class StoragePath(BaseDataStoragePath):
         if not filename:
             return None
         parts = [
-            'wizard',
+            "wizard",
             cls._get_pk(instance),
-            cls.rename(filename, 'thumb'),
+            cls.rename(filename, "thumb"),
         ]
-        return '/'.join(parts)
+        return "/".join(parts)
 
     @classmethod
     def media_thumb(cls):
@@ -24,11 +24,11 @@ class StoragePath(BaseDataStoragePath):
         if not filename:
             return None
         parts = [
-            'wizard',
+            "wizard",
             cls._get_pk(instance),
             cls.rename(filename),
         ]
-        return '/'.join(parts)
+        return "/".join(parts)
 
     @classmethod
     def another_pic(cls):

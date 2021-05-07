@@ -24,7 +24,7 @@ class TestModelDiff(BaseApiTest):
 
         wizard.age = 13
         expected_diff = {
-            'age': (12, 13),
+            "age": (12, 13),
         }
         self.assertEqual(expected_diff, wizard._diff)
         self.assertTrue(wizard._has_changed)
@@ -48,18 +48,18 @@ class TestModelDiff(BaseApiTest):
         )
         wizard.delete()
         expected_diff = {
-            'id': (100, None),
+            "id": (100, None),
         }
 
         self.assertEqual(expected_diff, wizard._diff)
         self.assertTrue(wizard._has_changed)
 
     def test_updated_special_fields(self):
-        house_a = House.objects.create(id=100, name='Gryffindor')
-        house_b = House.objects.create(id=200, name='Hufflepuff')
+        house_a = House.objects.create(id=100, name="Gryffindor")
+        house_b = House.objects.create(id=200, name="Hufflepuff")
 
-        old_file = SimpleUploadedFile('pre-harry.jpg', '○-○'.encode())
-        new_file = SimpleUploadedFile('new-harry.jpg', '○⚡︎○'.encode())
+        old_file = SimpleUploadedFile("pre-harry.jpg", "○-○".encode())
+        new_file = SimpleUploadedFile("new-harry.jpg", "○⚡︎○".encode())
 
         wizard = Wizard.objects.create(
             name="Harry Potter",
@@ -77,53 +77,53 @@ class TestModelDiff(BaseApiTest):
 
         self.assertTrue(wizard._has_changed)
 
-        self.assertEqual((100, 200), wizard._diff['house'])
-        self.assertEqual(old_url, wizard._diff['picture'][0])
-        self.assertEqual(new_url, wizard._diff['picture'][1])
+        self.assertEqual((100, 200), wizard._diff["house"])
+        self.assertEqual(old_url, wizard._diff["picture"][0])
+        self.assertEqual(new_url, wizard._diff["picture"][1])
 
 
 class TestModelStorage(BaseApiTest):
     def test_file_path(self):
-        a_file = SimpleUploadedFile('./pics/harry.jpg', '○⚡︎○'.encode())
+        a_file = SimpleUploadedFile("./pics/harry.jpg", "○⚡︎○".encode())
 
         wizard = Wizard.objects.create(
             id=100,
-            name='Harry Potter',
+            name="Harry Potter",
             picture=a_file,
         )
 
         self.assertUUIDFilePath(
-            prefix='wizard',
-            name='thumb',
-            extension='jpg',
+            prefix="wizard",
+            name="thumb",
+            extension="jpg",
             pk=100,
             file=wizard.picture,
         )
 
     def test_file_path_preserve_name(self):
-        a_file = SimpleUploadedFile('./pics/harryyyyy.cdr', '○⚡︎○'.encode())
+        a_file = SimpleUploadedFile("./pics/harryyyyy.cdr", "○⚡︎○".encode())
 
         wizard = Wizard.objects.create(
             id=100,
-            name='Harry Potter',
+            name="Harry Potter",
             extra_picture=a_file,
         )
 
         self.assertUUIDFilePath(
-            prefix='wizard',
-            name='harryyyyy',
-            extension='cdr',
+            prefix="wizard",
+            name="harryyyyy",
+            extension="cdr",
             pk=100,
             file=wizard.extra_picture,
         )
 
     def test_invalid_file_path(self):
-        a_file = SimpleUploadedFile('wtf', '42'.encode())
+        a_file = SimpleUploadedFile("wtf", "42".encode())
 
         with self.assertRaises(ValidationError):
             Wizard.objects.create(
                 id=100,
-                name='Harry Potter',
+                name="Harry Potter",
                 picture=a_file,
             )
 
@@ -132,18 +132,18 @@ class TestModelStorage(BaseApiTest):
 
 class TestMultiModel(BaseApiTest):
     def test_create_parent_model(self):
-        spell = Spell.objects.create(name='Leviosa')
-        self.assertEqual('spell', spell.type)
+        spell = Spell.objects.create(name="Leviosa")
+        self.assertEqual("spell", spell.type)
 
         self.assertFalse(EnvironmentalSpell.objects.exists())
         self.assertFalse(CombatSpell.objects.exists())
 
     def test_create_child_model(self):
-        e_spell = EnvironmentalSpell.objects.create(name='Leviosa')
-        self.assertEqual('environmentalspell', e_spell.type)
+        e_spell = EnvironmentalSpell.objects.create(name="Leviosa")
+        self.assertEqual("environmentalspell", e_spell.type)
 
-        c_spell = CombatSpell.objects.create(name='Petrificus')
-        self.assertEqual('combatspell', c_spell.type)
+        c_spell = CombatSpell.objects.create(name="Petrificus")
+        self.assertEqual("combatspell", c_spell.type)
 
         spells = Spell.objects.all()
         self.assertEqual(2, spells.count())
@@ -280,22 +280,18 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_auto_order_when_adding(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(
-            year=year,
-            wizard=self.wizards[0],
-            prize='rock'
-        )
+        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
         self.assertOrder(placement_1, 0)
 
         placement_2 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[1],
-            prize='stone',
+            prize="stone",
         )
         placement_3 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[2],
-            prize='wand',
+            prize="wand",
         )
         self.assertOrder(placement_1, 0)
         self.assertOrder(placement_2, 1)
@@ -304,7 +300,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         placement_4 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[3],
-            prize='hug',
+            prize="hug",
         )
         self.assertOrder(placement_1, 0)
         self.assertOrder(placement_2, 1)
@@ -328,17 +324,17 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         placement_1 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[0],
-            prize='rock',
+            prize="rock",
         )
         placement_2 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[1],
-            prize='stone',
+            prize="stone",
         )
         placement_3 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[2],
-            prize='wand',
+            prize="wand",
         )
         self.assertOrder(placement_1, 0)
         self.assertOrder(placement_2, 1)
@@ -349,7 +345,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         placement_4 = TriWizardPlacement.objects.create(
             year=year,
             wizard=self.wizards[3],
-            prize='hug',
+            prize="hug",
         )
         self.assertOrder(placement_1, 0)
         self.assertOrder(placement_3, 1)

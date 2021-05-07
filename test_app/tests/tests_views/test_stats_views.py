@@ -3,7 +3,7 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestStatsView(HogwartsTestMixin, BaseApiTest):
-    url = '/houses'
+    url = "/houses"
 
     def setUp(self):
         super().setUp()
@@ -12,7 +12,7 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
         self._set_up_wizard_houses(wizards=self.wizards, houses=self.houses)
 
     def test_list_endpoint(self):
-        url = f'{self.url}?stats=1'
+        url = f"{self.url}?stats=1"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -26,11 +26,11 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
             self.expected_stats_houses[2],
             self.expected_stats_houses[1],
         ]
-        self.assertEqual(expected, data['results'])
+        self.assertEqual(expected, data["results"])
 
     def test_detail_endpoint(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}?stats=1'
+        url = f"{self.url}/{house.pk}?stats=1"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -40,10 +40,10 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
 
     def test_list_endpoint_wrong_parameter(self):
         house = self.houses[0]
-        url = f'{self.url}/{house.pk}?stats=potato'
+        url = f"{self.url}/{house.pk}?stats=potato"
 
         response = self.client.get(url)
         self.assertEqual(400, response.status_code)
 
         data = response.json()
-        self.assertEqual({'stats': "Stats parameter must be an integer"}, data)
+        self.assertEqual({"stats": "Stats parameter must be an integer"}, data)
