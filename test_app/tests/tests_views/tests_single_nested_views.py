@@ -72,7 +72,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
             'name': 'Snake',
         }
         response = self.client.put(url, data)
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(201, response.status_code)
+
+        wizard.refresh_from_db()
+        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual(None, wizard.patronus.color)
+
+        self.assertEqual(4, models.Patronus.objects.count())
 
     def test_put_endpoint_with_existing(self):
         wizard = self.wizards[0]
@@ -82,7 +88,13 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
             'name': 'Snake',
         }
         response = self.client.put(url, data)
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(200, response.status_code)
+
+        wizard.refresh_from_db()
+        self.assertEqual('Snake', wizard.patronus.name)
+        self.assertEqual(None, wizard.patronus.color)
+
+        self.assertEqual(3, models.Patronus.objects.count())
 
     def test_patch_endpoint(self):
         wizard = self.wizards[2]
