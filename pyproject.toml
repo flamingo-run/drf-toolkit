@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.3.1"
+version = "1.4.0"
 description = "DRF Toolkit"
 authors = ["eduK <pd@eduk.com>"]
 packages = [
@@ -21,8 +21,24 @@ drf-extensions = "^0"
 pylint = "*"
 nose = "^1"
 coverage = "*"
+black = "*"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py39']
+
+
+[tool.pylint.messages_control]
+disable = "C0330, C0326, C0114, C0115, C0116, W0212, W0511, W0613, W1203, R0901, R0903, R0913, R0914, R0201"
+
+[tool.pylint.format]
+max-line-length = "120"
+
+[tool.pylint.basic]
+good-names= "i, j, k, m, n, dt, db, pk, tz, qs, ex, _"
 
 
 [build-system]
-requires = ["poetry^1"]
+requires = ["poetry"]
 build-backend = "poetry.masonry.api"
