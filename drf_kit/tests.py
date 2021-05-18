@@ -41,7 +41,7 @@ class BaseApiTest(APITransactionTestCase):
         def _assert_dict(expected_item, received_item, idx=None):
             msg = f"At item #{idx}:: " if idx else ""
             if expected_item == received_item:
-                return
+                return {}
 
             expected_keys = set(expected_item)
             received_keys = set(received_item)
@@ -49,42 +49,49 @@ class BaseApiTest(APITransactionTestCase):
                 missing_keys = expected_keys - received_keys
                 if missing_keys:
                     msg += f"There's {len(missing_keys)} fields missing: {' | '.join(missing_keys)}"
-                    raise AssertionError(msg)
+                    return {"__len__": msg}
 
                 extra_keys = received_keys - expected_keys
                 if extra_keys:
                     msg += f"There's {len(extra_keys)} unexpected fields: {' | '.join(extra_keys)}"
-                    raise AssertionError(msg)
+                    return {"__keys__": msg}
 
-            diff_keys = set()
+            errors = {}
             for key in expected_item:
-                if expected_item[key] == ANY:
-                    continue
+                inner_errors = _compare(expected_item=expected_item[key], received_item=received_item[key])
+                for inner_key, inner_error in inner_errors.items():
+                    inner_key_str = f".{inner_key}" if not inner_key.startswith("__") else ""
+                    errors[f"{key}{inner_key_str}"] = inner_error
 
-                if expected_item[key] != received_item[key]:
-                    diff_keys.add(key)
+            return errors
 
-            if not diff_keys:
-                return
+        def _compare(expected_item, received_item):
+            if expected_item is ANY:
+                return {}
 
-            msg += f"There's {len(diff_keys)} fields that differ"
-            differ_report = "\n".join(
-                [f"- {key}: Received {received_item[key]}, but expected {expected_item[key]} " for key in diff_keys]
-            )
+            if isinstance(expected_item, list) and isinstance(received_item, list):
+                if len(expected_item) != len(received_item):
+                    msg = f"Received {len(received_item)} items and it was expected to have {len(expected_item)}"
+                    return {"__len__": msg}
+
+                for _idx, (_expected_item, _received_item) in enumerate(zip(expected_item, received_item)):
+                    return _assert_dict(idx=_idx, expected_item=_expected_item, received_item=_received_item)
+            elif isinstance(expected_item, dict) and isinstance(received_item, dict):
+                return _assert_dict(expected_item=expected_item, received_item=received_item)
+            else:
+                try:
+                    self.assertEqual(expected_item, received_item)
+                    return {}
+                except AssertionError:
+                    msg = f"Received `{received_item}`, but expected `{expected_item}`"
+                    return {"__eq__": msg}
+
+        errors = _compare(expected_item=expected, received_item=received)
+        if errors:
+            msg = f"There's {len(errors)} fields that differ"
+            differ_report = "\n".join([f"- {key}: {msg} " for key, msg in errors.items()])
             msg += f"\n{differ_report}"
             raise AssertionError(msg)
-
-        if isinstance(expected, list) and isinstance(received, list):
-            if len(expected) != len(received):
-                msg = f"Received {len(received)} items and it was expected to have {len(expected)}"
-                raise AssertionError(msg)
-
-            for _idx, (_expected_item, _received_item) in enumerate(zip(expected, received)):
-                _assert_dict(idx=_idx, expected_item=_expected_item, received_item=_received_item)
-        elif isinstance(expected, dict) and isinstance(received, dict):
-            _assert_dict(expected_item=expected, received_item=received)
-        else:
-            super().assertEqual(expected, received)
 
     def patch_env(self, include_existing=False, **kwargs):
         all_envs = kwargs.copy()
