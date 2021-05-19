@@ -27,15 +27,21 @@ class BaseApiTest(APITransactionTestCase):
             message = f"Missing migration. Run python manage.py makemigrations {app_name}"
         self.assertIn("No changes", out.getvalue(), msg=message)
 
-    def assertUUIDFilePath(self, prefix, name, extension, pk, file):  # pylint: disable=invalid-name
-        expected_path = r"^{prefix}/{pk}/{name}_{uuid}\.{extension}$".format(
-            prefix=prefix,
-            pk=pk,
-            name=name,
-            extension=extension,
-            uuid=r"[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}",
+    def uuid_file_path_regex(self, prefix, pk, name, extension):
+        uuid_regex = r"[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}"
+        return re.compile(
+            r"^{prefix}/{pk}/{name}_{uuid}\.{extension}$".format(
+                prefix=prefix,
+                pk=pk,
+                name=name,
+                extension=extension,
+                uuid=uuid_regex,
+            )
         )
-        self.assertTrue(re.match(expected_path, str(file)))
+
+    def assertUUIDFilePath(self, prefix, name, extension, pk, file):  # pylint: disable=invalid-name
+        pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
+        self.assertTrue(pattern.match(str(file)))
 
     def assertResponseMatch(self, expected, received):  # pylint: disable=invalid-name
         def _assert_dict(expected_item, received_item, idx=None):
@@ -69,13 +75,23 @@ class BaseApiTest(APITransactionTestCase):
             if expected_item is ANY:
                 return {}
 
+            if isinstance(expected_item, re.Pattern):
+                if not expected_item.match(received_item):
+                    msg = f"Received `{received_item}`, but expected to match `{expected_item.pattern}`"
+                    return {"__match__": msg}
+                return {}
+
             if isinstance(expected_item, list) and isinstance(received_item, list):
                 if len(expected_item) != len(received_item):
                     msg = f"Received {len(received_item)} items and it was expected to have {len(expected_item)}"
                     return {"__len__": msg}
 
+                all_errors = {}
                 for _idx, (_expected_item, _received_item) in enumerate(zip(expected_item, received_item)):
-                    return _assert_dict(idx=_idx, expected_item=_expected_item, received_item=_received_item)
+                    inner_errors = _assert_dict(idx=_idx, expected_item=_expected_item, received_item=_received_item)
+                    for inner_key, inner_error in inner_errors.items():
+                        all_errors[f"[#{_idx}] {inner_key}"] = inner_error
+                return all_errors
             elif isinstance(expected_item, dict) and isinstance(received_item, dict):
                 return _assert_dict(expected_item=expected_item, received_item=received_item)
             else:
