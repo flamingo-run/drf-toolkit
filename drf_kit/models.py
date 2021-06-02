@@ -129,9 +129,9 @@ class OrderedModelMixin(_OrderedModelBase):
 
     def save(self, *args, **kwargs):
         if getattr(self, self.order_field_name) is None:
-            highest_order = self.get_ordering_queryset().aggregate(
-                Max(self.order_field_name)
-            ).get(self.order_field_name + "__max")
+            highest_order = (
+                self.get_ordering_queryset().aggregate(Max(self.order_field_name)).get(self.order_field_name + "__max")
+            )
             new_order = 0 if highest_order is None else highest_order + 1
             setattr(self, self.order_field_name, new_order)
         super().save(*args, **kwargs)
