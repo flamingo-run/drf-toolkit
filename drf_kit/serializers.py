@@ -26,11 +26,19 @@ class BaseModelSerializer(serializers.ModelSerializer):
 
 
 class ForeignKeyField(PrimaryKeyRelatedField):
-    def __init__(self, queryset, write_only=True, **kwargs):
+    def __init__(self, queryset, write_only=True, m2m=False, **kwargs):
         super().__init__(queryset=queryset, write_only=write_only, **kwargs)
+        self.m2m = m2m
 
     def to_internal_value(self, data):
-        return super().to_internal_value(data=data).pk
+        if self.m2m:
+            return [super(ForeignKeyField, self).to_internal_value(data=item).pk for item in data]
+        return super(ForeignKeyField, self).to_internal_value(data=data).pk
+
+    def to_representation(self, value):
+        if self.m2m:
+            return [super(ForeignKeyField, self).to_representation(item) for item in value]
+        return super(ForeignKeyField, self).to_representation(value)
 
 
 DATETIME_FORMAT = settings.REST_FRAMEWORK.get("DATETIME_FORMAT", "%Y-%m-%dT%H:%M:%SZ")
