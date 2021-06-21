@@ -192,7 +192,7 @@ class SoftDeleteModel(BaseModel):
         return self.deleted_at is not None
 
     def save(self, *args, soft_deleting=False, **kwargs):  # pylint: disable=arguments-differ
-        if self.is_deleted and not soft_deleting:
+        if self.is_deleted and not soft_deleting and not self._state.adding:
             raise exceptions.UpdatingSoftDeletedException()
         return super().save(*args, **kwargs)
 
