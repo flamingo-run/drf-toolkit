@@ -69,4 +69,10 @@ router.register(
     "house-bulk",
 )
 
+router.register(
+    r"wands",
+    views.WandViewSet,
+    "wand",
+)
+
 urlpatterns = router.urls

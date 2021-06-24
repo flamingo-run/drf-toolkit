@@ -138,3 +138,12 @@ class TriWizardPlacementSerializer(serializers.BaseModelSerializer):
             "year",
             "prize",
         )
+
+
+class WandSerializer(serializers.BaseModelSerializer):
+    class Meta(serializers.BaseModelSerializer.Meta):
+        model = models.Wand
+        fields = (
+            "id",
+            "name",
+        )

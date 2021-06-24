@@ -1,6 +1,6 @@
 from unittest.mock import ANY
 
-from test_app.models import Wizard, Teacher, House, Patronus, Spell, SpellCast, Memory, TriWizardPlacement
+from test_app.models import Wizard, Teacher, House, Patronus, Spell, SpellCast, Memory, TriWizardPlacement, Wand
 
 
 class HogwartsTestMixin:
@@ -481,4 +481,38 @@ class HogwartsTestMixin:
                 "wizard_id": 400,
                 "year": 1960,
             },
+        ]
+
+    def _set_up_wands(self):
+        return [
+            Wand.objects.create(
+                id=10,
+                name="Aspen",
+            ),
+            Wand.objects.create(
+                id=20,
+                name="Beech",
+            ),
+            Wand.objects.create(
+                id=30,
+                name="Cedar",
+            ),
+            Wand.objects.create(
+                id=40,
+                name="Elder",
+            ),
+            Wand.objects.create(
+                id=50,
+                name="Elm",
+            ),
+        ]
+
+    @property
+    def expected_wands(self):
+        return [
+            {"id": 10, "name": "Aspen"},
+            {"id": 20, "name": "Beech"},
+            {"id": 30, "name": "Cedar"},
+            {"id": 40, "name": "Elder"},
+            {"id": 50, "name": "Elm"},
         ]

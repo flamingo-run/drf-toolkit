@@ -160,6 +160,10 @@ class ReadOnlyModelViewSet(MultiSerializerMixin, viewsets.ReadOnlyModelViewSet):
     http_method_names = ["get", "head", "options"]
 
 
+class NonDestructiveModelViewSet(ModelViewSet):
+    http_method_names = ["get", "post", "patch", "head", "options"]
+
+
 class CacheResponseMixin(BaseCacheResponseMixin):
     @cache_response(key_func=cache_key_constructor)
     def list(self, request, *args, **kwargs):
@@ -175,6 +179,10 @@ class CachedModelViewSet(CacheResponseMixin, ModelViewSet):
 
 
 class CachedReadOnlyModelViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
+    pass
+
+
+class CachedNonDestructiveModelViewSet(CacheResponseMixin, NonDestructiveModelViewSet):
     pass
 
 

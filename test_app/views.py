@@ -11,6 +11,7 @@ from drf_kit.views import (
     WriteOnlyNestedModelViewSet,
     UpsertMixin,
     BulkMixin,
+    NonDestructiveModelViewSet,
 )
 from test_app import filters, models, serializers
 
@@ -102,3 +103,8 @@ class TriWizardPlacementViewSet(UpsertMixin, ModelViewSet):
 class HouseBulkViewSet(BulkMixin, ModelViewSet):
     queryset = models.House.objects.all().order_by("name")
     serializer_class = serializers.HouseSerializer
+
+
+class WandViewSet(NonDestructiveModelViewSet):
+    queryset = models.Wand.objects.all()
+    serializer_class = serializers.WandSerializer
