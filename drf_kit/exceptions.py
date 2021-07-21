@@ -17,9 +17,7 @@ class DuplicatedRecord(ValidationError):
         self.constraints, self.values = self._parse_error()
 
         model_name = {self.model.__class__.__name__}
-        violation = " and ".join([
-            f"{constraint}={value}" for constraint, value in zip(self.constraints, self.values)
-        ])
+        violation = " and ".join([f"{constraint}={value}" for constraint, value in zip(self.constraints, self.values)])
         message = f"A {model_name} with `{violation}` already exists."
         super().__init__(message=message, code=status.HTTP_409_CONFLICT)
 

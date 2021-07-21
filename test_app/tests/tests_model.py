@@ -273,7 +273,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         super().setUp()
         self.wizards = self._set_up_wizards()
 
-    def assertOrder(self, placement, expected_order):
+    def assertOrder(self, placement, expected_order):  # pylint:disable=invalid-name
         placement.refresh_from_db()
         self.assertEqual(expected_order, placement.order)
 
