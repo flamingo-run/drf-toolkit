@@ -11,8 +11,8 @@ class StatsViewMixin:
         stats_param = self.request.query_params.get("stats", "0")
         try:
             stats_value = int(stats_param)
-        except ValueError as e:
-            raise ValidationError({"stats": "Stats parameter must be an integer"}) from e
+        except ValueError as exc:
+            raise ValidationError({"stats": "Stats parameter must be an integer"}) from exc
         return IntBooleanFilter.get_logic(stats_value)
 
     def get_queryset(self):

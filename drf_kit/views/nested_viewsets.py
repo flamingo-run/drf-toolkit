@@ -1,5 +1,6 @@
 import logging
 
+from django.db.models import QuerySet
 from django.http import Http404
 from rest_framework.exceptions import ValidationError
 
@@ -15,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class NestedViewMixin:
-    queryset_nest = UNSET
-    pk_field_nest = "pk"
-    lookup_url_kwarg_nest = UNSET
-    lookup_field_nest = UNSET
-    serializer_field_nest = UNSET
+    queryset_nest: QuerySet = UNSET
+    pk_field_nest: str = "pk"
+    lookup_url_kwarg_nest: str = UNSET
+    lookup_field_nest: str = UNSET
+    serializer_field_nest: str = UNSET
 
     def __init__(self, *args, **kwargs):
         if self.queryset_nest is UNSET:
@@ -59,16 +60,16 @@ class NestedViewMixin:
     def get_nest_object(self):
         try:
             pk = self.kwargs[self.lookup_url_kwarg_nest]
-        except KeyError as e:
-            raise Exception(f"{self.lookup_url_kwarg_nest} not found in {self.kwargs}") from e
+        except KeyError as exc:
+            raise Exception(f"{self.lookup_url_kwarg_nest} not found in {self.kwargs}") from exc
 
         try:
-            return self.queryset_nest.get(**{self.pk_field_nest: pk})
-        except self.queryset_nest.model.DoesNotExist as e:
-            model_name = self.queryset_nest.model
-            raise Http404(f"{model_name} with ID {pk} not found") from e
-        except ValueError as e:
-            raise ValidationError(e) from e
+            return self.queryset_nest.get(**{self.pk_field_nest: pk})  # pylint:disable=no-member
+        except self.queryset_nest.model.DoesNotExist as exc:  # pylint:disable=no-member
+            model_name = self.queryset_nest.model  # pylint:disable=no-member
+            raise Http404(f"{model_name} with ID {pk} not found") from exc
+        except ValueError as exc:
+            raise ValidationError(exc) from exc
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()

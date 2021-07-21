@@ -32,13 +32,13 @@ class ForeignKeyField(PrimaryKeyRelatedField):
 
     def to_internal_value(self, data):
         if self.m2m:
-            return [super(ForeignKeyField, self).to_internal_value(data=item).pk for item in data]
-        return super(ForeignKeyField, self).to_internal_value(data=data).pk
+            return [super().to_internal_value(data=item).pk for item in data]
+        return super().to_internal_value(data=data).pk
 
     def to_representation(self, value):
         if self.m2m:
-            return [super(ForeignKeyField, self).to_representation(item) for item in value]
-        return super(ForeignKeyField, self).to_representation(value)
+            return [super().to_representation(item) for item in value]
+        return super().to_representation(value)
 
 
 DATETIME_FORMAT = settings.REST_FRAMEWORK.get("DATETIME_FORMAT", "%Y-%m-%dT%H:%M:%SZ")

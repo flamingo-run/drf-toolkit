@@ -99,13 +99,13 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.teachers = self._set_up_houses()
 
     def test_filter_with_wrong_param_type(self):
-        url = f"/teachers?id=potato"
+        url = "/teachers?id=potato"
         response = self.client.get(url)
 
         self.assertEqual(400, response.status_code)
 
     def test_filter_with_unknown_param(self):
-        url = f"/teachers?shining_vampires=no"
+        url = "/teachers?shining_vampires=no"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
@@ -115,13 +115,13 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         )
 
     def test_filter_with_list_param(self):
-        url = f"/teachers?id=no"
+        url = "/teachers?id=no"
         response = self.client.get(url)
 
         self.assertEqual(400, response.status_code)
 
     def test_order_with_param(self):
-        url = f"/houses?sort=-name"
+        url = "/houses?sort=-name"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -137,7 +137,7 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(expected, data["results"])
 
     def test_order_with_unknown_param(self):
-        url = f"/houses?ordering=-shining_vampire"
+        url = "/houses?ordering=-shining_vampire"
         response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
@@ -146,7 +146,7 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(len(self.expected_houses), len(data["results"]))
 
     def test_search_with_param(self):
-        url = f"/houses?q=yff"
+        url = "/houses?q=yff"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -159,7 +159,7 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(expected, data["results"])
 
     def test_order_search_results(self):
-        url = f"/houses?q=ff&sort=name"
+        url = "/houses?q=ff&sort=name"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
@@ -173,7 +173,7 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(expected, data["results"])
 
     def test_search_on_disabled_view(self):
-        url = f"/teachers?q=yff"
+        url = "/teachers?q=yff"
 
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)

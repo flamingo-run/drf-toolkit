@@ -92,15 +92,16 @@ class BaseApiTest(APITransactionTestCase):
                     for inner_key, inner_error in inner_errors.items():
                         all_errors[f"[#{_idx}] {inner_key}"] = inner_error
                 return all_errors
-            elif isinstance(expected_item, dict) and isinstance(received_item, dict):
+
+            if isinstance(expected_item, dict) and isinstance(received_item, dict):
                 return _assert_dict(expected_item=expected_item, received_item=received_item)
-            else:
-                try:
-                    self.assertEqual(expected_item, received_item)
-                    return {}
-                except AssertionError:
-                    msg = f"Received `{received_item}`, but expected `{expected_item}`"
-                    return {"__eq__": msg}
+
+            try:
+                self.assertEqual(expected_item, received_item)
+                return {}
+            except AssertionError:
+                msg = f"Received `{received_item}`, but expected `{expected_item}`"
+                return {"__eq__": msg}
 
         errors = _compare(expected_item=expected, received_item=received)
         if errors:

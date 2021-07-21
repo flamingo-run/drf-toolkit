@@ -29,14 +29,14 @@ class MultiSerializerMixin:
         return {}
 
     def get_serializer_class(self):
-        SERIALIZERS = {
+        serializers = {
             "retrieve": self.serializer_detail_class,
             "create": self.serializer_create_class,
             "update": self.serializer_update_class or self.serializer_create_class,
         }
         action = self._get_action()
 
-        klass = SERIALIZERS.get(action)
+        klass = serializers.get(action)
 
         if not klass:
             klass = super().get_serializer_class()
@@ -48,14 +48,14 @@ class MultiSerializerMixin:
         return super().get_serializer(*args, **kwargs)
 
     def get_response_serializer_class(self):
-        SERIALIZERS = {
+        serializers = {
             "retrieve": self.serializer_detail_class,
             "create": self.serializer_detail_class,
             "update": self.serializer_detail_class,
         }
         action = self._get_action()
 
-        klass = SERIALIZERS.get(action)
+        klass = serializers.get(action)
 
         if not klass:
             klass = super().get_serializer_class()
@@ -67,14 +67,14 @@ class MultiSerializerMixin:
         return self.get_response_serializer_class()(obj, **kwargs)
 
     def get_queryset(self, *args, **kwargs):
-        QUERYSETS = {
+        querysets = {
             "retrieve": self.queryset_detail,
             "create": self.queryset_create,
             "update": self.queryset_update or self.queryset_create,
         }
         action = self._get_action()
 
-        queryset = QUERYSETS.get(action)
+        queryset = querysets.get(action)
         if not queryset:
             queryset = super().get_queryset(*args, **kwargs)
         else:
@@ -140,13 +140,13 @@ class MultiSerializerMixin:
         try:
             # identical override of parent method, but returns the object
             return serializer.save()
-        except IntegrityError as e:
-            if DuplicatedRecord.verify(e):
+        except IntegrityError as exc:
+            if DuplicatedRecord.verify(exc):
                 raise DuplicatedRecord(
                     serializer=serializer,
-                    integrity_error=e,
-                ) from e
-            raise e
+                    integrity_error=exc,
+                ) from exc
+            raise exc
 
     def perform_update(self, serializer):
         # identical override of parent method, but returns the object
@@ -200,8 +200,8 @@ class UpsertMixin(MultiSerializerMixin):
     def create(self, request, *args, **kwargs):
         try:
             return super().create(request, *args, **kwargs)
-        except DuplicatedRecord as e:
-            instance = self.get_queryset().get(e.get_filter())
+        except DuplicatedRecord as exc:
+            instance = self.get_queryset().get(exc.get_filter())
             return self.upsert(instance=instance, data=request.data, *args, **kwargs)
 
     def upsert(self, instance, data, *args, **kwargs):
@@ -221,14 +221,14 @@ class BulkMixin(MultiSerializerMixin):
         return {}
 
     def get_response_serializer_class(self):
-        SERIALIZERS = {
+        serializers = {
             "retrieve": self.serializer_detail_class,
             "create": self.serializer_list_class,
             "update": self.serializer_list_class,
         }
         action = self._get_action()
 
-        klass = SERIALIZERS.get(action)
+        klass = serializers.get(action)
 
         if not klass:
             klass = super().get_serializer_class()
