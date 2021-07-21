@@ -6,6 +6,7 @@ from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
+from drf_kit import exceptions
 from drf_kit.cache import cache_response, cache_key_constructor
 from drf_kit.exceptions import DuplicatedRecord
 
@@ -150,6 +151,9 @@ class MultiSerializerMixin:
     def perform_update(self, serializer):
         # identical override of parent method, but returns the object
         return serializer.save()
+
+    def get_exception_handler(self):
+        return exceptions.custom_exception_handler
 
 
 class ModelViewSet(MultiSerializerMixin, viewsets.ModelViewSet):

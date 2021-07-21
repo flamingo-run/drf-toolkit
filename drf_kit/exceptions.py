@@ -1,8 +1,9 @@
 import logging
 import re
 
+from django.core.exceptions import ValidationError
 from django.db.models import Q
-from rest_framework.exceptions import ValidationError
+from rest_framework import status, views, response
 
 logger = logging.getLogger()
 
@@ -81,3 +82,18 @@ class UpdatingSoftDeletedException(Exception):
     def __init__(self):
         message = "It's not possible to save changes to a soft deleted model. Undelete it first."
         super().__init__(message)
+
+
+def custom_exception_handler(exc, context):
+    resp = views.exception_handler(exc, context)
+    if resp is None:
+        if isinstance(exc, ValidationError):
+            msg = getattr(exc, "message", exc.args[0])
+            if isinstance(msg, (dict, str)):
+                data = msg
+            else:
+                data = exc.messages
+
+            status_code = getattr(exc, "code", "") or status.HTTP_400_BAD_REQUEST
+            return response.Response(data={"errors": data}, status=status_code, exception=exc)
+    return resp
