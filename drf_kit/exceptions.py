@@ -16,11 +16,12 @@ class DuplicatedRecord(ValidationError):
         self.engine = self._get_engine(integrity_error=self.integrity_error)
         self.constraints, self.values = self._parse_error()
 
-        message = (
-            f"Duplicate key constraint raised for {self.integrity_error}. "
-            "Try adding a UniqueTogetherValidator to the serializer"
-        )
-        super().__init__(message)
+        model_name = {self.model.__class__.__name__}
+        violation = " and ".join([
+            f"{constraint}={value}" for constraint, value in zip(self.constraints, self.values)
+        ])
+        message = f"A {model_name} with `{violation}` already exists."
+        super().__init__(message=message, code=status.HTTP_409_CONFLICT)
 
     @classmethod
     def verify(cls, integrity_error):
