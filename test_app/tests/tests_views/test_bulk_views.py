@@ -23,7 +23,7 @@ class TestBulkView(TestCRUDView):
         with self._simulate_integrity_error():
             response = self.client.post(url, data=data, format="json")
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(409, response.status_code)
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
