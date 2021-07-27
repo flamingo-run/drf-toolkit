@@ -24,6 +24,8 @@ class TestBulkView(TestCRUDView):
             response = self.client.post(url, data=data, format="json")
 
         self.assertEqual(409, response.status_code)
+        expected = "A House with `id=42` already exists."
+        self.assertResponseMatch(expected=expected, received=response.json()["errors"])
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
