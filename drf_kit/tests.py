@@ -1,10 +1,13 @@
 import os
 import re
+from contextlib import contextmanager
 from io import StringIO
+from typing import Optional, Callable
 from unittest.mock import patch, ANY
 
 from django.core.cache import cache
 from django.core.management import call_command
+from django.utils.connection import ConnectionProxy
 from rest_framework.test import APITransactionTestCase
 
 
@@ -118,3 +121,63 @@ class BaseApiTest(APITransactionTestCase):
 
     def patch_time(self, some_date):
         return patch("django.utils.timezone.now", return_value=some_date)
+
+    def patch_cache_lock(self, side_effect: Optional[Callable] = None):
+        class CacheAssertion:
+            def __init__(self):
+                self.call_count = 0
+                self.call_args = []
+                self.call_kwargs = {}
+
+            def assert_called(self):
+                msg = "Expected to be called, but it was not"
+                assert self.call_count > 0, msg
+
+            def assert_called_with(self, *expected_args, **expected_kwargs):
+                self.assert_called()
+
+                lock_args = self.call_args  # remove the self argument
+                msg = (
+                    f"Expected to lock with {len(expected_args)} args: {', '.join(expected_args)}. "
+                    f"But locked with {len(lock_args)} args: {', '.join(lock_args)}"
+                )
+                assert len(expected_args) == len(lock_args), msg
+
+                for expected, received in zip(expected_args, lock_args):
+                    msg = f"Expected to lock with {expected}, but locked with {received}"
+                    assert expected == received, msg
+
+                lock_kwargs = self.call_kwargs
+                msg = (
+                    f"Expected to lock with {len(expected_kwargs)} kwargs: {', '.join(expected_kwargs)}. "
+                    f"But locked with {len(lock_kwargs)} kwargs: {', '.join(lock_kwargs)}"
+                )
+                assert len(expected_kwargs) == len(lock_kwargs), msg
+
+                for expected_key, expected_value in expected_kwargs.items():
+                    received = lock_kwargs.get(expected_key)
+                    msg = f"Expected to lock with {expected_key}={expected_value}, but locked with {received}"
+                    assert expected_value == received, msg
+
+        assertion = CacheAssertion()
+
+        @contextmanager
+        def mocked_lock(*lock_args, **lock_kwargs):
+            nonlocal assertion
+
+            assertion.call_count += 1
+            assertion.call_args = lock_args[1:]  # remove self argument
+            assertion.call_kwargs = lock_kwargs
+
+            if side_effect:
+                side_effect()
+
+            yield
+
+        @contextmanager
+        def lock_assertion():
+            setattr(ConnectionProxy, "lock", mocked_lock)
+            yield assertion
+            delattr(ConnectionProxy, "lock")
+
+        return lock_assertion()
