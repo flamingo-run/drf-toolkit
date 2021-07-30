@@ -129,6 +129,19 @@ class BaseApiTest(APITransactionTestCase):
                 self.call_args = []
                 self.call_kwargs = {}
 
+            def start(self):
+                setattr(ConnectionProxy, "lock", mocked_lock)
+
+            def stop(self):
+                delattr(ConnectionProxy, "lock")
+
+            def __enter__(self):
+                self.start()
+                return self
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                self.stop()
+
             def assert_called(self):
                 msg = "Expected to be called, but it was not"
                 assert self.call_count > 0, msg
@@ -174,10 +187,4 @@ class BaseApiTest(APITransactionTestCase):
 
             yield
 
-        @contextmanager
-        def lock_assertion():
-            setattr(ConnectionProxy, "lock", mocked_lock)
-            yield assertion
-            delattr(ConnectionProxy, "lock")
-
-        return lock_assertion()
+        return assertion

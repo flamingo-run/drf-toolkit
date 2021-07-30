@@ -95,3 +95,12 @@ class TestLockAssertion(BaseApiTest):
                 tasks.LockableTask().run()
 
         lock.assert_called()
+
+    def test_use_with_start(self):
+        lock = self.patch_cache_lock()
+        lock.start()
+
+        tasks.LockableTask().run()
+        lock.assert_called()
+
+        lock.stop()
