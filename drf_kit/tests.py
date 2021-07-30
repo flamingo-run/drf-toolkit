@@ -2,7 +2,7 @@ import os
 import re
 from contextlib import contextmanager
 from io import StringIO
-from typing import Optional, Callable
+from typing import Optional, Callable, Union, Type
 from unittest.mock import patch, ANY
 
 from django.core.cache import cache
@@ -122,7 +122,11 @@ class BaseApiTest(APITransactionTestCase):
     def patch_time(self, some_date):
         return patch("django.utils.timezone.now", return_value=some_date)
 
-    def patch_cache_lock(self, side_effect: Optional[Callable] = None):
+    def patch_cache_lock(
+        self,
+        lock_side_effect: Optional[Union[Callable, Exception, Type[Exception]]] = None,
+        unlock_side_effect: Optional[Union[Callable, Exception, Type[Exception]]] = None,
+    ):
         class CacheAssertion:
             def __init__(self):
                 self.call_count = 0
@@ -174,6 +178,17 @@ class BaseApiTest(APITransactionTestCase):
 
         assertion = CacheAssertion()
 
+        def _execute_effect(effect):
+            if effect:
+                import inspect
+
+                if inspect.isclass(effect) and issubclass(effect, Exception):
+                    raise effect()
+                if isinstance(effect, Exception):
+                    raise effect
+                if callable(effect):
+                    effect()
+
         @contextmanager
         def mocked_lock(*lock_args, **lock_kwargs):
             nonlocal assertion
@@ -182,9 +197,8 @@ class BaseApiTest(APITransactionTestCase):
             assertion.call_args = lock_args[1:]  # remove self argument
             assertion.call_kwargs = lock_kwargs
 
-            if side_effect:
-                side_effect()
-
+            _execute_effect(effect=lock_side_effect)
             yield
+            _execute_effect(effect=unlock_side_effect)
 
         return assertion

@@ -86,11 +86,39 @@ class TestLockAssertion(BaseApiTest):
         with self.assertRaisesMessage(AssertionError, expected_message=expected_message):
             lock.assert_called_with()
 
-    def test_execute_side_effect(self):
+    def test_execute_lock_side_effect_callable(self):
         def _effect():
             raise Exception("Dementors")
 
-        with self.patch_cache_lock(side_effect=_effect) as lock:
+        with self.patch_cache_lock(lock_side_effect=_effect) as lock:
+            with self.assertRaisesMessage(Exception, expected_message="Dementors"):
+                tasks.LockableTask().run()
+
+        lock.assert_called()
+
+    def test_execute_lock_side_effect_error(self):
+        effect = Exception("Dementors")
+
+        with self.patch_cache_lock(lock_side_effect=effect) as lock:
+            with self.assertRaisesMessage(Exception, expected_message="Dementors"):
+                tasks.LockableTask().run()
+
+        lock.assert_called()
+
+    def test_execute_lock_side_effect_error_class(self):
+        effect = Exception
+
+        with self.patch_cache_lock(lock_side_effect=effect) as lock:
+            with self.assertRaises(Exception):
+                tasks.LockableTask().run()
+
+        lock.assert_called()
+
+    def test_execute_unlock_side_effect(self):
+        def _effect():
+            raise Exception("Dementors")
+
+        with self.patch_cache_lock(unlock_side_effect=_effect) as lock:
             with self.assertRaisesMessage(Exception, expected_message="Dementors"):
                 tasks.LockableTask().run()
 
