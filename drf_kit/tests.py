@@ -1,3 +1,4 @@
+import inspect
 import os
 import re
 from contextlib import contextmanager
@@ -84,20 +85,41 @@ class BaseApiTest(APITransactionTestCase):
                     return {"__match__": msg}
                 return {}
 
-            if isinstance(expected_item, list) and isinstance(received_item, list):
+            if isinstance(expected_item, list):
+                if not isinstance(received_item, (list, set)):
+                    msg = f"Received `{received_item}`, but expected to `{expected_item}`"
+                    return {"__match__": msg}
+
                 if len(expected_item) != len(received_item):
                     msg = f"Received {len(received_item)} items and it was expected to have {len(expected_item)}"
                     return {"__len__": msg}
 
                 all_errors = {}
                 for _idx, (_expected_item, _received_item) in enumerate(zip(expected_item, received_item)):
-                    inner_errors = _assert_dict(idx=_idx, expected_item=_expected_item, received_item=_received_item)
+                    inner_errors = _compare(expected_item=_expected_item, received_item=_received_item)
                     for inner_key, inner_error in inner_errors.items():
                         all_errors[f"[#{_idx}] {inner_key}"] = inner_error
                 return all_errors
 
             if isinstance(expected_item, dict) and isinstance(received_item, dict):
                 return _assert_dict(expected_item=expected_item, received_item=received_item)
+
+            if isinstance(expected_item, set):
+                if not isinstance(received_item, list):
+                    msg = (
+                        f"Received `{received_item}`, "
+                        f"but expected to have `{', '.join(sorted(expected_item))}` items"
+                    )
+                    return {"__eq__": msg}
+                try:
+                    self.assertEqual(expected_item, set(received_item))
+                    return {}
+                except AssertionError:
+                    msg = (
+                        f"Received `{', '.join(sorted(received_item))}`, "
+                        f"but expected to have `{', '.join(sorted(expected_item))}` items"
+                    )
+                    return {"__eq__": msg}
 
             try:
                 self.assertEqual(expected_item, received_item)
@@ -180,8 +202,6 @@ class BaseApiTest(APITransactionTestCase):
 
         def _execute_effect(effect):
             if effect:
-                import inspect
-
                 if inspect.isclass(effect) and issubclass(effect, Exception):
                     raise effect()
                 if isinstance(effect, Exception):

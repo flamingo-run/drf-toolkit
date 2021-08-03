@@ -1,3 +1,4 @@
+import re
 from unittest.mock import patch
 
 from drf_kit.tests import BaseApiTest
@@ -132,3 +133,142 @@ class TestLockAssertion(BaseApiTest):
         lock.assert_called()
 
         lock.stop()
+
+
+class TestResponseMatch(BaseApiTest):
+    def _assert_match(self, expected, received):
+        self.assertResponseMatch(expected=expected, received=received)
+
+    def _assert_not_match(self, expected, received, expected_error):
+        with self.assertRaisesMessage(expected_exception=AssertionError, expected_message=expected_error):
+            self.assertResponseMatch(expected=expected, received=received)
+
+    def test_match_types(self):
+        expected = {"name": "Harry", "age": 13}
+
+        received = {"name": "Harry", "age": 13}
+        self._assert_match(expected, received)
+
+        received = {"name": "Potter", "age": 13}
+        message = "There's 1 fields that differ\n- name: Received `Potter`, but expected `Harry` "
+        self._assert_not_match(expected, received, message)
+
+    def test_match_regex(self):
+        expected = {"name": re.compile("H.*y"), "age": 13}
+
+        received = {"name": "Harry", "age": 13}
+        self._assert_match(expected, received)
+
+        received = {"name": "Potter", "age": 13}
+        message = "There's 1 fields that differ\n- name: Received `Potter`, but expected to match `H.*y` "
+        self._assert_not_match(expected, received, message)
+
+    def test_match_embedded(self):
+        expected = {"name": "Harry", "age": {"amount": 13, "min_age": 0}}
+
+        received = {"name": "Harry", "age": {"amount": 13, "min_age": 0}}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "age": {"amount": 13}}
+        message = "There's 1 fields that differ\n- age: There's 1 fields missing: min_age "
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "age": {"amount": 13, "min_age": 0, "max_age": 100}}
+        message = "There's 1 fields that differ\n- age: There's 1 unexpected fields: max_age "
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "age": 13}
+        message = "There's 1 fields that differ\n- age: Received `13`, but expected `{'amount': 13, 'min_age': 0}` "
+        self._assert_not_match(expected, received, message)
+
+    def test_match_embedded_list(self):
+        expected = {"name": "Harry", "friends": [{"name": "Hermione", "age": 13}, {"name": "Hagrid", "age": 50}]}
+
+        received = {"name": "Harry", "friends": [{"name": "Hermione", "age": 13}, {"name": "Hagrid", "age": 50}]}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "friends": [{"name": "Hermione", "age": 13}]}
+        message = "There's 1 fields that differ\n- friends: Received 1 items and it was expected to have 2 "
+        self._assert_not_match(expected, received, message)
+
+        received = {
+            "name": "Harry",
+            "friends": [
+                {"name": "Hermione", "age": 13},
+                {"name": "Hagrid", "age": 50},
+                {"name": "Dumbledore", "age": 100},
+            ],
+        }
+        message = "There's 1 fields that differ\n- friends: Received 3 items and it was expected to have 2 "
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": "potato"}
+        message = (
+            "There's 1 fields that differ\n"
+            "- friends: Received `potato`, "
+            "but expected to `[{'name': 'Hermione', 'age': 13}, {'name': 'Hagrid', 'age': 50}]` "
+        )
+        self._assert_not_match(expected, received, message)
+
+    def test_match_set(self):
+        expected = {"name": "Harry", "friends": {"Hermione", "Hagrid", "Dumbledore"}}
+
+        received = {"name": "Harry", "friends": ["Hermione", "Hagrid", "Dumbledore"]}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore"]}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "friends": {"Hermione", "Hagrid", "Dumbledore"}}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione"]}
+        message = (
+            "There's 1 fields that differ\n"
+            "- friends: Received `Hagrid, Hermione`, but expected to have `Dumbledore, Hagrid, Hermione` items "
+        )
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore", "Valdemort"]}
+        message = (
+            "There's 1 fields that differ\n"
+            "- friends: Received `Dumbledore, Hagrid, Hermione, Valdemort`, "
+            "but expected to have `Dumbledore, Hagrid, Hermione` items "
+        )
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": 13}
+        message = (
+            "There's 1 fields that differ\n"
+            "- friends: Received `13`, but expected to have `Dumbledore, Hagrid, Hermione` items "
+        )
+        self._assert_not_match(expected, received, message)
+
+    def test_match_list(self):
+        expected = {"name": "Harry", "friends": ["Hermione", "Hagrid", "Dumbledore"]}
+
+        received = {"name": "Harry", "friends": ["Hermione", "Hagrid", "Dumbledore"]}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore"]}
+        message = (
+            "There's 2 fields that differ\n"
+            "- friends.[#0] __eq__: Received `Hagrid`, but expected `Hermione` \n"
+            "- friends.[#1] __eq__: Received `Hermione`, but expected `Hagrid` "
+        )
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione"]}
+        message = "There's 1 fields that differ\n" "- friends: Received 2 items and it was expected to have 3 "
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore", "Valdemort"]}
+        message = "There's 1 fields that differ\n" "- friends: Received 4 items and it was expected to have 3 "
+        self._assert_not_match(expected, received, message)
+
+        received = {"name": "Harry", "friends": 13}
+        message = (
+            "There's 1 fields that differ\n"
+            "- friends: Received `13`, but expected to `['Hermione', 'Hagrid', 'Dumbledore']` "
+        )
+        self._assert_not_match(expected, received, message)
