@@ -1,5 +1,7 @@
 from unittest.mock import ANY
 
+from rest_framework import status
+
 from drf_kit.tests import BaseApiTest
 from test_app import models
 from test_app.tests.tests_base import HogwartsTestMixin
@@ -18,22 +20,18 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
 
         expected = list(reversed(self.expected_spell_casts))
-        self.assertEqual(expected, data["results"])
+        self.assertResponseList(expected_items=expected, response=response)
 
     def test_detail_endpoint(self):
         spell_cast = self.spell_casts[0]
         url = f"{self.url}/{spell_cast.pk}"
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
 
-        data = response.json()
-        self.assertEqual(self.expected_spell_casts[0], data)
+        expected = self.expected_spell_casts[0]
+        self.assertResponseDetail(expected_item=expected, response=response)
 
     def test_post_endpoint(self):
         wizard = self.wizards[3]
@@ -46,16 +44,14 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
             "is_successful": False,
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(201, response.status_code)
 
-        data = response.json()
         expected = {
             "id": ANY,
             "wizard": self.expected_detailed_wizards[3],
             "spell": self.expected_spells[0],
             "is_successful": False,
         }
-        self.assertEqual(expected, data)
+        self.assertResponseCreate(expected_item=expected, response=response)
 
         spell_casts = models.SpellCast.objects.all()
         self.assertEqual(5, spell_casts.count())
@@ -70,7 +66,7 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
             "is_successful": False,
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         data = response.json()
 
@@ -87,11 +83,10 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
             "is_successful": True,
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(200, response.status_code)
 
         expected_spell_cast = self.expected_spell_casts[0]
         expected_spell_cast["is_successful"] = True
-        self.assertEqual(expected_spell_cast, response.json())
+        self.assertResponseUpdated(expected_item=expected_spell_cast, response=response)
 
         spell_casts = models.SpellCast.objects.all()
         self.assertEqual(4, spell_casts.count())
@@ -105,13 +100,13 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
             "is_successful": False,
         }
         response = self.client.put(url, data=data)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_delete_endpoint(self):
         spell_cast = self.spell_casts[0]
         url = f"{self.url}/{spell_cast.pk}"
         response = self.client.delete(url)
-        self.assertEqual(204, response.status_code)
+        self.assertResponseDeleted(response=response)
 
         with self.assertRaises(models.SpellCast.DoesNotExist):
             spell_cast.refresh_from_db()

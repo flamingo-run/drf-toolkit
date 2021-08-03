@@ -259,11 +259,11 @@ class TestResponseMatch(BaseApiTest):
         self._assert_not_match(expected, received, message)
 
         received = {"name": "Harry", "friends": ["Hagrid", "Hermione"]}
-        message = "There's 1 fields that differ\n" "- friends: Received 2 items and it was expected to have 3 "
+        message = "There's 1 fields that differ\n- friends: Received 2 items and it was expected to have 3 "
         self._assert_not_match(expected, received, message)
 
         received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore", "Valdemort"]}
-        message = "There's 1 fields that differ\n" "- friends: Received 4 items and it was expected to have 3 "
+        message = "There's 1 fields that differ\n- friends: Received 4 items and it was expected to have 3 "
         self._assert_not_match(expected, received, message)
 
         received = {"name": "Harry", "friends": 13}

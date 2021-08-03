@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.core.cache import cache
+from rest_framework import status
 
 from drf_kit.cache import CacheResponse
 from drf_kit.tests import BaseApiTest
@@ -18,11 +19,11 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual("MISS", response["X-Cache"])
 
         cached_response = self.client.get(url)
-        self.assertEqual(200, cached_response.status_code)
+        self.assertEqual(status.HTTP_200_OK, cached_response.status_code)
         self.assertEqual("HIT", cached_response["X-Cache"])
 
     def test_retrocompatible(self):
@@ -51,20 +52,20 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response_json_miss = self.client.get(url, HTTP_ACCEPT="application/json")
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("MISS", response_json_miss["X-Cache"])
 
         response_html_miss = self.client.get(url, HTTP_ACCEPT="text/html")
-        self.assertEqual(200, response_html_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_html_miss.status_code)
         self.assertEqual("MISS", response_html_miss["X-Cache"])
 
         response_json_hit = self.client.get(url, HTTP_ACCEPT="application/json")
-        self.assertEqual(200, response_json_hit.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_hit.status_code)
         self.assertEqual("HIT", response_json_hit["X-Cache"])
         self.assertEqual(response_json_miss.content, response_json_hit.content)
 
         response_html_hit = self.client.get(url, HTTP_ACCEPT="text/html")
-        self.assertEqual(200, response_html_hit.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_html_hit.status_code)
         self.assertEqual("HIT", response_html_hit["X-Cache"])
 
     def test_cache_control_no_cache(self):
@@ -72,23 +73,23 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         cache_control = "no-cache"
         response_json_miss = self.client.get(url)
 
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("MISS", response_json_miss["X-Cache"])
         self.assertEqual(None, response_json_miss.get("Cache-Control"))
 
         response_json_miss = self.client.get(url)
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("HIT", response_json_miss["X-Cache"])
         self.assertEqual(None, response_json_miss.get("Cache-Control"))
 
         response_json_miss = self.client.get(url, HTTP_CACHE_CONTROL=cache_control)
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("MISS", response_json_miss["X-Cache"])
         self.assertEqual("max-age=300", response_json_miss.get("Cache-Control"))
 
         cache_control = "no-store,no-cache"
         response_json_miss = self.client.get(url, HTTP_CACHE_CONTROL=cache_control)
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("MISS", response_json_miss["X-Cache"])
         self.assertEqual("max-age=300", response_json_miss.get("Cache-Control"))
 
@@ -96,11 +97,11 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         url = self.url
         cache_control = "invalid-directive"
         response_json_miss = self.client.get(url)
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("MISS", response_json_miss["X-Cache"])
         self.assertEqual(None, response_json_miss.get("Cache-Control"))
 
         response_json_miss = self.client.get(url, **{"cache-control": cache_control})
-        self.assertEqual(200, response_json_miss.status_code)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("HIT", response_json_miss["X-Cache"])
         self.assertEqual(None, response_json_miss.get("Cache-Control"))

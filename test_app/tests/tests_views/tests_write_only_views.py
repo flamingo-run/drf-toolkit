@@ -17,14 +17,14 @@ class TestWriteOnlyView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_detail_endpoint(self):
         memory = self.memories[0]
         url = f"{self.url}/{memory.pk}"
 
         response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_post_endpoint(self):
         url = self.url
@@ -35,15 +35,13 @@ class TestWriteOnlyView(HogwartsTestMixin, BaseApiTest):
             "description": "Dad dead",
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(201, response.status_code)
 
-        data = response.json()
         expected = {
             "id": ANY,
             "description": "Dad dead",
             "owner_id": wizard.pk,
         }
-        self.assertEqual(expected, data)
+        self.assertResponseCreate(expected_item=expected, response=response)
 
         memories = models.Memory.objects.all()
         self.assertEqual(4, memories.count())
@@ -55,11 +53,10 @@ class TestWriteOnlyView(HogwartsTestMixin, BaseApiTest):
             "description": "Under the stairs",
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(200, response.status_code)
 
         expected_memory = self.expected_memories[0]
         expected_memory["description"] = "Under the stairs"
-        self.assertEqual(expected_memory, response.json())
+        self.assertResponseUpdated(expected_item=expected_memory, response=response)
 
         memories = models.Memory.objects.all()
         self.assertEqual(3, memories.count())
@@ -71,13 +68,13 @@ class TestWriteOnlyView(HogwartsTestMixin, BaseApiTest):
             "description": "Under the stairs",
         }
         response = self.client.put(url, data=data)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_delete_endpoint(self):
         memory = self.memories[0]
         url = f"{self.url}/{memory.pk}"
         response = self.client.delete(url)
-        self.assertEqual(204, response.status_code)
+        self.assertResponseDeleted(response=response)
 
         memories = models.Memory.objects.all()
         self.assertEqual(2, memories.count())

@@ -1,6 +1,7 @@
 from unittest.mock import ANY, patch
 
 from django.db import IntegrityError
+from rest_framework import status
 
 from drf_kit.tests import BaseApiTest
 from test_app import models
@@ -28,9 +29,6 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
 
         # sorted by name ASC
         expected = [
@@ -39,17 +37,16 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             self.expected_houses[2],
             self.expected_houses[1],
         ]
-        self.assertEqual(expected, data["results"])
+        self.assertResponseList(expected, response)
 
     def test_detail_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}"
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
 
-        data = response.json()
-        self.assertEqual(self.expected_houses[0], data)
+        expected = self.expected_houses[0]
+        self.assertResponseDetail(expected, response)
 
     def test_post_endpoint(self):
         url = self.url
@@ -58,16 +55,14 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             "points_boost": 3.1,
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(201, response.status_code)
 
-        data = response.json()
         expected = {
             "id": ANY,
             "name": "#Always",
             "points_boost": "3.10",
             "created_at": ANY,
         }
-        self.assertEqual(expected, data)
+        self.assertResponseCreate(expected, response)
 
         houses = models.House.objects.all()
         self.assertEqual(5, houses.count())
@@ -83,8 +78,8 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             response = self.client.post(url, data=data)
 
         self.assertEqual(409, response.status_code)
-        expected = "A House with `id=42` already exists."
-        self.assertResponseMatch(expected=expected, received=response.json()["errors"])
+        expected = {"errors": "A House with `id=42` already exists."}
+        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
@@ -96,11 +91,11 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             "points_boost": 3.14,
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(200, response.status_code)
 
         expected_house = self.expected_houses[0]
         expected_house["points_boost"] = "3.14"
-        self.assertEqual(expected_house, response.json())
+
+        self.assertResponseUpdated(expected_item=expected_house, response=response)
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
@@ -112,13 +107,14 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
             "name": "Not Griffindor",
         }
         response = self.client.put(url, data=data)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_delete_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}"
         response = self.client.delete(url)
-        self.assertEqual(204, response.status_code)
+
+        self.assertResponseDeleted(response=response)
 
         houses = models.House.objects.all()
         self.assertEqual(3, houses.count())

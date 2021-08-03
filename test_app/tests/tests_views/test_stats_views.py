@@ -1,3 +1,5 @@
+from rest_framework import status
+
 from drf_kit.tests import BaseApiTest
 from test_app.tests.tests_base import HogwartsTestMixin
 
@@ -15,9 +17,6 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
         url = f"{self.url}?stats=1"
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
 
         # sorted by name ASC
         expected = [
@@ -26,24 +25,20 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
             self.expected_stats_houses[2],
             self.expected_stats_houses[1],
         ]
-        self.assertEqual(expected, data["results"])
+        self.assertResponseList(expected, response)
 
     def test_detail_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}?stats=1"
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
-        self.assertEqual(self.expected_stats_houses[0], data)
+        self.assertResponseDetail(self.expected_stats_houses[0], response)
 
     def test_list_endpoint_wrong_parameter(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}?stats=potato"
 
         response = self.client.get(url)
-        self.assertEqual(400, response.status_code)
 
-        data = response.json()
-        self.assertEqual({"stats": "Stats parameter must be an integer"}, data)
+        expected_error = {"stats": "Stats parameter must be an integer"}
+        self.assertResponse(status.HTTP_400_BAD_REQUEST, expected_error, response)

@@ -16,9 +16,6 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
         url = self.url
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-
-        data = response.json()
 
         expected = [
             self.expected_wands[4],
@@ -27,17 +24,16 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
             self.expected_wands[1],
             self.expected_wands[0],
         ]
-        self.assertEqual(expected, data["results"])
+        self.assertResponseList(expected_items=expected, response=response)
 
     def test_detail_endpoint(self):
         wand = self.wands[0]
         url = f"{self.url}/{wand.pk}"
 
         response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
 
-        data = response.json()
-        self.assertEqual(self.expected_wands[0], data)
+        expected = self.expected_wands[0]
+        self.assertResponseDetail(expected_item=expected, response=response)
 
     def test_post_endpoint(self):
         url = self.url
@@ -46,14 +42,12 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
             "name": "Holly",
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(201, response.status_code)
 
-        data = response.json()
         expected = {
             "id": ANY,
             "name": "Holly",
         }
-        self.assertEqual(expected, data)
+        self.assertResponseCreate(expected_item=expected, response=response)
 
         wands = models.Wand.objects.all()
 
@@ -67,11 +61,10 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
             "name": "Hazel",
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(200, response.status_code)
 
         expected_wand = self.expected_wands[0]
         expected_wand["name"] = "Hazel"
-        self.assertEqual(expected_wand, response.json())
+        self.assertResponseUpdated(expected_item=expected_wand, response=response)
 
         wands = models.Wand.objects.all()
         expected_amount = len(self.wands)
@@ -84,13 +77,13 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
             "name": "Holly",
         }
         response = self.client.put(url, data=data)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
     def test_delete_endpoint(self):
         wand = self.wands[0]
         url = f"{self.url}/{wand.pk}"
         response = self.client.delete(url)
-        self.assertEqual(405, response.status_code)
+        self.assertResponseNotAllowed(response=response)
 
         wands = models.Wand.objects.all()
         expected_amount = len(self.wands)
