@@ -1,14 +1,16 @@
+# pylint: disable=invalid-name
 import inspect
 import os
 import re
 from contextlib import contextmanager
 from io import StringIO
-from typing import Optional, Callable, Union, Type
+from typing import Optional, Callable, Union, Type, Dict, List
 from unittest.mock import patch, ANY
 
 from django.core.cache import cache
 from django.core.management import call_command
 from django.utils.connection import ConnectionProxy
+from rest_framework import status
 from rest_framework.test import APITransactionTestCase
 
 
@@ -46,6 +48,74 @@ class BaseApiTest(APITransactionTestCase):
     def assertUUIDFilePath(self, prefix, name, extension, pk, file):  # pylint: disable=invalid-name
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
         self.assertTrue(pattern.match(str(file)))
+
+    def assertResponseList(self, expected_items: List[Dict], response):
+        count = response.json()["count"]
+        msg = f"Expected to receive {len(expected_items)} items, but metadata indicates {count} items"
+        self.assertEqual(len(expected_items), count, msg)
+
+        self.assertResponse(
+            expected_status=status.HTTP_200_OK,
+            expected_body=expected_items,
+            response=response,
+            response_key="results",
+        )
+
+    def assertResponseDetail(self, expected_item: Dict, response):
+        self.assertResponse(
+            expected_status=status.HTTP_200_OK,
+            expected_body=expected_item,
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponseCreate(self, expected_item, response):
+        self.assertResponse(
+            expected_status=status.HTTP_201_CREATED,
+            expected_body=expected_item,
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponseUpdated(self, expected_item, response):
+        self.assertResponse(
+            expected_status=status.HTTP_200_OK,
+            expected_body=expected_item,
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponseDeleted(self, response):
+        self.assertResponse(
+            expected_status=status.HTTP_204_NO_CONTENT,
+            expected_body="",
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponseNotAllowed(self, response):
+        method = response.request["REQUEST_METHOD"]
+        expected = {"detail": f'Method "{method}" not allowed.'}
+        self.assertResponse(
+            expected_status=status.HTTP_405_METHOD_NOT_ALLOWED,
+            expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponse(self, expected_status: int, expected_body, response, response_key: Optional[str] = None):
+        response_content = response.json() if response.content_type else response.content.decode()
+        msg = f"Expected status code {expected_status}, but received {response.status_code} with {response_content}"
+        self.assertEqual(expected_status, response.status_code, msg)
+
+        if expected_body:
+            body = response.json()
+            if response_key:
+                body = body[response_key]
+            self.assertResponseMatch(expected=expected_body, received=body)
+        else:
+            msg = f"Expected body to be empty, but received {response_content}"
+            self.assertEqual(expected_body, response.content.decode(), msg)
 
     def assertResponseMatch(self, expected, received):  # pylint: disable=invalid-name
         def _assert_dict(expected_item, received_item, idx=None):
