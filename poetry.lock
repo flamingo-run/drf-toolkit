@@ -83,7 +83,7 @@ toml = ["toml"]
 
 [[package]]
 name = "django"
-version = "3.2.5"
+version = "3.2.6"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -368,8 +368,8 @@ coverage = [
     {file = "coverage-5.5.tar.gz", hash = "sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c"},
 ]
 django = [
-    {file = "Django-3.2.5-py3-none-any.whl", hash = "sha256:c58b5f19c5ae0afe6d75cbdd7df561e6eb929339985dbbda2565e1cabb19a62e"},
-    {file = "Django-3.2.5.tar.gz", hash = "sha256:3da05fea54fdec2315b54a563d5b59f3b4e2b1e69c3a5841dda35019c01855cd"},
+    {file = "Django-3.2.6-py3-none-any.whl", hash = "sha256:7f92413529aa0e291f3be78ab19be31aefb1e1c9a52cd59e130f505f27a51f13"},
+    {file = "Django-3.2.6.tar.gz", hash = "sha256:f27f8544c9d4c383bbe007c57e3235918e258364577373d4920e9162837be022"},
 ]
 django-filter = [
     {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},
