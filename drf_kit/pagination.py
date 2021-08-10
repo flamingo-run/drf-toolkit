@@ -55,7 +55,7 @@ class CustomPagePagination(PageNumberPagination):
         if not self.page.has_previous():
             return None
         url = self.request.build_absolute_uri()
-        page_number = self.page.previous_page_number() - 1
+        page_number = self.page.previous_page_number()
         if page_number == self.page_start:
             return remove_query_param(url, self.page_query_param)
         return replace_query_param(url, self.page_query_param, page_number)
@@ -64,7 +64,7 @@ class CustomPagePagination(PageNumberPagination):
         if not self.page.has_next():
             return None
         url = self.request.build_absolute_uri()
-        page_number = self.page.next_page_number() - 1
+        page_number = self.page.next_page_number()
         return replace_query_param(url, self.page_query_param, page_number)
 
     def get_html_context(self):
