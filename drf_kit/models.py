@@ -149,7 +149,7 @@ class OrderedModelMixin(_OrderedModelBase):
 
     class Meta:
         abstract = True
-        ordering = ("order",)
+        ordering = ("order", "-updated_at")
 
 
 class BaseOrderedModel(OrderedModelMixin, BaseModel):
