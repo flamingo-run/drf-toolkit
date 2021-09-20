@@ -16,7 +16,7 @@ class TestNestedView(HogwartsTestMixin, BaseApiTest):
 
     @property
     def url(self):
-        return "/houses/{id}/wizards".format(id=self.houses[0].pk)
+        return f"/houses/{self.houses[0].pk}/wizards"
 
     def test_list_endpoint(self):
         url = self.url

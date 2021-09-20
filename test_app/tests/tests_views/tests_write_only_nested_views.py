@@ -15,7 +15,7 @@ class TestWriteOnlyNestedView(HogwartsTestMixin, BaseApiTest):
 
     @property
     def url(self):
-        return "/wizards/{id}/memories".format(id=self.wizards[0].pk)
+        return f"/wizards/{self.wizards[0].pk}/memories"
 
     def test_list_endpoint(self):
         url = self.url

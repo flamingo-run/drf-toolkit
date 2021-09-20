@@ -14,7 +14,8 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         self.patronus = self._set_up_patronus(wizards=self.wizards)
 
     def url(self, wizard_pk=None):
-        return "/wizards/{id}/patronus".format(id=wizard_pk or self.wizards[0].pk)
+        wizard_id = wizard_pk or self.wizards[0].pk
+        return f"/wizards/{wizard_id}/patronus"
 
     def test_list_endpoint(self):
         url = self.url()

@@ -35,15 +35,7 @@ class BaseApiTest(APITransactionTestCase):
 
     def uuid_file_path_regex(self, prefix, pk, name, extension):
         uuid_regex = r"[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}"
-        return re.compile(
-            r"^{prefix}/{pk}/{name}_{uuid}\.{extension}$".format(
-                prefix=prefix,
-                pk=pk,
-                name=name,
-                extension=extension,
-                uuid=uuid_regex,
-            )
-        )
+        return re.compile(fr"^{prefix}/{pk}/{name}_{uuid_regex}\.{extension}$")
 
     def assertUUIDFilePath(self, prefix, name, extension, pk, file):  # pylint: disable=invalid-name
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
