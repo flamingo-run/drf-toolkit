@@ -41,16 +41,12 @@ class BaseApiTest(APITransactionTestCase):
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
         self.assertTrue(pattern.match(str(file)))
 
-    def assertResponseList(self, expected_items: List[Dict], response):
-        count = response.json()["count"]
-        msg = f"Expected to receive {len(expected_items)} items, but metadata indicates {count} items"
-        self.assertEqual(len(expected_items), count, msg)
-
+    def assertResponseList(self, expected_items: List[Dict], response, response_key: str = "results"):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_items,
             response=response,
-            response_key="results",
+            response_key=response_key,
         )
 
     def assertResponseDetail(self, expected_item: Dict, response):
