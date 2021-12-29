@@ -184,6 +184,9 @@ class BaseApiTest(APITransactionTestCase):
                 return {}
             except AssertionError:
                 msg = f"Received `{received_item}`, but expected `{expected_item}`"
+                if not isinstance(received_item, type(expected_item)):
+                    msg = f"Received `{type(received_item)} - {received_item}`, but expected `{type(expected_item)} - {expected_item}`"  # pylint: disable=C0301
+
                 return {"__eq__": msg}
 
         errors = _compare(expected_item=expected, received_item=received)
