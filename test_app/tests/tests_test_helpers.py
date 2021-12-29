@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from unittest.mock import patch
 
 from drf_kit.tests import BaseApiTest
@@ -178,7 +179,7 @@ class TestResponseMatch(BaseApiTest):
         self._assert_not_match(expected, received, message)
 
         received = {"name": "Harry", "age": 13}
-        message = "There's 1 fields that differ\n- age: Received `13`, but expected `{'amount': 13, 'min_age': 0}` "
+        message = "There's 1 fields that differ\n- age: Received `<class 'int'> - 13`, but expected `<class 'dict'> - {'amount': 13, 'min_age': 0}` "  # pylint: disable=C0301
         self._assert_not_match(expected, received, message)
 
     def test_match_embedded_list(self):
@@ -271,4 +272,11 @@ class TestResponseMatch(BaseApiTest):
             "There's 1 fields that differ\n"
             "- friends: Received `13`, but expected to `['Hermione', 'Hagrid', 'Dumbledore']` "
         )
+        self._assert_not_match(expected, received, message)
+
+    def test_match_error_types(self):
+        expected = {"birthday": datetime(2022, 1, 1, 0, 0, 0)}
+        received = {"birthday": "2022-01-01 00:00:00"}
+
+        message = "There's 1 fields that differ\n- birthday: Received `<class 'str'> - 2022-01-01 00:00:00`, but expected `<class 'datetime.datetime'> - 2022-01-01 00:00:00` "  # pylint: disable=C0301
         self._assert_not_match(expected, received, message)
