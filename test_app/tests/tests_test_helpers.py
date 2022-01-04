@@ -179,7 +179,10 @@ class TestResponseMatch(BaseApiTest):
         self._assert_not_match(expected, received, message)
 
         received = {"name": "Harry", "age": 13}
-        message = "There's 1 fields that differ\n- age: Received `<class 'int'> - 13`, but expected `<class 'dict'> - {'amount': 13, 'min_age': 0}` "  # pylint: disable=C0301
+        message = (
+            "There's 1 fields that differ\n- age: Received `<class 'int'> - 13`, "
+            "but expected `<class 'dict'> - {'amount': 13, 'min_age': 0}` "
+        )
         self._assert_not_match(expected, received, message)
 
     def test_match_embedded_list(self):
@@ -278,5 +281,8 @@ class TestResponseMatch(BaseApiTest):
         expected = {"birthday": datetime(2022, 1, 1, 0, 0, 0)}
         received = {"birthday": "2022-01-01 00:00:00"}
 
-        message = "There's 1 fields that differ\n- birthday: Received `<class 'str'> - 2022-01-01 00:00:00`, but expected `<class 'datetime.datetime'> - 2022-01-01 00:00:00` "  # pylint: disable=C0301
+        message = (
+            "There's 1 fields that differ\n- birthday: Received `<class 'str'> - 2022-01-01 00:00:00`, "
+            "but expected `<class 'datetime.datetime'> - 2022-01-01 00:00:00` "
+        )
         self._assert_not_match(expected, received, message)
