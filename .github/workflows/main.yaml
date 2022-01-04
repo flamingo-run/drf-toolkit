@@ -27,8 +27,6 @@ jobs:
       - name: Install Python dependencies
         run: |
           make dependencies
-        env:
-          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
       - name: Lint with pylint
         run: |
           make lint
@@ -51,8 +49,6 @@ jobs:
       - name: Install Python dependencies
         run: |
           make dependencies
-        env:
-          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
       - name: Install as a package
         run: |
           poetry build
@@ -87,8 +83,6 @@ jobs:
       - name: Install dependencies
         run: |
           make dependencies
-        env:
-          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Prepare CodeClimate
         run: |
