@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 from django.db import models
-from django.db.models import Max
 from django.forms.models import model_to_dict
 from django.urls import reverse
 from django.utils.timezone import now
@@ -128,24 +127,33 @@ class OrderedModelMixin(_OrderedModelBase):
     order_field_name = "order"
 
     def save(self, *args, **kwargs):
-        if getattr(self, self.order_field_name) is None:
-            highest_order = (
-                self.get_ordering_queryset().aggregate(Max(self.order_field_name)).get(self.order_field_name + "__max")
-            )
-            new_order = 0 if highest_order is None else highest_order + 1
-            setattr(self, self.order_field_name, new_order)
-        super().save(*args, **kwargs)
+        if kwargs.pop("ignore_order_validation", False):
+            return super().save(*args, **kwargs)
 
-        new_order = getattr(self, self.order_field_name, None)
-        if not new_order:
-            return
+        # How to prevent the order indexes from becoming sparse:
+        # 1. Fetch the list of objects of that grouping, except the current item
+        # 2. Insert the current item in the desired index
+        #    a. if the current item does not have a specified index, add to the end
+        #    b. if it does, add to that index
+        # 3. Traverse the list and update each item whose index has changed
 
-        clash = self.get_ordering_queryset().filter(**{self.order_field_name: new_order}).exclude(pk=self.pk).first()
-        if not clash:
-            return
+        order = getattr(self, self.order_field_name)
 
-        setattr(clash, self.order_field_name, new_order + 1)
-        clash.save()
+        group = list(self.get_ordering_queryset().exclude(id=self.pk))
+
+        if order is not None:  # when updating
+            group.insert(max(0, order), self)
+        else:  # when creating
+            group.append(self)
+
+        for index, obj in enumerate(group):
+            if obj.pk == self.pk:
+                setattr(self, self.order_field_name, index)
+            elif obj.order != index:
+                obj.order = index
+                obj.save(ignore_order_validation=True)
+
+        return super().save(*args, **kwargs)
 
     class Meta:
         abstract = True
