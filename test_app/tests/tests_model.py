@@ -458,3 +458,37 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         self.assertOrder(placement_2, 2)
         self.assertOrder(placement_3, 3)
         self.assertOrder(placement_4, 0)
+
+    def test_delete_within_range(self):
+        year = 1900
+
+        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+
+        placement_2.delete()
+
+        for placement in [placement_1, placement_3, placement_4]:
+            placement.refresh_from_db()
+
+        self.assertOrder(placement_1, 0)
+        self.assertOrder(placement_3, 1)
+        self.assertOrder(placement_4, 2)
+
+    def test_delete_from_queryset(self):
+        year = 1900
+
+        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+
+        TriWizardPlacement.objects.filter(id=placement_2.id).delete()
+
+        for placement in [placement_1, placement_3, placement_4]:
+            placement.refresh_from_db()
+
+        self.assertOrder(placement_1, 0)
+        self.assertOrder(placement_3, 1)
+        self.assertOrder(placement_4, 2)
