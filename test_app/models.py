@@ -9,6 +9,9 @@ class Coordinates:
         self.latitude = float(latitude)
         self.longitude = float(longitude)
 
+    def default(self):
+        return dict(longitude=self.longitude, latitude=self.latitude)
+
 class CoordinatesField(models.CharField):
     def __init__(self,*args, **kwargs) -> None:
         kwargs.setdefault("max_length", 100)
