@@ -4,6 +4,27 @@ from drf_kit.models import BaseModel, SoftDeleteModel, InheritanceModel, BaseOrd
 from test_app import managers
 from test_app.storage import StoragePath
 
+class Coordinates:
+    def __init__(self, latitude, longitude):
+        self.latitude = float(latitude)
+        self.longitude = float(longitude)
+
+class CoordinatesField(models.CharField):
+    def __init__(self,*args, **kwargs) -> None:
+        kwargs.setdefault("max_length", 100)
+        kwargs.setdefault("null", True)
+        super().__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection):
+        if not value:
+            return value
+        return Coordinates(*value.split(','))
+
+    def get_db_prep_save(self, value, *args, **kwargs):
+        if not value:
+            return None
+        return f"{value['latitude']},{value['longitude']}"
+
 
 class Wizard(BaseModel):
     name = models.CharField(
@@ -40,6 +61,7 @@ class Wizard(BaseModel):
         blank=True,
         null=True,
     )
+    coordinates = CoordinatesField()
 
 
 class House(BaseModel):
