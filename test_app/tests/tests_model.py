@@ -82,10 +82,7 @@ class TestModelDiff(BaseApiTest):
         self.assertEqual(new_url, wizard._diff["picture"][1])
 
     def test_serialize_custom_model_field(self):
-        wizard = Wizard.objects.create(
-            name="Harry Potter",
-            coordinates={"latitude": 41.40338, "longitude": 2.17403}
-        )
+        wizard = Wizard.objects.create(name="Harry Potter", coordinates={"latitude": 41.40338, "longitude": 2.17403})
         wizard.refresh_from_db()
         self.assertEqual(wizard.coordinates.latitude, 41.40338)
         self.assertEqual(wizard.coordinates.longitude, 2.17403)

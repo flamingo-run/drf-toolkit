@@ -7,13 +7,13 @@ import test_app.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('test_app', '0001_initial'),
+        ("test_app", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='wizard',
-            name='coordinates',
+            model_name="wizard",
+            name="coordinates",
             field=test_app.models.CoordinatesField(max_length=100, null=True),
         ),
     ]
