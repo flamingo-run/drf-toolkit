@@ -51,8 +51,12 @@ class OrderedModelMixin(OrderedModelBase):
     class Meta:
         abstract = True
         ordering = ("order", "-updated_at")
+        indexes = [
+            models.Index(fields=["order"]),
+        ]
 
 
 class OrderedModel(OrderedModelMixin, BaseModel):
     class Meta(OrderedModelMixin.Meta, BaseModel.Meta):
         abstract = True
+        indexes = OrderedModelMixin.Meta.indexes + BaseModel.Meta.indexes
