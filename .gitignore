@@ -61,3 +61,5 @@ target/
 
 wizard/
 test_app/wizard/
+
+*.sqlite3
