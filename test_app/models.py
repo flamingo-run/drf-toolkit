@@ -5,6 +5,7 @@ from drf_kit.models import (
     SoftDeleteModel,
     InheritanceModel,
     BaseOrderedModel,
+    SoftDeleteInheritanceOrderedModel,
 )
 from test_app import managers
 from test_app.storage import StoragePath
@@ -169,3 +170,21 @@ class TriWizardPlacement(BaseOrderedModel):
             "year",
             "order",
         ]
+
+
+class Tale(SoftDeleteInheritanceOrderedModel):
+    description = models.TextField()
+
+
+class DarkTale(Tale):
+    dark_level = models.IntegerField(default=0)
+
+    class Meta(Tale.Meta):
+        indexes = []
+
+
+class HappyTale(Tale):
+    laugh_level = models.IntegerField(default=0)
+
+    class Meta(Tale.Meta):
+        indexes = []
