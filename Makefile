@@ -18,7 +18,7 @@ check:
 
 lint:
 	@echo "Checking code style ..."
-	DJANGO_SETTINGS_MODULE=test_app.settings poetry run pylint drf_kit test_app
+	DJANGO_SETTINGS_MODULE=test_app.settings poetry run pylint ./*/*.py
 	poetry run black --check .
 
 unit:
