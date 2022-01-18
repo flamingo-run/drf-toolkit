@@ -67,6 +67,7 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
     def test_undelete_model(self):
         memory = MemoryFactory()
         memory.delete()
+        memory.refresh_from_db()
 
         with self.patch_notify_task() as some_task:
             memory.undelete()

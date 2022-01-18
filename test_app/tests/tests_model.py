@@ -169,6 +169,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
     def test_undelete_model(self):
         memory = MemoryFactory()
         memory.delete()
+        memory.refresh_from_db()
 
         memory.undelete()
         memory.refresh_from_db()
@@ -178,6 +179,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         new_description = "Parents fighting Voldemort"
         memory = MemoryFactory()
         memory.delete()
+        memory.refresh_from_db()
 
         memory.description = new_description
 

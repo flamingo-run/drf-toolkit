@@ -1,9 +1,15 @@
 import logging
 
 from django.db import models
+from django.db.models.signals import pre_save
+
 from drf_kit.models.base_models import BaseModel
 
 logger = logging.getLogger(__name__)
+
+
+def assert_inherited_type(sender, instance, **kwargs):
+    instance.type = instance.__class__.__name__.lower()
 
 
 class InheritanceModelMixin(models.Model):
@@ -15,9 +21,10 @@ class InheritanceModelMixin(models.Model):
         abstract = True
         indexes = []
 
-    def save(self, *args, **kwargs):
-        self.type = self.__class__.__name__.lower()
-        return super().save(*args, **kwargs)
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        pre_save.connect(assert_inherited_type, cls)
 
 
 class InheritanceModel(InheritanceModelMixin, BaseModel):

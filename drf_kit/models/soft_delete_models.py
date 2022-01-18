@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+from django.db.models.signals import pre_save
 from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 
@@ -8,6 +9,11 @@ from drf_kit import exceptions, managers, signals
 from drf_kit.models.base_models import BaseModel
 
 logger = logging.getLogger(__name__)
+
+
+def verify_soft_deletion(sender, instance, **kwargs):
+    if instance.is_deleted and not instance._state.adding:
+        raise exceptions.UpdatingSoftDeletedException()
 
 
 class SoftDeleteModelMixin(models.Model):
@@ -24,16 +30,16 @@ class SoftDeleteModelMixin(models.Model):
             models.Index(fields=["deleted_at"]),
         ]
 
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        pre_save.connect(verify_soft_deletion, cls)
+
     objects = managers.SoftDeleteManager()
 
     @property
     def is_deleted(self):
         return self.deleted_at is not None
-
-    def save(self, *args, soft_deleting=False, **kwargs):  # pylint: disable=arguments-differ
-        if self.is_deleted and not soft_deleting and not self._state.adding:
-            raise exceptions.UpdatingSoftDeletedException()
-        return super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
         if not self.is_deleted:
@@ -42,8 +48,12 @@ class SoftDeleteModelMixin(models.Model):
                 instance=self,
             )
 
+            # save & skip signals
             self.deleted_at = now()
-            self.save(soft_deleting=True)
+            from drf_kit.signals import UnplugSignal  # pylint: disable=import-outside-toplevel
+
+            with UnplugSignal(signal=pre_save, func=verify_soft_deletion, model=self.__class__):
+                self.save()
 
             signals.post_soft_delete.send(
                 sender=self.__class__,
