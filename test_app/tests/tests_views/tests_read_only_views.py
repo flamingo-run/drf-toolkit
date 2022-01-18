@@ -8,7 +8,7 @@ class TestReadOnlyView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.spells = self._set_up_spells()
+        self._set_up_spells()
 
     def test_list_endpoint(self):
         url = self.url

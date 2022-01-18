@@ -3,8 +3,19 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import Wizard, House, Spell, CombatSpell, EnvironmentalSpell, Memory, TriWizardPlacement
+from test_app.models import (
+    Wizard,
+    Spell,
+    CombatSpell,
+    EnvironmentalSpell,
+    Memory,
+)
 from test_app.tests.tests_base import HogwartsTestMixin
+from test_app.tests.factories.memory_factories import MemoryFactory
+from test_app.tests.factories.wizard_factories import WizardFactory
+from test_app.tests.factories.spell_factories import SpellFactory, EnvironmentalSpellFactory, CombatSpellFactory
+from test_app.tests.factories.tri_wizard_placement_factories import TriWizardPlacementFactory
+from test_app.tests.factories.house_factories import HouseFactory
 
 
 class TestModelDiff(BaseApiTest):
@@ -42,10 +53,7 @@ class TestModelDiff(BaseApiTest):
         self.assertFalse(wizard._has_changed)
 
     def test_deleted(self):
-        wizard = Wizard.objects.create(
-            id=100,
-            name="Albus Dumbledore",
-        )
+        wizard = WizardFactory(id=100)
         wizard.delete()
         expected_diff = {
             "id": (100, None),
@@ -55,13 +63,13 @@ class TestModelDiff(BaseApiTest):
         self.assertTrue(wizard._has_changed)
 
     def test_updated_special_fields(self):
-        house_a = House.objects.create(id=100, name="Gryffindor")
-        house_b = House.objects.create(id=200, name="Hufflepuff")
+        house_a = HouseFactory(id=100)
+        house_b = HouseFactory(id=200)
 
         old_file = SimpleUploadedFile("pre-harry.jpg", "○-○".encode())
         new_file = SimpleUploadedFile("new-harry.jpg", "○⚡︎○".encode())
 
-        wizard = Wizard.objects.create(
+        wizard = WizardFactory(
             name="Harry Potter",
             age=12,
             picture=old_file,
@@ -86,7 +94,7 @@ class TestModelStorage(BaseApiTest):
     def test_file_path(self):
         a_file = SimpleUploadedFile("./pics/harry.jpg", "○⚡︎○".encode())
 
-        wizard = Wizard.objects.create(
+        wizard = WizardFactory(
             id=100,
             name="Harry Potter",
             picture=a_file,
@@ -103,7 +111,7 @@ class TestModelStorage(BaseApiTest):
     def test_file_path_preserve_name(self):
         a_file = SimpleUploadedFile("./pics/harryyyyy.cdr", "○⚡︎○".encode())
 
-        wizard = Wizard.objects.create(
+        wizard = WizardFactory(
             id=100,
             name="Harry Potter",
             extra_picture=a_file,
@@ -121,7 +129,7 @@ class TestModelStorage(BaseApiTest):
         a_file = SimpleUploadedFile("wtf", "42".encode())
 
         with self.assertRaises(ValidationError):
-            Wizard.objects.create(
+            WizardFactory(
                 id=100,
                 name="Harry Potter",
                 picture=a_file,
@@ -132,17 +140,17 @@ class TestModelStorage(BaseApiTest):
 
 class TestMultiModel(BaseApiTest):
     def test_create_parent_model(self):
-        spell = Spell.objects.create(name="Leviosa")
+        spell = SpellFactory(name="Leviosa")
         self.assertEqual("spell", spell.type)
 
         self.assertFalse(EnvironmentalSpell.objects.exists())
         self.assertFalse(CombatSpell.objects.exists())
 
     def test_create_child_model(self):
-        e_spell = EnvironmentalSpell.objects.create(name="Leviosa")
+        e_spell = EnvironmentalSpellFactory(name="Leviosa")
         self.assertEqual("environmentalspell", e_spell.type)
 
-        c_spell = CombatSpell.objects.create(name="Petrificus")
+        c_spell = CombatSpellFactory(name="Petrificus")
         self.assertEqual("combatspell", c_spell.type)
 
         spells = Spell.objects.all()
@@ -150,12 +158,8 @@ class TestMultiModel(BaseApiTest):
 
 
 class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
-    def setUp(self):
-        super().setUp()
-        self.wizards = self._set_up_wizards()
-
     def test_delete_model(self):
-        memory = Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
         self.assertIsNone(memory.deleted_at)
 
         memory.delete()
@@ -163,7 +167,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertIsNotNone(memory.deleted_at)
 
     def test_undelete_model(self):
-        memory = Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
         memory.delete()
 
         memory.undelete()
@@ -172,7 +176,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
     def test_update_deleted_using_model(self):
         new_description = "Parents fighting Voldemort"
-        memory = Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
         memory.delete()
 
         memory.description = new_description
@@ -186,8 +190,8 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
     def test_update_deleted_using_queryset(self):
         new_description = "Parents fighting Voldemort"
-        memory_a = Memory.objects.create(owner=self.wizards[0])
-        memory_b = Memory.objects.create(owner=self.wizards[0])
+        memory_a = MemoryFactory()
+        memory_b = MemoryFactory()
         memory_b.delete()
 
         Memory.objects.all().update(description=new_description)
@@ -199,15 +203,15 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertNotEqual(new_description, memory_b.description)
 
     def test_delete_using_model(self):
-        memory = Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
         memory.delete()
 
         memory.refresh_from_db()
         self.assertIsNotNone(memory.deleted_at)
 
     def test_delete_using_queryset(self):
-        memory_a = Memory.objects.create(owner=self.wizards[0])
-        memory_b = Memory.objects.create(owner=self.wizards[0])
+        memory_a = MemoryFactory()
+        memory_b = MemoryFactory()
 
         Memory.objects.all().delete()
 
@@ -218,12 +222,12 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertIsNotNone(memory_b.deleted_at)
 
     def test_filter_by_default(self):
-        memory_a = Memory.objects.create(owner=self.wizards[0])
+        memory_a = MemoryFactory()
 
-        memory_b = Memory.objects.create(owner=self.wizards[0])
+        memory_b = MemoryFactory()
         memory_b.delete()
 
-        memory_c = Memory.objects.create(owner=self.wizards[1])
+        memory_c = MemoryFactory()
 
         memories = Memory.objects.all()
         self.assertEqual(2, memories.count())
@@ -236,12 +240,12 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertIsNotNone(deleted_memory.deleted_at)
 
     def test_filter_with_deleted(self):
-        memory_a = Memory.objects.create(owner=self.wizards[0])
+        memory_a = MemoryFactory()
 
-        memory_b = Memory.objects.create(owner=self.wizards[0])
+        memory_b = MemoryFactory()
         memory_b.delete()
 
-        memory_c = Memory.objects.create(owner=self.wizards[1])
+        memory_c = MemoryFactory()
 
         memories = Memory.objects.all_with_deleted()
         self.assertEqual(3, memories.count())
@@ -255,9 +259,9 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertIsNotNone(deleted_memory.deleted_at)
 
     def test_get_referenced_deleted(self):
-        wizard = self.wizards[0]
-        memory_a = Memory.objects.create(owner=wizard)
-        memory_b = Memory.objects.create(owner=wizard)
+        wizard = WizardFactory()
+        memory_a = MemoryFactory(owner=wizard)
+        memory_b = MemoryFactory(owner=wizard)
         memory_b.delete()
 
         memories = wizard.memories.all()
@@ -271,7 +275,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
+        self._set_up_wizards()
 
     def assertOrder(self, placement, expected_order):  # pylint:disable=invalid-name
         placement.refresh_from_db()
@@ -280,15 +284,15 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_auto_order_when_adding(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
         self.assertOrder(placement_1, 0)
 
-        placement_2 = TriWizardPlacement.objects.create(
+        placement_2 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[1],
             prize="stone",
         )
-        placement_3 = TriWizardPlacement.objects.create(
+        placement_3 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[2],
             prize="wand",
@@ -297,7 +301,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         self.assertOrder(placement_2, 1)
         self.assertOrder(placement_3, 2)
 
-        placement_4 = TriWizardPlacement.objects.create(
+        placement_4 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[3],
             prize="hug",
@@ -307,7 +311,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
         self.assertOrder(placement_3, 2)
         self.assertOrder(placement_4, 3)
 
-        another_placement_1 = TriWizardPlacement.objects.create(
+        another_placement_1 = TriWizardPlacementFactory(
             year=2000,
             wizard=self.wizards[0],
         )
@@ -321,17 +325,17 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_auto_order_when_removing(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(
+        placement_1 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[0],
             prize="rock",
         )
-        placement_2 = TriWizardPlacement.objects.create(
+        placement_2 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[1],
             prize="stone",
         )
-        placement_3 = TriWizardPlacement.objects.create(
+        placement_3 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[2],
             prize="wand",
@@ -342,7 +346,7 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
 
         placement_2.delete()
 
-        placement_4 = TriWizardPlacement.objects.create(
+        placement_4 = TriWizardPlacementFactory(
             year=year,
             wizard=self.wizards[3],
             prize="hug",
@@ -354,10 +358,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_reordering_within_range(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug")
 
         placement_2.order = 3
         placement_2.save()
@@ -373,10 +377,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_reordering_after_range(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug")
 
         placement_3.order = 30
         placement_3.save()
@@ -392,10 +396,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_reordering_before_range(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug")
 
         placement_3.order = -3
         placement_3.save()
@@ -411,10 +415,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_reordering_to_zero(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug")
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug")
 
         placement_3.order = 0
         placement_3.save()
@@ -430,10 +434,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_create_within_range(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug", order=1)
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug", order=1)
 
         for placement in [placement_1, placement_2, placement_3, placement_4]:
             placement.refresh_from_db()
@@ -446,10 +450,10 @@ class TestOrderedModel(HogwartsTestMixin, BaseApiTest):
     def test_create_before_range(self):
         year = 1900
 
-        placement_1 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[0], prize="rock")
-        placement_2 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[1], prize="stone")
-        placement_3 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[2], prize="wand")
-        placement_4 = TriWizardPlacement.objects.create(year=year, wizard=self.wizards[3], prize="hug", order=-1)
+        placement_1 = TriWizardPlacementFactory(year=year, wizard=self.wizards[0], prize="rock")
+        placement_2 = TriWizardPlacementFactory(year=year, wizard=self.wizards[1], prize="stone")
+        placement_3 = TriWizardPlacementFactory(year=year, wizard=self.wizards[2], prize="wand")
+        placement_4 = TriWizardPlacementFactory(year=year, wizard=self.wizards[3], prize="hug", order=-1)
 
         for placement in [placement_1, placement_2, placement_3, placement_4]:
             placement.refresh_from_db()

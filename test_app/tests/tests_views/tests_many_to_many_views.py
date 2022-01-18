@@ -12,9 +12,9 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.spells = self._set_up_spells()
-        self.spell_casts = self._set_up_spell_casts(spells=self.spells, wizards=self.wizards)
+        self._set_up_wizards()
+        self._set_up_spells()
+        self._set_up_spell_casts()
 
     def test_list_endpoint(self):
         url = self.url

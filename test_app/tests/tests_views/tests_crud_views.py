@@ -13,7 +13,7 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.houses = self._set_up_houses()
+        self._set_up_houses()
 
     def _simulate_integrity_error(self, constraint="(id)=(42)"):
         # IntegrityError by duplicate key is a very rare exception because the serializer

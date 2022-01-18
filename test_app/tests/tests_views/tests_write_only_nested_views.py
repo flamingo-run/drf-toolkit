@@ -10,8 +10,8 @@ from test_app.tests.tests_base import HogwartsTestMixin
 class TestWriteOnlyNestedView(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.memories = self._set_up_memories(wizards=self.wizards)
+        self._set_up_wizards()
+        self._set_up_memories()
 
     @property
     def url(self):

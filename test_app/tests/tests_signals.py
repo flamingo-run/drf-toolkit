@@ -5,8 +5,11 @@ from django.db.models.signals import post_save
 from drf_kit.signals import UnplugSignal
 from drf_kit.tests import BaseApiTest
 from test_app import signals, models
-from test_app.models import Wizard, Spell, SpellCast
 from test_app.tests.tests_base import HogwartsTestMixin
+from test_app.tests.factories.memory_factories import MemoryFactory
+from test_app.tests.factories.wizard_factories import WizardFactory
+from test_app.tests.factories.spell_factories import SpellFactory
+from test_app.tests.factories.spell_cast_factories import CombatSpellCastFactory
 
 
 class TestUnplugSignal(BaseApiTest):
@@ -21,11 +24,11 @@ class TestUnplugSignal(BaseApiTest):
         )
 
     def test_preserve_signal(self):
-        wizard = Wizard.objects.create(name="Harry Potter")
-        spell = Spell.objects.create(name="Expecto Patronum")
+        wizard = WizardFactory(name="Harry Potter")
+        spell = SpellFactory(name="Expecto Patronum")
 
         with self.patch_signal_trigger() as patched_signal:
-            spell_cast = SpellCast.objects.create(
+            spell_cast = CombatSpellCastFactory(
                 wizard=wizard,
                 spell=spell,
             )
@@ -45,13 +48,13 @@ class TestUnplugSignal(BaseApiTest):
 class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
+        self._set_up_wizards()
 
     def patch_notify_task(self):
         return patch("test_app.tasks.NotifyMinisterOfMagicTask.run")
 
     def test_soft_delete_model(self):
-        memory = models.Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
 
         with self.patch_notify_task() as some_task:
             memory.delete()
@@ -62,7 +65,7 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         self.assertIn("[ERASED]", memory.description)
 
     def test_undelete_model(self):
-        memory = models.Memory.objects.create(owner=self.wizards[0])
+        memory = MemoryFactory()
         memory.delete()
 
         with self.patch_notify_task() as some_task:

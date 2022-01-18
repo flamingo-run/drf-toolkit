@@ -1,6 +1,6 @@
 from drf_kit.tests import BaseApiTest
-from test_app import models
 from test_app.tests.tests_base import HogwartsTestMixin
+from test_app.tests.factories.teacher_factories import TeacherFactory
 
 
 class TestIntBooleanFilter(HogwartsTestMixin, BaseApiTest):
@@ -8,7 +8,7 @@ class TestIntBooleanFilter(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.teachers = self._set_up_teachers()
+        self._set_up_teachers()
 
     def test_filter_true(self):
         url = f"{self.url}?is_half_blood=1"
@@ -49,17 +49,16 @@ class TestIncludeUnavailableFilterSet(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.teachers = self._set_up_teachers()
+        self._set_up_teachers()
 
     def _set_up_teachers(self):
-        teachers = super()._set_up_teachers()
-        teachers.append(
-            models.Teacher.objects.create(
+        super()._set_up_teachers()
+        self.teachers.append(
+            TeacherFactory(
                 name="Nicholas de Mimsy-Porpington",
                 is_ghost=True,
             )
         )
-        return teachers
 
     def test_filter_default(self):
         url = f"{self.url}"
@@ -95,8 +94,8 @@ class TestIncludeUnavailableFilterSet(HogwartsTestMixin, BaseApiTest):
 class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.teachers = self._set_up_teachers()
-        self.teachers = self._set_up_houses()
+        self._set_up_teachers()
+        self._set_up_houses()
 
     def test_filter_with_wrong_param_type(self):
         url = "/teachers?id=potato"

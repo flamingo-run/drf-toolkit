@@ -10,8 +10,8 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.placements = self._set_up_placements(wizards=self.wizards)
+        self._set_up_wizards()
+        self._set_up_placements()
 
     def test_list_endpoint(self):
         url = self.url

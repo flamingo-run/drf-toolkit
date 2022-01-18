@@ -1,5 +1,6 @@
 from test_app import models
 from drf_kit.tests import BaseApiTest
+from test_app.tests.factories.spell_factories import SpellFactory
 
 
 class TestPaginatedView(BaseApiTest):
@@ -7,7 +8,7 @@ class TestPaginatedView(BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.spells = [models.Spell.objects.create(id=i, name=str(i).zfill(3)) for i in range(1, 50)]
+        self.spells = [SpellFactory(id=i, name=str(i).zfill(3)) for i in range(1, 50)]
 
     def test_first_page(self):
         url = self.url
