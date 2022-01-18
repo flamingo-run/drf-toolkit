@@ -58,8 +58,6 @@ class House(BaseModel):
         max_digits=4,
     )
 
-    _PUBSUB_NAME = "team"
-
 
 class Patronus(BaseModel):
     name = models.CharField(
