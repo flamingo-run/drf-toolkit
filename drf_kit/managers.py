@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import query
 from django.utils import timezone
+from ordered_model.models import OrderedModelQuerySet
 
 
 class SoftDeleteQuerySet(query.QuerySet):
@@ -19,6 +20,8 @@ class SoftDeleteQuerySet(query.QuerySet):
 
 
 class SoftDeleteManager(models.Manager):
+    queryset_class = SoftDeleteQuerySet
+
     def get_queryset(self):
         qs = (
             super()
@@ -27,7 +30,7 @@ class SoftDeleteManager(models.Manager):
                 deleted_at__isnull=True,
             )
         )
-        qs.__class__ = SoftDeleteQuerySet
+        qs.__class__ = self.queryset_class
         return qs
 
     def all_with_deleted(self, prt=False):
@@ -46,3 +49,14 @@ class SoftDeleteManager(models.Manager):
         else:
             qs = self.all()
         return qs
+
+
+class SoftDeleteOrderedQueryset(SoftDeleteQuerySet, OrderedModelQuerySet):
+    def all_with_deleted(self):
+        qs = super().all()
+        qs.__class__ = SoftDeleteOrderedQueryset
+        return qs
+
+
+class SoftDeleteOrderedManager(SoftDeleteManager):
+    queryset_class = SoftDeleteOrderedQueryset

@@ -22,10 +22,11 @@ def assert_order(sender, instance, **kwargs):
 
     group = list(instance.get_ordering_queryset().exclude(id=instance.pk))
 
-    if order is not None:  # when updating
-        group.insert(max(0, order), instance)
-    else:  # when creating
-        group.append(instance)
+    if not getattr(instance, "is_deleted", False):
+        if order is not None:  # when updating
+            group.insert(max(0, order), instance)
+        else:  # when creating
+            group.append(instance)
 
     for index, obj in enumerate(group):
         if obj.pk == instance.pk:
