@@ -69,3 +69,4 @@ class SoftDeleteModelMixin(models.Model):
 class SoftDeleteModel(SoftDeleteModelMixin, BaseModel):
     class Meta(SoftDeleteModelMixin.Meta, BaseModel.Meta):
         abstract = True
+        indexes = BaseModel.Meta.indexes + SoftDeleteModelMixin.Meta.indexes
