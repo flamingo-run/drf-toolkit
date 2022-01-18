@@ -10,7 +10,7 @@ class TestNonDestructiveView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.wands = self._set_up_wands()
+        self._set_up_wands()
 
     def test_list_endpoint(self):
         url = self.url

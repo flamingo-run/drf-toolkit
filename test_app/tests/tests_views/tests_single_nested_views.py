@@ -10,8 +10,8 @@ from test_app.tests.tests_base import HogwartsTestMixin
 class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.patronus = self._set_up_patronus(wizards=self.wizards)
+        self._set_up_wizards()
+        self._set_up_patronus()
 
     def url(self, wizard_pk=None):
         wizard_id = wizard_pk or self.wizards[0].pk

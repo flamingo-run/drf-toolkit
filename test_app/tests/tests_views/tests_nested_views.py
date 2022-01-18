@@ -10,9 +10,9 @@ from test_app.tests.tests_base import HogwartsTestMixin
 class TestNestedView(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.houses = self._set_up_houses()
-        self._set_up_wizard_houses(wizards=self.wizards, houses=self.houses)
+        self._set_up_wizards()
+        self._set_up_houses()
+        self._set_up_wizard_houses()
 
     @property
     def url(self):

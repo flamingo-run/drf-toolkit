@@ -11,7 +11,7 @@ class TestVeryCustomView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
+        self._set_up_wizards()
 
     def test_list_endpoint(self):
         url = self.url

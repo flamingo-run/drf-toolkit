@@ -13,7 +13,7 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.teachers = self._set_up_teachers()
+        self._set_up_teachers()
 
     def test_cache_headers_endpoint(self):
         url = self.url

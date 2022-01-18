@@ -9,9 +9,9 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.houses = self._set_up_houses()
-        self.wizards = self._set_up_wizards()
-        self._set_up_wizard_houses(wizards=self.wizards, houses=self.houses)
+        self._set_up_houses()
+        self._set_up_wizards()
+        self._set_up_wizard_houses()
 
     def test_list_endpoint(self):
         url = f"{self.url}?stats=1"

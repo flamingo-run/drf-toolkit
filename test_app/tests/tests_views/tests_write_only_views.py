@@ -10,8 +10,8 @@ class TestWriteOnlyView(HogwartsTestMixin, BaseApiTest):
 
     def setUp(self):
         super().setUp()
-        self.wizards = self._set_up_wizards()
-        self.memories = self._set_up_memories(wizards=self.wizards)
+        self._set_up_wizards()
+        self._set_up_memories()
 
     def test_list_endpoint(self):
         url = self.url
