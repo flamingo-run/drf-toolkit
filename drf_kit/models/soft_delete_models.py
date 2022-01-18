@@ -10,7 +10,7 @@ from drf_kit.models.base_models import BaseModel
 logger = logging.getLogger(__name__)
 
 
-class SoftDeleteModel(BaseModel):
+class SoftDeleteModelMixin(models.Model):
     deleted_at = models.DateTimeField(
         verbose_name=_("deleted at"),
         blank=True,
@@ -18,9 +18,9 @@ class SoftDeleteModel(BaseModel):
         default=None,
     )
 
-    class Meta(BaseModel.Meta):
+    class Meta:
         abstract = True
-        indexes = BaseModel.Meta.indexes + [
+        indexes = [
             models.Index(fields=["deleted_at"]),
         ]
 
@@ -64,3 +64,8 @@ class SoftDeleteModel(BaseModel):
                 sender=self.__class__,
                 instance=self,
             )
+
+
+class SoftDeleteModel(SoftDeleteModelMixin, BaseModel):
+    class Meta(SoftDeleteModelMixin.Meta, BaseModel.Meta):
+        abstract = True

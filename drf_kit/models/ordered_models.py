@@ -2,14 +2,14 @@ import logging
 
 from django.db import models
 from django.utils.translation import ugettext as _
-from ordered_model.models import OrderedModelBase as _OrderedModelBase
+from ordered_model.models import OrderedModelBase
 
 from drf_kit.models.base_models import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class OrderedModelMixin(_OrderedModelBase):
+class OrderedModelMixin(OrderedModelBase):
     order = models.PositiveIntegerField(
         db_index=True,
         default=None,
@@ -53,6 +53,6 @@ class OrderedModelMixin(_OrderedModelBase):
         ordering = ("order", "-updated_at")
 
 
-class BaseOrderedModel(OrderedModelMixin, BaseModel):
+class OrderedModel(OrderedModelMixin, BaseModel):
     class Meta(OrderedModelMixin.Meta, BaseModel.Meta):
         abstract = True
