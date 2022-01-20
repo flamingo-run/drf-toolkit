@@ -1,0 +1,42 @@
+site_name: DRF Toolkit
+site_description: A comprehensive toolkit that extends Django REST Framework with enhanced functionality and common patterns
+theme:
+  name: material
+  palette:
+    primary: blue
+use_directory_urls: false
+strict: true
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: quick_start.md
+    - Installation: installation.md
+    - Requirements: requirements.md
+  - Features:
+    - Models:
+      - Overview: models/index.md
+      - Base Models: models/base.md
+      - Soft Delete: models/soft_delete.md
+      - Ordered: models/ordered.md
+      - Inheritance: models/inheritance.md
+      - File Handling: models/file.md
+      - Diff Tracking: models/diff.md
+      - Combinations: models/combinations.md
+      - Availability: models/availability.md
+    - Fields: fields.md
+    - Serializers: serializers.md
+    - Views: views.md
+    - Filters: filters.md
+    - Pagination: pagination.md
+    - Caching: caching.md
+    - Storage: storage.md
+    - Testing: testing.md
+    - Signals: signals.md
+  - Development:
+    - Setup: development.md
+    - Contributing: contributing.md
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - toc:
+      permalink: true

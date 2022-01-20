@@ -54,6 +54,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# MkDocs documentation
+site/
+
 # PyBuilder
 target/
 
@@ -65,3 +68,5 @@ test_app/wizard/
 *.sqlite3
 
 .run/
+
+.DS_Store
