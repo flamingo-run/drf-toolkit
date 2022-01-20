@@ -41,5 +41,13 @@ publish:
 	@uv publish --token $(PYPI_API_TOKEN)
 	@make clean
 
+docs-build:
+	@echo "Building documentation ..."
+	@uv run mkdocs build
 
-.PHONY: setup dependencies update test check lint clean publish
+docs-serve:
+	@echo "Serving documentation locally ..."
+	@uv run mkdocs serve
+
+
+.PHONY: setup dependencies update test check lint clean publish docs-build docs-serve
