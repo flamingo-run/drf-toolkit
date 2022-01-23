@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.db.models.signals import pre_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from ordered_model.models import OrderedModelBase
 
 from drf_kit.models.base_models import BaseModel

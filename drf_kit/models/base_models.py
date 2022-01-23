@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from drf_kit.models.diff_models import ModelDiffMixin
 from drf_kit.models.file_models import BoundedFileMixin
