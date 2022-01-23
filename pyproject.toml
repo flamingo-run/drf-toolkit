@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.10.0"
+version = "1.11.0"
 description = "DRF Toolkit"
 authors = ["eduK <pd@eduk.com>"]
 packages = [
@@ -9,12 +9,12 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.10"
-Django = "^3"
+python = ">=3.8,<3.11"
+Django = ">=3,<5"
 djangorestframework = "^3"
-django-filter = "^2"
-django-ordered-model = "^3"
-drf-extensions = "^0"
+django-filter = "^21.1"
+django-ordered-model = "^3.5"
+drf-extensions = "^0.7"
 
 
 [tool.poetry.dev-dependencies]
