@@ -41,4 +41,8 @@ class TestStatsView(HogwartsTestMixin, BaseApiTest):
         response = self.client.get(url)
 
         expected_error = {"stats": "Stats parameter must be an integer"}
-        self.assertResponse(status.HTTP_400_BAD_REQUEST, expected_error, response)
+        self.assertResponse(
+            expected_status=status.HTTP_400_BAD_REQUEST,
+            expected_body=expected_error,
+            response=response,
+        )

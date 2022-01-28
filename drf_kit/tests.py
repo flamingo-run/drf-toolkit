@@ -4,13 +4,14 @@ import os
 import re
 from contextlib import contextmanager
 from io import StringIO
-from typing import Optional, Callable, Union, Type, Dict, List
+from typing import Optional, Callable, Union, Type, Dict, List, Any
 from unittest.mock import patch, ANY
 
 from django.core.cache import cache
 from django.core.management import call_command
 from django.utils.connection import ConnectionProxy
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.test import APITransactionTestCase
 
 
@@ -91,15 +92,24 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponse(self, expected_status: int, expected_body, response, response_key: Optional[str] = None):
-        response_content = response.json() if response.content_type else response.content.decode()
+    def assertResponse(
+        self,
+        expected_status: int,
+        response: Response,
+        expected_body: Optional[Any] = None,
+        response_key: Optional[str] = None,
+    ):
+        response_content = (
+            response.json() if response.headers.get("Content-Type") == "application/json" else response.content.decode()
+        )
         msg = f"Expected status code {expected_status}, but received {response.status_code} with {response_content}"
         self.assertEqual(expected_status, response.status_code, msg)
 
-        if expected_body:
-            body = response.json()
+        if expected_body is not None:
             if response_key:
-                body = body[response_key]
+                body = response_content[response_key]
+            else:
+                body = response_content
             self.assertResponseMatch(expected=expected_body, received=body)
         else:
             msg = f"Expected body to be empty, but received {response_content}"
