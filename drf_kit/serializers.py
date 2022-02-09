@@ -71,6 +71,10 @@ class JSONEncoder(DjangoJSONEncoder):
             return value.strftime(DATETIME_FORMAT)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
+        if hasattr(o, "_json") and callable(o._json):
+            return o._json()
+        if hasattr(o, "__dict__"):
+            return o.__dict__
         return super().default(o)
 
 
