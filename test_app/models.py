@@ -66,10 +66,17 @@ class Patronus(BaseModel):
     color = models.CharField(
         max_length=50,
         null=True,
+        db_column="colour",
     )
     wizard = models.OneToOneField(
         to="test_app.Wizard",
         on_delete=models.CASCADE,
+    )
+    memory = models.OneToOneField(
+        to="test_app.Memory",
+        on_delete=models.CASCADE,
+        db_column="flashback_id",
+        null=True,
     )
 
 

@@ -35,9 +35,17 @@ class ModelDiffMixin:
 
     @property
     def _dict(self):
+        # ref: https://github.com/django/django/blob/4.0.2/django/forms/models.py#L86
         return as_dict(
-            model_to_dict(
-                self,
-                fields=[field.name for field in self._meta.fields],
-            )
+            {
+                _field_name(field): field.value_from_object(self)
+                for field in self._meta.fields
+                if getattr(field, "editable", False)
+            }
         )
+
+
+def _field_name(field):
+    if field.is_relation:
+        return f"{field.name}_id"
+    return field.name
