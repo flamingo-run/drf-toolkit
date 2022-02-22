@@ -12,6 +12,7 @@ from test_app.models import (
     DarkTale,
     Tale,
 )
+from test_app import models
 from test_app.tests.tests_base import HogwartsTestMixin
 from test_app.tests.factories.tale_factories import DarkTaleFactory, HappyTaleFactory, TaleFactory
 from test_app.tests.factories.memory_factories import MemoryFactory
@@ -19,6 +20,27 @@ from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.factories.spell_factories import SpellFactory, EnvironmentalSpellFactory, CombatSpellFactory
 from test_app.tests.factories.tri_wizard_placement_factories import TriWizardPlacementFactory
 from test_app.tests.factories.house_factories import HouseFactory
+from test_app.tests.factories.patronus_factories import PatronusFactory
+
+
+class TestModelDict(BaseApiTest):
+    def test_field(self):
+        wizard = WizardFactory(name="Harry")
+        patronus = PatronusFactory(name="Stag", wizard=wizard)
+
+        generated_dict = patronus._dict
+        self.assertEqual(patronus.name, generated_dict["name"])
+
+        models.Patronus(**generated_dict)
+
+    def test_fk_generated_with_id(self):
+        wizard = WizardFactory(name="Harry")
+        patronus = PatronusFactory(name="Stag", wizard=wizard)
+
+        generated_dict = patronus._dict
+        self.assertEqual(wizard.pk, generated_dict["wizard_id"])
+
+        models.Patronus(**generated_dict)
 
 
 class TestModelDiff(BaseApiTest):
@@ -42,6 +64,28 @@ class TestModelDiff(BaseApiTest):
         }
         self.assertEqual(expected_diff, wizard._diff)
         self.assertTrue(wizard._has_changed)
+
+    def test_updated_fk(self):
+        harry = WizardFactory(
+            name="Harry Potter",
+            age=12,
+        )
+
+        james = WizardFactory(
+            name="James Potter",
+            age=21,
+        )
+
+        patronus = PatronusFactory(name="Stag", wizard=james)
+        patronus.refresh_from_db()
+
+        patronus.wizard = harry
+
+        expected_diff = {
+            "wizard_id": (james.pk, harry.pk),
+        }
+        self.assertEqual(expected_diff, patronus._diff)
+        self.assertTrue(patronus._has_changed)
 
     def test_not_updated(self):
         wizard = Wizard(
@@ -88,7 +132,7 @@ class TestModelDiff(BaseApiTest):
 
         self.assertTrue(wizard._has_changed)
 
-        self.assertEqual((100, 200), wizard._diff["house"])
+        self.assertEqual((100, 200), wizard._diff["house_id"])
         self.assertEqual(old_url, wizard._diff["picture"][0])
         self.assertEqual(new_url, wizard._diff["picture"][1])
 
