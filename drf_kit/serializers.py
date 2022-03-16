@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
-
+from zoneinfo import ZoneInfo
 import pytz
+
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -69,6 +70,8 @@ class JSONEncoder(DjangoJSONEncoder):
         if isinstance(o, datetime):
             value = assure_tz(o.astimezone(tz=DEFAULT_TIMEZONE))
             return value.strftime(DATETIME_FORMAT)
+        if isinstance(o, (ZoneInfo, pytz.tzinfo.DstTzInfo)):
+            return str(o)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
         if hasattr(o, "_json") and callable(o._json):
