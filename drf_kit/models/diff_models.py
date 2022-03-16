@@ -1,5 +1,4 @@
 import logging
-from django.forms.models import model_to_dict
 
 from drf_kit.serializers import as_dict
 
