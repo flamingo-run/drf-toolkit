@@ -1,3 +1,4 @@
+import inspect
 import logging
 from drf_kit.serializers import as_dict
 
@@ -34,13 +35,22 @@ class ModelDiffMixin:
     @property
     def _dict(self):
         # ref: https://github.com/django/django/blob/4.0.2/django/forms/models.py#L86
-        return as_dict(
-            {
-                _field_name(field): field.get_prep_value(value=field.value_from_object(self))
-                for field in self._meta.fields
-                if getattr(field, "editable", False)
-            }
-        )
+        data = {}
+        for field in self._meta.fields:
+            if not getattr(field, "editable", False):
+                continue
+            serializable_value = field.value_from_object(self)
+            try:
+                serializable_value = field.get_prep_value(value=serializable_value)
+            except Exception:
+                # The prep-value might fail because Django performs a check
+                # (eg. the field cannot be empty)
+                # But we don't really care for that, we just want their serializable versions
+                # and not necessarily their database-compliant versions
+                ...
+            data[_field_name(field)] = serializable_value
+
+        return as_dict(data)
 
 
 def _field_name(field):

@@ -1,3 +1,4 @@
+import inspect
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -74,7 +75,7 @@ class JSONEncoder(DjangoJSONEncoder):
             return str(o)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
-        if hasattr(o, "_json") and callable(o._json):
+        if hasattr(o, "_json") and callable(o._json) and not inspect.isclass(o):
             return o._json()
         if hasattr(o, "__dict__"):
             return o.__dict__
