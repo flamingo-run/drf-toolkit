@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.12.0"
+version = "1.12.1"
 description = "DRF Toolkit"
 authors = ["eduK <pd@eduk.com>"]
 packages = [

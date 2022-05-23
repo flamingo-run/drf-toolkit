@@ -123,12 +123,12 @@ class TestModelDiff(BaseApiTest):
             house=house_a,
         )
 
-        old_url = wizard.picture.url
+        old_url = wizard.picture.url.removeprefix("/")
 
         wizard.house = house_b
         wizard.picture = new_file
 
-        new_url = wizard.picture.url
+        new_url = wizard.picture.url.removeprefix("/")
 
         self.assertTrue(wizard._has_changed)
 

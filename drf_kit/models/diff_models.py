@@ -36,7 +36,7 @@ class ModelDiffMixin:
         # ref: https://github.com/django/django/blob/4.0.2/django/forms/models.py#L86
         return as_dict(
             {
-                _field_name(field): field.value_from_object(self)
+                _field_name(field): field.get_prep_value(value=field.value_from_object(self))
                 for field in self._meta.fields
                 if getattr(field, "editable", False)
             }
