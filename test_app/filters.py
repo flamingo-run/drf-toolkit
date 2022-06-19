@@ -12,3 +12,11 @@ class TeacherFilterSet(filters.IncludeUnavailableFilterSet):
             "include_unavailable",
             "is_half_blood",
         ]
+
+
+class WandFilterSet(filters.BaseFilterSet):
+    holder_id = filters.AnyOfOrNullFilter()
+
+    class Meta:
+        model = models.Wand
+        fields = ["holder_id"]

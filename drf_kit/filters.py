@@ -1,3 +1,5 @@
+import functools
+
 from django.db.models import Q
 from django.forms import IntegerField
 from django_filters import MultipleChoiceFilter
@@ -64,6 +66,35 @@ class AnyOfFilter(MultipleChoiceFilter):
         if not self.conjoined:
             predicate = {f"{self.field_name}__in": value}
             query_filter = Q(**predicate)
+            qs = self.get_method(qs)(query_filter)
+
+        return qs.distinct() if self.distinct else qs
+
+
+class AnyOfOrNullFilter(MultipleChoiceFilter):
+    NULL_VALUE = "null"
+    field_class = _OpenChoiceField
+
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        if self.is_noop(qs, value):
+            return qs
+
+        if not self.conjoined:
+            filters = []
+
+            if self.NULL_VALUE in value:
+                predicate = {f"{self.field_name}__isnull": True}
+                filters.append(Q(**predicate))
+                value = [i for i in value if i != self.NULL_VALUE]
+
+            if value:
+                predicate = {f"{self.field_name}__in": value}
+                filters.append(Q(**predicate))
+
+            query_filter = functools.reduce((lambda a, b: a | b), filters)
             qs = self.get_method(qs)(query_filter)
 
         return qs.distinct() if self.distinct else qs
