@@ -179,3 +179,63 @@ class TestBackendFilter(HogwartsTestMixin, BaseApiTest):
 
         data = response.json()
         self.assertEqual(len(self.expected_teachers), len(data["results"]))
+
+
+class TestNullableFilterSet(HogwartsTestMixin, BaseApiTest):
+    url = "/wands"
+
+    def setUp(self):
+        super().setUp()
+        self._set_up_wands()
+        self._set_up_wizards()
+        self._assign_wands()
+
+    def _assign_wands(self):
+        [wand_not_held, wand_held, *wands] = self.wands
+
+        wand_not_held.holder = None
+        wand_not_held.save()
+        self._wand_not_held = wand_not_held
+
+        self._wizard = self.wizards[0]
+        wand_held.holder = self._wizard
+        wand_held.save()
+        self._wand_held = wand_held
+
+        for wand in wands:
+            wand.holder = self.wizards[1]
+            wand.save()
+
+    def test_filter_with_null(self):
+        search = "holder_id=null"
+        response = self.client.get(f"{self.url}?{search}")
+        self.assertEqual(200, response.status_code)
+
+        data = response.json()
+        response_ids = [i["id"] for i in data["results"]]
+
+        self.assertEqual([self._wand_not_held.id], response_ids)
+
+    def test_filter_with_null_and_values(self):
+        search = f"holder_id=null&holder_id={self._wizard.id}"
+        response = self.client.get(f"{self.url}?{search}")
+        self.assertEqual(200, response.status_code)
+
+        data = response.json()
+        response_ids = [i["id"] for i in data["results"]]
+
+        self.assertEqual(
+            [
+                self._wand_held.id,
+                self._wand_not_held.id,
+            ],
+            response_ids,
+        )
+
+    def test_filter_with_null_invalid_value(self):
+        search = f"holder_id=nullable"
+        response = self.client.get(f"{self.url}?{search}")
+        self.assertEqual(400, response.status_code)
+
+        expected_response = ["Field 'id' expected a number but got 'nullable'."]
+        self.assertEqual(expected_response, response.json())

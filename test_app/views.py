@@ -108,3 +108,4 @@ class HouseBulkViewSet(BulkMixin, ModelViewSet):
 class WandViewSet(NonDestructiveModelViewSet):
     queryset = models.Wand.objects.all()
     serializer_class = serializers.WandSerializer
+    filterset_class = filters.WandFilterSet
