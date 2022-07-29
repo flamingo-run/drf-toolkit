@@ -155,6 +155,23 @@ class TestModelStorage(BaseApiTest):
             file=wizard.picture,
         )
 
+    def test_file_path_with_default_extension(self):
+        a_file = SimpleUploadedFile("./pics/harry", "○⚡︎○".encode())
+
+        wizard = WizardFactory(
+            id=100,
+            name="Harry Potter",
+            picture=a_file,
+        )
+
+        self.assertUUIDFilePath(
+            prefix="wizard",
+            name="thumb",
+            extension="jpeg",
+            pk=100,
+            file=wizard.picture,
+        )
+
     def test_file_path_preserve_name(self):
         a_file = SimpleUploadedFile("./pics/harryyyyy.cdr", "○⚡︎○".encode())
 
@@ -179,7 +196,7 @@ class TestModelStorage(BaseApiTest):
             WizardFactory(
                 id=100,
                 name="Harry Potter",
-                picture=a_file,
+                extra_picture=a_file,
             )
 
         self.assertFalse(Wizard.objects.exists())

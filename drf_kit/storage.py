@@ -14,10 +14,10 @@ class BaseDataStoragePath:
         }
 
     @classmethod
-    def rename(cls, filename, new_name=None, unique=True):
+    def rename(cls, filename, new_name=None, unique=True, default_extension=None):
         filepath = Path(filename)
         previous_name = filepath.stem
-        extension = filepath.suffix
+        extension = filepath.suffix or (f".{default_extension}" if default_extension else None)
 
         if not extension:
             raise ValidationError("Filename must have and extension")
