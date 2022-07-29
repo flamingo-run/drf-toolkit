@@ -9,7 +9,7 @@ class StoragePath(BaseDataStoragePath):
         parts = [
             "wizard",
             cls._get_pk(instance),
-            cls.rename(filename, "thumb"),
+            cls.rename(filename, "thumb", default_extension="jpeg"),
         ]
         return "/".join(parts)
 
