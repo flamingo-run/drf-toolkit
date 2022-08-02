@@ -1,17 +1,13 @@
 setup:
 	@pip install -U pip poetry
 
-dependencies:
-	@make setup
+dependencies: setup
 	@poetry install --no-root
 
 update:
 	@poetry update
 
-test:
-	@make check
-	@make lint
-	@make unit
+test: check lint unit
 
 check:
 	@poetry check
@@ -28,10 +24,8 @@ unit:
 clean:
 	@rm -rf .coverage coverage.xml dist/ build/ *.egg-info/
 
-publish:
-	@make clean
+publish: clean setup
 	@printf "\nPublishing lib"
-	@make setup
 	@poetry config pypi-token.pypi $(PYPI_API_TOKEN)
 	@poetry publish --build
 	@make clean
