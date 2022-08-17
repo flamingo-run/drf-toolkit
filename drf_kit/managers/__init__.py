@@ -1,1 +1,1 @@
-from drf_kit.managers.soft_delete_managers import SoftDeleteManager, SoftDeleteOrderedManager, SoftDeleteFilters
+from drf_kit.managers.soft_delete_managers import SoftDeleteFilters, SoftDeleteManager, SoftDeleteOrderedManager

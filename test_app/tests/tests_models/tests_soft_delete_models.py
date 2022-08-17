@@ -1,8 +1,6 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import (
-    Memory,
-)
+from test_app.models import Memory
 from test_app.tests.factories.memory_factories import MemoryFactory
 from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin

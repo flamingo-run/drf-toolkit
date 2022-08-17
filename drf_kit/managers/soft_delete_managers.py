@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import query, Q
+from django.db.models import Q, query
 from django.utils import timezone
 from ordered_model.models import OrderedModelQuerySet
 

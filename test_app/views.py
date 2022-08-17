@@ -1,17 +1,17 @@
 from django.db.models import Count
 
 from drf_kit.views import (
+    BulkMixin,
     CachedModelViewSet,
     ModelViewSet,
     NestedModelViewSet,
-    SingleNestedModelViewSet,
+    NonDestructiveModelViewSet,
     ReadOnlyModelViewSet,
+    SingleNestedModelViewSet,
     StatsViewMixin,
+    UpsertMixin,
     WriteOnlyModelViewSet,
     WriteOnlyNestedModelViewSet,
-    UpsertMixin,
-    BulkMixin,
-    NonDestructiveModelViewSet,
 )
 from test_app import filters, models, serializers
 

@@ -1,10 +1,6 @@
 from django.core.paginator import InvalidPage
 from rest_framework.exceptions import NotFound
-from rest_framework.pagination import (
-    PageNumberPagination,
-    _get_displayed_page_numbers,
-    _get_page_links,
-)
+from rest_framework.pagination import PageNumberPagination, _get_displayed_page_numbers, _get_page_links
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 

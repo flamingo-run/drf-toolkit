@@ -1,4 +1,4 @@
-from rest_framework.fields import IntegerField, CharField
+from rest_framework.fields import CharField, IntegerField
 
 from drf_kit import serializers
 from test_app import models

@@ -20,7 +20,7 @@ check:
 
 lint:
 	@echo "Checking code style ..."
-	DJANGO_SETTINGS_MODULE=sample_app.settings APP_NAME=sample-app ENV=test poetry run pylint ./django_nilo ./sample_app
+	DJANGO_SETTINGS_MODULE=test_app.settings APP_NAME=sample-app ENV=test poetry run pylint ./drf_kit ./test_app
 	poetry run black --check .
 	poetry run isort --check .
 

@@ -4,8 +4,8 @@ import os
 import re
 from contextlib import contextmanager
 from io import StringIO
-from typing import Optional, Callable, Union, Type, Dict, List, Any
-from unittest.mock import patch, ANY
+from typing import Any, Callable, Dict, List, Optional, Type, Union
+from unittest.mock import ANY, patch
 
 from django.core.cache import cache
 from django.core.management import call_command

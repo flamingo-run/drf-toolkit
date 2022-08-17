@@ -1,9 +1,7 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from drf_kit.tests import BaseApiTest
-from test_app.models import (
-    Wizard,
-)
+from test_app.models import Wizard
 from test_app.tests.factories.house_factories import HouseFactory
 from test_app.tests.factories.wizard_factories import WizardFactory
 

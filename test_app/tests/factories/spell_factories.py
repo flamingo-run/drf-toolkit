@@ -1,6 +1,6 @@
 import factory
 
-from test_app.models import Spell, CombatSpell, EnvironmentalSpell
+from test_app.models import CombatSpell, EnvironmentalSpell, Spell
 
 
 class SpellFactory(factory.django.DjangoModelFactory):

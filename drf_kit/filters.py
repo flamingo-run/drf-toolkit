@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.forms import IntegerField
 from django_filters import MultipleChoiceFilter
 from django_filters.fields import MultipleChoiceField
-from django_filters.rest_framework import FilterSet, Filter, DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, Filter, FilterSet
 from rest_framework.exceptions import ValidationError
 
 

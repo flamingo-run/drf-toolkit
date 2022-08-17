@@ -1,6 +1,6 @@
 import factory
 
-from test_app.models import Tale, DarkTale, HappyTale
+from test_app.models import DarkTale, HappyTale, Tale
 
 
 class TaleFactory(factory.django.DjangoModelFactory):
