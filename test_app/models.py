@@ -1,6 +1,13 @@
 from django.db import models
 
-from drf_kit.models import BaseModel, InheritanceModel, OrderedModel, SoftDeleteInheritanceOrderedModel, SoftDeleteModel
+from drf_kit.models import (
+    AvailabilityModel,
+    BaseModel,
+    InheritanceModel,
+    OrderedModel,
+    SoftDeleteInheritanceOrderedModel,
+    SoftDeleteModel,
+)
 from test_app import managers
 from test_app.storage import StoragePath
 
@@ -187,3 +194,12 @@ class HappyTale(Tale):
 
     class Meta(Tale.Meta):
         indexes = []
+
+
+class RoomOfRequirement(AvailabilityModel):
+    wizard = models.ForeignKey(
+        to="test_app.Wizard",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
