@@ -1,5 +1,5 @@
-import inspect
 import logging
+
 from drf_kit.serializers import as_dict
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class ModelDiffMixin:
             serializable_value = field.value_from_object(self)
             try:
                 serializable_value = field.get_prep_value(value=serializable_value)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 # The prep-value might fail because Django performs a check
                 # (eg. the field cannot be empty)
                 # But we don't really care for that, we just want their serializable versions

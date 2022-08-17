@@ -2,8 +2,8 @@ import inspect
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
-import pytz
 
+import pytz
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models

@@ -1,12 +1,6 @@
 from django.db import models
 
-from drf_kit.models import (
-    BaseModel,
-    SoftDeleteModel,
-    InheritanceModel,
-    BaseOrderedModel,
-    SoftDeleteInheritanceOrderedModel,
-)
+from drf_kit.models import BaseModel, InheritanceModel, OrderedModel, SoftDeleteInheritanceOrderedModel, SoftDeleteModel
 from test_app import managers
 from test_app.storage import StoragePath
 
@@ -147,7 +141,7 @@ class Memory(SoftDeleteModel):
     description = models.TextField()
 
 
-class TriWizardPlacement(BaseOrderedModel):
+class TriWizardPlacement(OrderedModel):
     year = models.IntegerField()
     wizard = models.ForeignKey(
         to="test_app.Wizard",
@@ -160,7 +154,7 @@ class TriWizardPlacement(BaseOrderedModel):
 
     order_with_respect_to = "year"
 
-    class Meta(BaseOrderedModel.Meta):
+    class Meta(OrderedModel.Meta):
         constraints = [
             models.UniqueConstraint(
                 fields=["wizard", "year"],

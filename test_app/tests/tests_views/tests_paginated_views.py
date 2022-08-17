@@ -1,4 +1,3 @@
-from test_app import models
 from drf_kit.tests import BaseApiTest
 from test_app.tests.factories.spell_factories import SpellFactory
 

@@ -1,8 +1,9 @@
 from zoneinfo import ZoneInfo
+
 import pytz
 
-from drf_kit.tests import BaseApiTest
 from drf_kit.serializers import as_dict
+from drf_kit.tests import BaseApiTest
 
 
 class TestAsDict(BaseApiTest):

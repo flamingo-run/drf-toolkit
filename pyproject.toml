@@ -23,6 +23,7 @@ pylint-django = "*"
 coverage = "*"
 black = "*"
 isort = "*"
+safety = "*"
 factory-boy = "*"
 
 
@@ -42,7 +43,7 @@ multi_line_output = 3
 ignore = "migrations"
 
 [tool.pylint.messages_control]
-disable = "C0114, C0115, C0116, W0212, W0511, W0613, W1203, R0901, R0903, R0913, R0801, R0902"
+disable = "C0114, C0115, C0116, W0212, W0511, W0613, W1203, R0901, R0903, R0913, R0801, R0902, R0911, R0914, R0912"
 
 [tool.pylint.format]
 max-line-length = "120"

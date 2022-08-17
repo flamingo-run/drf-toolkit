@@ -4,12 +4,12 @@ from django.db.models.signals import post_save
 
 from drf_kit.signals import UnplugSignal
 from drf_kit.tests import BaseApiTest
-from test_app import signals, models
-from test_app.tests.tests_base import HogwartsTestMixin
+from test_app import models, signals
 from test_app.tests.factories.memory_factories import MemoryFactory
-from test_app.tests.factories.wizard_factories import WizardFactory
-from test_app.tests.factories.spell_factories import SpellFactory
 from test_app.tests.factories.spell_cast_factories import CombatSpellCastFactory
+from test_app.tests.factories.spell_factories import SpellFactory
+from test_app.tests.factories.wizard_factories import WizardFactory
+from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestUnplugSignal(BaseApiTest):

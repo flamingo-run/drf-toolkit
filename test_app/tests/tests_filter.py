@@ -1,6 +1,6 @@
 from drf_kit.tests import BaseApiTest
-from test_app.tests.tests_base import HogwartsTestMixin
 from test_app.tests.factories.teacher_factories import TeacherFactory
+from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestIntBooleanFilter(HogwartsTestMixin, BaseApiTest):
@@ -233,7 +233,7 @@ class TestNullableFilterSet(HogwartsTestMixin, BaseApiTest):
         )
 
     def test_filter_with_null_invalid_value(self):
-        search = f"holder_id=nullable"
+        search = "holder_id=nullable"
         response = self.client.get(f"{self.url}?{search}")
         self.assertEqual(400, response.status_code)
 

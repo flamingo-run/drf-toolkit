@@ -1,11 +1,6 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import (
-    CombatSpell,
-    EnvironmentalSpell,
-    DarkTale,
-    Tale,
-)
+from test_app.models import CombatSpell, DarkTale, EnvironmentalSpell, Tale
 from test_app.tests.factories.tale_factories import DarkTaleFactory, HappyTaleFactory, TaleFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 

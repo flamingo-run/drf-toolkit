@@ -1,10 +1,6 @@
 from drf_kit.tests import BaseApiTest
-from test_app.models import (
-    Spell,
-    CombatSpell,
-    EnvironmentalSpell,
-)
-from test_app.tests.factories.spell_factories import SpellFactory, EnvironmentalSpellFactory, CombatSpellFactory
+from test_app.models import CombatSpell, EnvironmentalSpell, Spell
+from test_app.tests.factories.spell_factories import CombatSpellFactory, EnvironmentalSpellFactory, SpellFactory
 
 
 class TestMultiModel(BaseApiTest):
