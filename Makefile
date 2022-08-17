@@ -14,12 +14,21 @@ test:
 	@make unit
 
 check:
-	@poetry check
+	@echo "Checking safety and integrity ..."
+	poetry check
+	poetry run safety check
 
 lint:
 	@echo "Checking code style ..."
-	DJANGO_SETTINGS_MODULE=test_app.settings poetry run pylint ./*/*.py
+	DJANGO_SETTINGS_MODULE=sample_app.settings APP_NAME=sample-app ENV=test poetry run pylint ./django_nilo ./sample_app
 	poetry run black --check .
+	poetry run isort --check .
+
+style:
+	@echo "Applying code style ..."
+	poetry run black .
+	poetry run isort .
+
 
 unit:
 	@echo "Running unit tests ..."
@@ -37,4 +46,4 @@ publish:
 	@make clean
 
 
-.PHONY: lint publish clean unit test dependencies setup
+.PHONY: setup dependencies update test check lint style unit clean publish
