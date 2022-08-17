@@ -44,11 +44,11 @@ class TestModelStorage(BaseApiTest):
     def test_invalid_file_path(self):
         a_file = SimpleUploadedFile("wtf", "42".encode())
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, "Filename must have and extension"):
             WizardFactory(
                 id=100,
                 name="Harry Potter",
-                picture=a_file,
+                extra_picture=a_file,
             )
 
         self.assertFalse(Wizard.objects.exists())

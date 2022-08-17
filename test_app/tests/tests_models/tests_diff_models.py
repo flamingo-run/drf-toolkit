@@ -73,6 +73,6 @@ class TestModelDiff(BaseApiTest):
 
         self.assertTrue(wizard._has_changed)
 
-        self.assertEqual((100, 200), wizard._diff["house"])
-        self.assertEqual(old_url, wizard._diff["picture"][0])
-        self.assertEqual(new_url, wizard._diff["picture"][1])
+        self.assertEqual((100, 200), wizard._diff["house_id"])
+        self.assertEqual(old_url.removeprefix("/"), wizard._diff["picture"][0])
+        self.assertEqual(new_url.removeprefix("/"), wizard._diff["picture"][1])
