@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.15.0"
+version = "1.16.0"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -49,7 +49,7 @@ disable = "C0114, C0115, C0116, W0212, W0511, W0613, W1203, R0901, R0903, R0913,
 max-line-length = "120"
 
 [tool.pylint.basic]
-good-names= "i, j, k, m, n, dt, db, pk, tz, qs, ex, _, s, fk, ct, id"
+good-names= "i, j, k, m, n, dt, db, pk, tz, qs, ex, _, s, fk, ct, id, at"
 
 
 [tool.coverage.run]

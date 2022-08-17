@@ -1,4 +1,5 @@
 from drf_kit.managers import SoftDeleteOrderedManager
+from drf_kit.models.availability_models import AvailabilityModel, AvailabilityModelMixin
 from drf_kit.models.base_models import BaseModel
 from drf_kit.models.diff_models import ModelDiffMixin
 from drf_kit.models.file_models import BoundedFileMixin
@@ -46,4 +47,6 @@ __all__ = (
     "SoftDeleteInheritanceModel",
     "SoftDeleteOrderedModel",
     "InheritanceOrderedModel",
+    "AvailabilityModel",
+    "AvailabilityModelMixin",
 )
