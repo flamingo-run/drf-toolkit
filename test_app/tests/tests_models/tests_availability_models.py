@@ -4,12 +4,17 @@ from django.db import IntegrityError
 from django.utils import timezone
 
 from drf_kit.tests import BaseApiTest
-from test_app.models import RoomOfRequirement
 from test_app.tests.factories.room_of_requirement_factories import RoomOfRequirementFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
 class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
+    factory_class = RoomOfRequirementFactory
+
+    @property
+    def model_class(self):
+        return self.factory_class._meta.model
+
     def setUp(self):
         super().setUp()
 
@@ -21,22 +26,22 @@ class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
         self.very_future_date = self.reference_date + timedelta(days=10)
 
         self.past = [
-            RoomOfRequirementFactory(starts_at=self.very_past_date, ends_at=self.past_date),
-            RoomOfRequirementFactory(starts_at=None, ends_at=self.past_date),
-            RoomOfRequirementFactory(starts_at=None, ends_at=self.very_past_date),
+            self.factory_class(starts_at=self.very_past_date, ends_at=self.past_date),
+            self.factory_class(starts_at=None, ends_at=self.past_date),
+            self.factory_class(starts_at=None, ends_at=self.very_past_date),
         ]
         self.current = [
-            RoomOfRequirementFactory(starts_at=self.past_date, ends_at=self.future_date),
-            RoomOfRequirementFactory(starts_at=None, ends_at=self.future_date),
-            RoomOfRequirementFactory(starts_at=None, ends_at=self.future_date),
-            RoomOfRequirementFactory(starts_at=self.past_date, ends_at=None),
-            RoomOfRequirementFactory(starts_at=self.very_past_date, ends_at=None),
-            RoomOfRequirementFactory(starts_at=None, ends_at=None),
+            self.factory_class(starts_at=self.past_date, ends_at=self.future_date),
+            self.factory_class(starts_at=None, ends_at=self.future_date),
+            self.factory_class(starts_at=None, ends_at=self.future_date),
+            self.factory_class(starts_at=self.past_date, ends_at=None),
+            self.factory_class(starts_at=self.very_past_date, ends_at=None),
+            self.factory_class(starts_at=None, ends_at=None),
         ]
         self.future = [
-            RoomOfRequirementFactory(starts_at=self.future_date, ends_at=self.very_future_date),
-            RoomOfRequirementFactory(starts_at=self.future_date, ends_at=None),
-            RoomOfRequirementFactory(starts_at=self.very_future_date, ends_at=None),
+            self.factory_class(starts_at=self.future_date, ends_at=self.very_future_date),
+            self.factory_class(starts_at=self.future_date, ends_at=None),
+            self.factory_class(starts_at=self.very_future_date, ends_at=None),
         ]
 
     def assertObjects(self, qs, expected):  # pylint: disable=invalid-name
@@ -45,28 +50,28 @@ class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
             self.assertIn(obj, expected)
 
     def assertInconsistent(self):  # pylint: disable=invalid-name
-        return self.assertRaisesRegex(expected_exception=IntegrityError, expected_regex=r"invalid_date_range")
+        return self.assertRaisesRegex(expected_exception=IntegrityError, expected_regex=r"_invalid_date_range")
 
     def test_query_default(self):
-        qs = RoomOfRequirement.objects.all()
+        qs = self.model_class.objects.all()
 
         expected = self.past + self.current + self.future
         self.assertObjects(qs=qs, expected=expected)
 
     def test_query_past(self):
-        qs = RoomOfRequirement.objects.past()
+        qs = self.model_class.objects.past()
 
         expected = self.past
         self.assertObjects(qs=qs, expected=expected)
 
     def test_query_current(self):
-        qs = RoomOfRequirement.objects.current()
+        qs = self.model_class.objects.current()
 
         expected = self.current
         self.assertObjects(qs=qs, expected=expected)
 
     def test_query_future(self):
-        qs = RoomOfRequirement.objects.future()
+        qs = self.model_class.objects.future()
 
         expected = self.future
         self.assertObjects(qs=qs, expected=expected)
@@ -99,4 +104,4 @@ class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
 
         for starts_at, ends_at in inconsistencies:
             with self.assertInconsistent():
-                RoomOfRequirementFactory(starts_at=starts_at, ends_at=ends_at)
+                self.factory_class(starts_at=starts_at, ends_at=ends_at)

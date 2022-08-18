@@ -5,6 +5,7 @@ from drf_kit.models import (
     BaseModel,
     InheritanceModel,
     OrderedModel,
+    SoftDeleteAvailabilityModel,
     SoftDeleteInheritanceOrderedModel,
     SoftDeleteModel,
 )
@@ -203,3 +204,7 @@ class RoomOfRequirement(AvailabilityModel):
         null=True,
         blank=True,
     )
+
+
+class Newspaper(SoftDeleteAvailabilityModel):
+    headline = models.CharField(max_length=30, default="?")
