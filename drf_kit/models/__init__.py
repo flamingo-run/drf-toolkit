@@ -1,4 +1,4 @@
-from drf_kit.managers import SoftDeleteOrderedManager
+from drf_kit.managers import SoftDeleteAvailabilityManager, SoftDeleteOrderedManager
 from drf_kit.models.availability_models import AvailabilityModel, AvailabilityModelMixin
 from drf_kit.models.base_models import BaseModel
 from drf_kit.models.diff_models import ModelDiffMixin
@@ -30,6 +30,14 @@ class SoftDeleteOrderedModel(SoftDeleteModelMixin, OrderedModelMixin, BaseModel)
         indexes = SoftDeleteModelMixin.Meta.indexes + OrderedModelMixin.Meta.indexes + BaseModel.Meta.indexes
 
 
+class SoftDeleteAvailabilityModel(SoftDeleteModelMixin, AvailabilityModelMixin, BaseModel):
+    objects = SoftDeleteAvailabilityManager()
+
+    class Meta(SoftDeleteModelMixin.Meta, AvailabilityModelMixin.Meta, BaseModel.Meta):
+        abstract = True
+        indexes = SoftDeleteModelMixin.Meta.indexes + AvailabilityModelMixin.Meta.indexes + BaseModel.Meta.indexes
+
+
 class InheritanceOrderedModel(OrderedModelMixin, InheritanceModelMixin, BaseModel):
     class Meta(OrderedModelMixin.Meta, InheritanceModelMixin.Meta, BaseModel.Meta):
         abstract = True
@@ -46,6 +54,7 @@ __all__ = (
     "SoftDeleteInheritanceOrderedModel",
     "SoftDeleteInheritanceModel",
     "SoftDeleteOrderedModel",
+    "SoftDeleteAvailabilityModel",
     "InheritanceOrderedModel",
     "AvailabilityModel",
     "AvailabilityModelMixin",

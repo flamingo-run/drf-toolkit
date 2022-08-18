@@ -30,7 +30,10 @@ class AvailabilityModelMixin(models.Model):
             models.Index(fields=["ends_at"]),
         ]
         constraints = [
-            models.CheckConstraint(check=models.Q(starts_at__lte=models.F("ends_at")), name="invalid_date_range"),
+            models.CheckConstraint(
+                check=models.Q(starts_at__lte=models.F("ends_at")),
+                name="%(class)s_invalid_date_range",
+            ),
         ]
 
     objects = managers.AvailabilityManager()

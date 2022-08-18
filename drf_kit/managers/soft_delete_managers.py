@@ -3,6 +3,8 @@ from django.db.models import Q, query
 from django.utils import timezone
 from ordered_model.models import OrderedModelQuerySet
 
+from drf_kit.managers.availability_managers import AvailabilityManager
+
 
 class SoftDeleteFilters:
     @classmethod
@@ -60,3 +62,7 @@ class SoftDeleteOrderedQueryset(SoftDeleteQuerySet, OrderedModelQuerySet):
 
 class SoftDeleteOrderedManager(SoftDeleteManager):
     queryset_class = SoftDeleteOrderedQueryset
+
+
+class SoftDeleteAvailabilityManager(AvailabilityManager, SoftDeleteManager):
+    ...
