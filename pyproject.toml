@@ -25,6 +25,7 @@ black = "*"
 isort = "*"
 safety = "*"
 factory-boy = "*"
+freezegun = "*"
 
 
 [tool.black]

@@ -43,11 +43,11 @@ class AvailabilityChecker:
 
     @property
     def past_start(self) -> bool:
-        return not self.undefined_start and self.starts_at < self.at
+        return not self.undefined_start and self.starts_at <= self.at  # now is considered in the past
 
     @property
     def past_end(self) -> bool:
-        return not self.undefined_end and self.ends_at < self.at
+        return not self.undefined_end and self.ends_at <= self.at  # now is considered in the past
 
     @property
     def future_start(self) -> bool:
@@ -88,12 +88,12 @@ class AvailabilityFilters:
     @classmethod
     def past_start(cls, dt: datetime | None = None):
         dt = dt or timezone.now()
-        return Q(starts_at__lt=dt)
+        return Q(starts_at__lte=dt)  # now is considered in the past
 
     @classmethod
     def past_end(cls, dt: datetime | None = None):
         dt = dt or timezone.now()
-        return Q(ends_at__lt=dt)
+        return Q(ends_at__lte=dt)  # now is considered in the past
 
     @classmethod
     def future_start(cls, dt: datetime | None = None):
