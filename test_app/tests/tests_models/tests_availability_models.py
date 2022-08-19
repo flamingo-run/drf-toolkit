@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.db import IntegrityError
 from django.utils import timezone
+from freezegun import freeze_time
 
 from drf_kit.tests import BaseApiTest
 from test_app.tests.factories.room_of_requirement_factories import RoomOfRequirementFactory
@@ -105,3 +106,25 @@ class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
         for starts_at, ends_at in inconsistencies:
             with self.assertInconsistent():
                 self.factory_class(starts_at=starts_at, ends_at=ends_at)
+
+
+@freeze_time("1990-07-19T12:30:45Z")
+class TestAvailabilityModelFrozenInTime(TestAvailabilityModel):
+    def setUp(self):
+        super().setUp()
+
+        self.now = timezone.now()
+
+        self.past.extend(
+            [
+                self.factory_class(starts_at=self.past_date, ends_at=self.now),
+                self.factory_class(starts_at=None, ends_at=self.now),
+            ]
+        )
+
+        self.current.extend(
+            [
+                self.factory_class(starts_at=self.now, ends_at=self.future_date),
+                self.factory_class(starts_at=self.now, ends_at=None),
+            ]
+        )
