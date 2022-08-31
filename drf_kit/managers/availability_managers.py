@@ -154,9 +154,7 @@ class AvailabilityManager(models.Manager):
         return super().get_queryset().filter(AvailabilityFilters.future(dt=at))
 
     def same_availability_of(self, obj: "drf_kit.models.AvailabilityModel"):
-        from drf_kit.models.availability_models import AvailabilityModel  # pylint: disable=import-outside-toplevel
-
-        if not isinstance(obj, AvailabilityModel):
+        if not hasattr(obj, "starts_at") or not hasattr(obj, "ends_at"):
             raise TypeError(f"Expected AvailabilityModel, got {type(obj)}")
 
         same_range_filter = AvailabilityFilters.same_availability(starts_at=obj.starts_at, ends_at=obj.ends_at)
