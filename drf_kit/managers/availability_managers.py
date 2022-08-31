@@ -78,6 +78,43 @@ class AvailabilityFilters:
         return started & not_ended
 
     @classmethod
+    def same_availability(cls, starts_at: datetime | None = None, ends_at: datetime | None = None):
+        if not starts_at and not ends_at:
+            # When it does have either start and end,
+            # any other similar patient_care_team will match
+            return Q()
+
+        # Any other similar patient_care_team that has
+        # both open start and open end will match
+        filters = cls.undefined_start() & cls.undefined_end()
+
+        if ends_at:
+            # When it has an end,
+            # any other similar patient_care_team with a range that overlaps will match
+            filters |= Q(starts_at__isnull=True, ends_at__gte=ends_at)
+            filters |= Q(starts_at__lt=ends_at, ends_at__gte=ends_at)
+
+            # or any other similar that is within the range will match
+            if starts_at:
+                filters |= Q(starts_at__gte=starts_at, ends_at__lte=ends_at)
+            else:
+                filters |= Q(starts_at__isnull=True, ends_at__lte=ends_at)
+
+        if starts_at:
+            # When it has a start,
+            # any other similar patient_care_team with a range that overlaps will match
+            filters |= Q(starts_at__lte=starts_at, ends_at__isnull=True)
+            filters |= Q(starts_at__lte=starts_at, ends_at__gt=starts_at)
+
+            # or any other similar that is within the range will match
+            if ends_at:
+                filters |= Q(starts_at__gte=starts_at, ends_at__lte=ends_at)
+            else:
+                filters |= Q(starts_at__gte=starts_at, ends_at__isnull=True)
+
+        return filters
+
+    @classmethod
     def undefined_start(cls):
         return Q(starts_at__isnull=True)
 
@@ -115,3 +152,12 @@ class AvailabilityManager(models.Manager):
 
     def future(self, at: datetime | None = None):
         return super().get_queryset().filter(AvailabilityFilters.future(dt=at))
+
+    def same_availability_of(self, obj: "drf_kit.models.AvailabilityModel"):
+        from drf_kit.models.availability_models import AvailabilityModel  # pylint: disable=import-outside-toplevel
+
+        if not isinstance(obj, AvailabilityModel):
+            raise TypeError(f"Expected AvailabilityModel, got {type(obj)}")
+
+        same_range_filter = AvailabilityFilters.same_availability(starts_at=obj.starts_at, ends_at=obj.ends_at)
+        return super().get_queryset().filter(same_range_filter).exclude(id=obj.pk)
