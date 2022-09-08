@@ -3,16 +3,17 @@ import re
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.utils import IntegrityError
 from rest_framework import response, status, views
 
 logger = logging.getLogger()
 
 
 class DuplicatedRecord(ValidationError):
-    def __init__(self, serializer, integrity_error):
+    def __init__(self, model_klass, body, integrity_error):
         self.integrity_error = integrity_error
-        self.model = serializer.Meta.model if not hasattr(serializer, "child") else serializer.child.Meta.model
-        self.data = serializer.initial_data
+        self.model = model_klass
+        self.data = body
         self.engine = self._get_engine(integrity_error=self.integrity_error)
         self.constraints, self.values = self._parse_error()
 
@@ -24,6 +25,10 @@ class DuplicatedRecord(ValidationError):
     @classmethod
     def verify(cls, integrity_error):
         return cls._get_engine(integrity_error=integrity_error) is not None
+
+    @property
+    def response(self):
+        return response.Response(data={"errors": self.message}, status=self.code, exception=self)
 
     def _parse_psql(self):
         # Parse SQL-provided error output for constraint failures, such as:
@@ -95,4 +100,12 @@ def custom_exception_handler(exc, context):
 
             status_code = getattr(exc, "code", "") or status.HTTP_400_BAD_REQUEST
             return response.Response(data={"errors": data}, status=status_code, exception=exc)
+        if isinstance(exc, IntegrityError):
+            if DuplicatedRecord.verify(exc):
+                error = DuplicatedRecord(
+                    model_klass=context["view"].get_queryset().model,
+                    body=context["request"].data,
+                    integrity_error=exc,
+                )
+                return error.response
     return resp

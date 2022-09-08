@@ -1,6 +1,6 @@
 import logging
 
-from django.db.utils import IntegrityError
+from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
@@ -137,16 +137,8 @@ class MultiSerializerMixin:
         return Response(data, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
-        try:
-            # identical override of parent method, but returns the object
-            return serializer.save()
-        except IntegrityError as exc:
-            if DuplicatedRecord.verify(exc):
-                raise DuplicatedRecord(
-                    serializer=serializer,
-                    integrity_error=exc,
-                ) from exc
-            raise exc
+        # identical override of parent method, but returns the object
+        return serializer.save()
 
     def perform_update(self, serializer):
         # identical override of parent method, but returns the object
@@ -200,8 +192,11 @@ class UpsertMixin(MultiSerializerMixin):
     def create(self, request, *args, **kwargs):
         try:
             return super().create(request, *args, **kwargs)
-        except DuplicatedRecord as exc:
-            instance = self.get_queryset().get(exc.get_filter())
+        except IntegrityError as exc:
+            if not DuplicatedRecord.verify(integrity_error=exc):
+                raise
+            error = DuplicatedRecord(model_klass=self.get_queryset().model, body=request.data, integrity_error=exc)
+            instance = self.get_queryset().get(error.get_filter())
             return self.upsert(instance=instance, data=request.data, *args, **kwargs)
 
     def upsert(self, instance, data, *args, **kwargs):

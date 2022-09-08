@@ -19,7 +19,7 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         # IntegrityError by duplicate key is a very rare exception because the serializer
         # validators pre-check before committing them to the database
         # Then we have to simulate this error happening
-        klass_name = "drf_kit.serializers.BaseModelSerializer.create"
+        klass_name = "django.db.models.Model.save"
         error = IntegrityError(
             "duplicate key value violates unique constraint potato\n" f"DETAIL:  Key {constraint} already exists."
         )
@@ -96,6 +96,23 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         expected_house["points_boost"] = "3.14"
 
         self.assertResponseUpdated(expected_item=expected_house, response=response)
+
+        houses = models.House.objects.all()
+        self.assertEqual(4, houses.count())
+
+    def test_patch_endpoint_with_existing(self):
+        house = self.houses[0]
+        url = f"{self.url}/{house.pk}"
+        data = {
+            "points_boost": 3.14,
+        }
+
+        with self._simulate_integrity_error():
+            response = self.client.patch(url, data=data)
+
+        self.assertEqual(409, response.status_code)
+        expected = {"errors": "A House with `id=42` already exists."}
+        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
