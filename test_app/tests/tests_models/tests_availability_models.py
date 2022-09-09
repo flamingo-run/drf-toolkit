@@ -194,6 +194,37 @@ class TestAvailabilityModelSimilar(HogwartsTestMixin, BaseApiTest):
             msg = f"Failed to detect conflict when {failure.starts_at} - {failure.ends_at}"
             self.assertTrue(same_availability.exists(), msg=msg)
 
+    def test_partially_open_range(self):
+        config = dict(
+            wizard=WizardFactory(),
+        )
+
+        past_3, past_2, past_1, future_1, future_2, future_3 = [
+            parse("2000-12-15T00:00:00Z") + timedelta(days=i) for i in (-15, -10, -5, 5, 10, 15)
+        ]
+
+        RoomOfRequirementFactory.create(starts_at=None, ends_at=past_2, **config)  # past
+        RoomOfRequirementFactory.create(starts_at=future_2, ends_at=None, **config)  # future
+
+        failures = [
+            RoomOfRequirementFactory.build(starts_at=past_2, ends_at=past_1, **config),  # past
+            RoomOfRequirementFactory.build(starts_at=future_1, ends_at=future_2, **config),  # future
+            RoomOfRequirementFactory.build(starts_at=past_1, ends_at=future_2, **config),  # current
+            RoomOfRequirementFactory.build(starts_at=past_2, ends_at=past_1, **config),  # past
+            RoomOfRequirementFactory.build(starts_at=future_1, ends_at=future_2, **config),  # future
+            RoomOfRequirementFactory.build(starts_at=None, ends_at=future_2, **config),  # current
+            RoomOfRequirementFactory.build(starts_at=past_1, ends_at=None, **config),  # current
+            RoomOfRequirementFactory.build(starts_at=past_3, ends_at=past_1, **config),  # past-conflict
+            RoomOfRequirementFactory.build(starts_at=future_1, ends_at=future_3, **config),  # future-conflict
+            RoomOfRequirementFactory.build(starts_at=past_3, ends_at=future_3, **config),  # all-conflict
+            RoomOfRequirementFactory.build(starts_at=None, ends_at=None, **config),  # all-conflict
+        ]
+
+        for failure in failures:
+            same_availability = RoomOfRequirement.objects.same_availability_of(obj=failure)
+            msg = f"Failed to detect conflict when {failure.starts_at} - {failure.ends_at}"
+            self.assertTrue(same_availability.exists(), msg=msg)
+
     def test_not_availability_model(self):
         with self.assertRaisesRegex(TypeError, "Expected AvailabilityModel, got"):
             RoomOfRequirement.objects.same_availability_of(obj=WizardFactory())

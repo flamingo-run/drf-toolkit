@@ -95,10 +95,9 @@ class AvailabilityFilters:
             filters |= Q(starts_at__lt=ends_at, ends_at__gte=ends_at)
 
             # or any other similar that is within the range will match
+            filters |= Q(starts_at__isnull=True, ends_at__lte=ends_at)
             if starts_at:
                 filters |= Q(starts_at__gte=starts_at, ends_at__lte=ends_at)
-            else:
-                filters |= Q(starts_at__isnull=True, ends_at__lte=ends_at)
 
         if starts_at:
             # When it has a start,
@@ -107,10 +106,9 @@ class AvailabilityFilters:
             filters |= Q(starts_at__lte=starts_at, ends_at__gt=starts_at)
 
             # or any other similar that is within the range will match
+            filters |= Q(starts_at__gte=starts_at, ends_at__isnull=True)
             if ends_at:
                 filters |= Q(starts_at__gte=starts_at, ends_at__lte=ends_at)
-            else:
-                filters |= Q(starts_at__gte=starts_at, ends_at__isnull=True)
 
         return filters
 
