@@ -74,6 +74,18 @@ class TestBulkView(TestCRUDView):
         response = self.client.patch(url, data=data)
         self.assertEqual(405, response.status_code)
 
+    def test_patch_endpoint_with_existing(self):
+        house = self.houses[0]
+        url = f"{self.url}/{house.pk}"
+        data = {
+            "points_boost": 3.14,
+        }
+
+        with self._simulate_integrity_error():
+            response = self.client.patch(url, data=data)
+
+        self.assertEqual(405, response.status_code)
+
     def test_put_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}"
