@@ -216,3 +216,29 @@ class Article(SoftDeleteModel):
         on_delete=models.CASCADE,
     )
     title = models.CharField(max_length=30, default="?")
+
+
+class News(SoftDeleteModel):
+    newspaper = models.ForeignKey(
+        to="test_app.Newspaper",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    description = models.TextField(default="?")
+
+
+class ExclusiveArticle(SoftDeleteModel):
+    newspaper = models.OneToOneField(
+        to="test_app.Newspaper",
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=30, default="?")
+
+
+class ExclusiveNews(SoftDeleteModel):
+    newspaper = models.OneToOneField(
+        to="test_app.Newspaper",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    description = models.TextField(default="?")

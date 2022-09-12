@@ -62,20 +62,26 @@ class SoftDeleteModelMixin(models.Model):
             ]
 
             for related in all_related:
-                if related.on_delete.__name__ == "CASCADE":
-                    relation_field = related.get_accessor_name()
+                on_delete = related.on_delete.__name__
+                if on_delete not in ("CASCADE", "SET_NULL"):
+                    continue
 
-                    if related.one_to_one:
-                        try:
-                            getattr(self, relation_field).delete()
-                        except related.related_model.DoesNotExist:
-                            continue
-                    else:
-                        getattr(self, relation_field).all().delete()
+                relation_field = related.get_accessor_name()
+                try:
+                    value = getattr(self, relation_field)
+                except related.related_model.DoesNotExist:
+                    continue
 
-                if related.on_delete.__name__ == "SET_NULL":
-                    rel = related.get_accessor_name()
-                    getattr(self, rel).all().update(**{related.remote_field.name: None})
+                match related.one_to_one, on_delete,:
+                    case True, "CASCADE":
+                        value.delete()
+                    case True, "SET_NULL":
+                        setattr(value, related.field.name, None)
+                        value.save()
+                    case False, "CASCADE":
+                        value.all().delete()
+                    case False, "SET_NULL":
+                        value.update(**{related.field.name: None})
         else:
             super().delete(using=using, keep_parents=keep_parents)
 

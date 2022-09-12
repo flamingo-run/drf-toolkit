@@ -1,8 +1,9 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import Article, Memory, Newspaper
-from test_app.tests.factories.article_factories import ArticleFactory
+from test_app.models import Article, ExclusiveArticle, ExclusiveNews, Memory, News, Newspaper
+from test_app.tests.factories.article_factories import ArticleFactory, ExclusiveArticleFactory
 from test_app.tests.factories.memory_factories import MemoryFactory
+from test_app.tests.factories.news_factories import ExclusiveNewsFactory, NewsFactory
 from test_app.tests.factories.newsaper_factories import NewspaperFactory
 from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
@@ -147,7 +148,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
 
 class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
-    def test_delete_related(self):
+    def test_delete_m2m_related(self):
         newspaper = NewspaperFactory()
         ArticleFactory.create_batch(5, newspaper=newspaper)
         ArticleFactory.create_batch(5)  # noise
@@ -156,7 +157,7 @@ class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(5, Article.objects.all().count())
         self.assertEqual(10, Article.objects.all_with_deleted().count())
 
-    def test_delete_related_using_queryset(self):
+    def test_delete_m2m_related_using_queryset(self):
         newspaper = NewspaperFactory()
         ArticleFactory.create_batch(5, newspaper=newspaper)
         ArticleFactory.create_batch(5)  # noise
@@ -164,3 +165,63 @@ class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
         Newspaper.objects.filter(pk=newspaper.pk).delete()
         self.assertEqual(5, Article.objects.all().count())
         self.assertEqual(10, Article.objects.all_with_deleted().count())
+
+    def test_delete_o2m_related(self):
+        newspaper = NewspaperFactory()
+        ExclusiveArticleFactory(newspaper=newspaper)
+        ExclusiveArticleFactory.create_batch(5)  # noise
+
+        newspaper.delete()
+        self.assertEqual(5, ExclusiveArticle.objects.all().count())
+        self.assertEqual(6, ExclusiveArticle.objects.all_with_deleted().count())
+
+    def test_delete_o2m_related_using_queryset(self):
+        newspaper = NewspaperFactory()
+        ExclusiveArticleFactory(newspaper=newspaper)
+        ExclusiveArticleFactory.create_batch(5)  # noise
+
+        Newspaper.objects.filter(pk=newspaper.pk).delete()
+        self.assertEqual(5, ExclusiveArticle.objects.all().count())
+        self.assertEqual(6, ExclusiveArticle.objects.all_with_deleted().count())
+
+
+class TestSoftDeleteSetNullModel(HogwartsTestMixin, BaseApiTest):
+    def test_delete_m2m_related(self):
+        newspaper = NewspaperFactory()
+        NewsFactory.create_batch(5, newspaper=newspaper)
+        NewsFactory.create_batch(5)  # noise
+
+        newspaper.delete()
+        self.assertEqual(10, News.objects.all().count())
+        self.assertEqual(10, News.objects.all_with_deleted().count())
+        self.assertEqual(5, News.objects.filter(newspaper__isnull=True).count())
+
+    def test_delete_m2m_related_using_queryset(self):
+        newspaper = NewspaperFactory()
+        NewsFactory.create_batch(5, newspaper=newspaper)
+        NewsFactory.create_batch(5)  # noise
+
+        Newspaper.objects.filter(pk=newspaper.pk).delete()
+        self.assertEqual(10, News.objects.all().count())
+        self.assertEqual(10, News.objects.all_with_deleted().count())
+        self.assertEqual(5, News.objects.filter(newspaper__isnull=True).count())
+
+    def test_delete_o2m_related(self):
+        newspaper = NewspaperFactory()
+        ExclusiveNewsFactory(newspaper=newspaper)
+        ExclusiveNewsFactory.create_batch(5)  # noise
+
+        newspaper.delete()
+        self.assertEqual(6, ExclusiveNews.objects.all().count())
+        self.assertEqual(6, ExclusiveNews.objects.all_with_deleted().count())
+        self.assertEqual(1, ExclusiveNews.objects.filter(newspaper__isnull=True).count())
+
+    def test_delete_o2m_related_using_queryset(self):
+        newspaper = NewspaperFactory()
+        ExclusiveNewsFactory(newspaper=newspaper)
+        ExclusiveNewsFactory.create_batch(5)  # noise
+
+        Newspaper.objects.filter(pk=newspaper.pk).delete()
+        self.assertEqual(6, ExclusiveNews.objects.all().count())
+        self.assertEqual(6, ExclusiveNews.objects.all_with_deleted().count())
+        self.assertEqual(1, ExclusiveNews.objects.filter(newspaper__isnull=True).count())
