@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Q, query
-from django.utils import timezone
 from ordered_model.models import OrderedModelQuerySet
 
 from drf_kit.managers.availability_managers import AvailabilityManager
@@ -20,11 +19,18 @@ class SoftDeleteQuerySet(query.QuerySet):
 
     def delete(self):
         if not bool(self):
-            return
-        self.update(deleted_at=timezone.now())
+            return False, 0
+        deleted = 0
+        for obj in self:
+            obj.delete()
+            deleted += 1
+        return True, deleted
 
-    def undelete(self, *args, using="default", **kwargs):
-        self.update(deleted_at=None)
+    def hard_delete(self):
+        return super().delete()
+
+    def undelete(self):
+        return self.update(deleted_at=None)
 
 
 class SoftDeleteManager(models.Manager):
@@ -32,7 +38,8 @@ class SoftDeleteManager(models.Manager):
 
     def get_queryset(self):
         qs = super().get_queryset().exclude(SoftDeleteFilters.deleted())
-        qs.__class__ = self.queryset_class
+        if not issubclass(qs.__class__, SoftDeleteQuerySet):
+            qs.__class__ = self.queryset_class
         return qs
 
     def all_with_deleted(self, prt=False):
@@ -50,6 +57,9 @@ class SoftDeleteManager(models.Manager):
             qs = self.all_with_deleted()
         else:
             qs = self.all()
+
+        if not issubclass(qs.__class__, SoftDeleteQuerySet):
+            qs.__class__ = SoftDeleteQuerySet
         return qs
 
 

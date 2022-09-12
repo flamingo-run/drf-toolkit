@@ -43,10 +43,7 @@ class SoftDeleteModelMixin(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         if not self.is_deleted:
-            signals.pre_soft_delete.send(
-                sender=self.__class__,
-                instance=self,
-            )
+            signals.pre_soft_delete.send(sender=self.__class__, instance=self)
 
             # save & skip signals
             self.deleted_at = now()
@@ -55,10 +52,32 @@ class SoftDeleteModelMixin(models.Model):
             with UnplugSignal(signal=pre_save, func=verify_soft_deletion, model=self.__class__):
                 self.save()
 
-            signals.post_soft_delete.send(
-                sender=self.__class__,
-                instance=self,
-            )
+            signals.post_soft_delete.send(sender=self.__class__, instance=self)
+
+            # Delete related
+            all_related = [
+                f
+                for f in self._meta.get_fields()
+                if (f.one_to_many or f.one_to_one) and f.auto_created and not f.concrete
+            ]
+
+            for related in all_related:
+                if related.on_delete.__name__ == "CASCADE":
+                    relation_field = related.get_accessor_name()
+
+                    if related.one_to_one:
+                        try:
+                            getattr(self, relation_field).delete()
+                        except related.related_model.DoesNotExist:
+                            continue
+                    else:
+                        getattr(self, relation_field).all().delete()
+
+                if related.on_delete.__name__ == "SET_NULL":
+                    rel = related.get_accessor_name()
+                    getattr(self, rel).all().update(**{related.remote_field.name: None})
+        else:
+            super().delete(using=using, keep_parents=keep_parents)
 
     def undelete(self):
         if self.is_deleted:

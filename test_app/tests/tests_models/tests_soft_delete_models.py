@@ -1,7 +1,9 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import Memory
+from test_app.models import Article, Memory, Newspaper
+from test_app.tests.factories.article_factories import ArticleFactory
 from test_app.tests.factories.memory_factories import MemoryFactory
+from test_app.tests.factories.newsaper_factories import NewspaperFactory
 from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
@@ -23,6 +25,27 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         memory.undelete()
         memory.refresh_from_db()
         self.assertIsNone(memory.deleted_at)
+
+    def test_hard_delete_model(self):
+        memory = MemoryFactory()
+        self.assertIsNone(memory.deleted_at)
+
+        memory.delete()
+        memory.refresh_from_db()
+        self.assertIsNotNone(memory.deleted_at)
+
+        memory.delete()
+        with self.assertRaises(Memory.DoesNotExist):  # pylint: disable=no-member
+            memory.refresh_from_db()
+
+    def test_hard_with_queryset(self):
+        memory = MemoryFactory()
+        self.assertIsNone(memory.deleted_at)
+
+        Memory.objects.all().hard_delete()
+
+        with self.assertRaises(Memory.DoesNotExist):  # pylint: disable=no-member
+            memory.refresh_from_db()
 
     def test_update_deleted_using_model(self):
         new_description = "Parents fighting Voldemort"
@@ -121,3 +144,23 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
         memories = wizard.memories.all_with_deleted()
         self.assertEqual(2, memories.count())
+
+
+class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
+    def test_delete_related(self):
+        newspaper = NewspaperFactory()
+        ArticleFactory.create_batch(5, newspaper=newspaper)
+        ArticleFactory.create_batch(5)  # noise
+
+        newspaper.delete()
+        self.assertEqual(5, Article.objects.all().count())
+        self.assertEqual(10, Article.objects.all_with_deleted().count())
+
+    def test_delete_related_using_queryset(self):
+        newspaper = NewspaperFactory()
+        ArticleFactory.create_batch(5, newspaper=newspaper)
+        ArticleFactory.create_batch(5)  # noise
+
+        Newspaper.objects.filter(pk=newspaper.pk).delete()
+        self.assertEqual(5, Article.objects.all().count())
+        self.assertEqual(10, Article.objects.all_with_deleted().count())

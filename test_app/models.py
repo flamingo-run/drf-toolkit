@@ -208,3 +208,11 @@ class RoomOfRequirement(AvailabilityModel):
 
 class Newspaper(SoftDeleteAvailabilityModel):
     headline = models.CharField(max_length=30, default="?")
+
+
+class Article(SoftDeleteModel):
+    newspaper = models.ForeignKey(
+        to="test_app.Newspaper",
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=30, default="?")
