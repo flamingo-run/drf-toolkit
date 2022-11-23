@@ -1,7 +1,8 @@
+import logging
 import uuid
 from pathlib import Path
 
-from django.core.exceptions import ValidationError
+logger = logging.getLogger()
 
 
 class BaseDataStoragePath:
@@ -20,7 +21,8 @@ class BaseDataStoragePath:
         extension = filepath.suffix or (f".{default_extension}" if default_extension else None)
 
         if not extension:
-            raise ValidationError("Filename must have and extension")
+            logger.warning("Saving file without extension")
+            extension = ""
 
         new_name = new_name or previous_name
         if unique:
