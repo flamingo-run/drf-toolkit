@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from drf_kit.tests import BaseApiTest
@@ -44,11 +43,20 @@ class TestModelStorage(BaseApiTest):
     def test_invalid_file_path(self):
         a_file = SimpleUploadedFile("wtf", "42".encode())
 
-        with self.assertRaisesRegex(ValidationError, "Filename must have and extension"):
-            WizardFactory(
+        with self.assertLogs(level="WARNING") as log:
+            wizard = WizardFactory(
                 id=100,
                 name="Harry Potter",
                 extra_picture=a_file,
             )
+            [output] = log.output
+        self.assertEqual("WARNING:root:Saving file without extension", output)
 
-        self.assertFalse(Wizard.objects.exists())
+        self.assertTrue(Wizard.objects.exists())
+        self.assertUUIDFilePath(
+            prefix="wizard",
+            name="wtf",
+            extension="",
+            pk=100,
+            file=wizard.extra_picture,
+        )
