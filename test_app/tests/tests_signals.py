@@ -1,3 +1,4 @@
+import warnings
 from unittest.mock import patch
 
 from django.db.models.signals import post_save
@@ -57,12 +58,11 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         memory = MemoryFactory()
 
         with self.patch_notify_task() as some_task:
-            memory.delete()
+            with warnings.catch_warnings(record=True) as warn:
+                memory.delete()
 
+        self.assertEqual("[ERASED]", str(warn[-1].message))
         some_task.assert_called_once_with(recovered=False)
-
-        memory.refresh_from_db()
-        self.assertIn("[ERASED]", memory.description)
 
     def test_undelete_model(self):
         memory = MemoryFactory()
@@ -70,9 +70,8 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         memory.refresh_from_db()
 
         with self.patch_notify_task() as some_task:
-            memory.undelete()
+            with warnings.catch_warnings(record=True) as warn:
+                memory.undelete()
 
+        self.assertEqual("[RECOVERED]", str(warn[0].message))
         some_task.assert_called_once_with(recovered=True)
-
-        memory.refresh_from_db()
-        self.assertIn("[RECOVERED]", memory.description)

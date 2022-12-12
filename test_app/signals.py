@@ -1,3 +1,5 @@
+import warnings
+
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
@@ -25,7 +27,7 @@ def harry_forever(sender, instance, **kwargs):
 
 @receiver(signals.pre_soft_delete, sender=models.Memory)
 def almost_erasing_memory(sender, instance, **kwargs):
-    instance.description += " [ERASED]"
+    warnings.warn("[ERASED]")
 
 
 @receiver(signals.post_soft_delete, sender=models.Memory)
@@ -35,7 +37,7 @@ def memory_has_been_erased(sender, instance, **kwargs):
 
 @receiver(signals.pre_undelete, sender=models.Memory)
 def almost_recovering_memory(sender, instance, **kwargs):
-    instance.description += " [RECOVERED]"
+    warnings.warn("[RECOVERED]")
 
 
 @receiver(signals.post_undelete, sender=models.Memory)
