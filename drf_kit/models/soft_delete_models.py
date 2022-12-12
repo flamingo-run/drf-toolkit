@@ -50,7 +50,7 @@ class SoftDeleteModelMixin(models.Model):
             from drf_kit.signals import UnplugSignal  # pylint: disable=import-outside-toplevel
 
             with UnplugSignal(signal=pre_save, func=verify_soft_deletion, model=self.__class__):
-                self.save()
+                self.save(update_fields=["deleted_at"])
 
             signals.post_soft_delete.send(sender=self.__class__, instance=self)
 
@@ -93,7 +93,7 @@ class SoftDeleteModelMixin(models.Model):
             )
 
             self.deleted_at = None
-            self.save()
+            self.save(update_fields=["deleted_at"])
 
             signals.post_undelete.send(
                 sender=self.__class__,
