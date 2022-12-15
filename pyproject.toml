@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.17.7"
+version = "1.18.0"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -9,7 +9,7 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.9,<3.12"
 Django = ">=3,<5"
 djangorestframework = "^3"
 django-filter = "^22.0"
@@ -30,7 +30,7 @@ freezegun = "*"
 
 [tool.black]
 line-length = 120
-target-version = ['py310']
+target-version = ['py311']
 
 
 [tool.isort]
