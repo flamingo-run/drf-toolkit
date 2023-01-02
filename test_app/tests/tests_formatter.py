@@ -52,6 +52,12 @@ class TestAssureTimezone(BaseApiTest):
         as_str = serializers.assure_tz(None)
         self.assertEqual(None, as_str)
 
+    def test_isoformat(self):
+        value = "2022-01-01T10:20:34T"
+        expected = datetime(2022, 1, 1, 10, 20, 34, tzinfo=timezone.utc)
+        assured_dt = serializers.assure_tz(value)
+        self.assertEqual(expected, assured_dt)
+
     def test_timezoned_datetime(self):
         timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=timezone.utc)
         assured_dt = serializers.assure_tz(timezoned)

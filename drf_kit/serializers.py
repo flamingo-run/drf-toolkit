@@ -4,6 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytz
+from dateutil import parser
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -56,7 +57,9 @@ def as_str(value):
     return str(value)
 
 
-def assure_tz(dt, tz=DEFAULT_TIMEZONE):
+def assure_tz(dt: datetime | str, tz: str = DEFAULT_TIMEZONE):
+    if isinstance(dt, str):
+        dt = parser.parse(dt)
     if not dt:
         return dt
     if not dt.tzinfo:
