@@ -12,14 +12,13 @@ from test_app.tests.tests_base import HogwartsTestMixin
 class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
     def test_delete_model(self):
         memory = MemoryFactory()
-        previous_description = memory.description
         memory.description = "Any short description"
         self.assertIsNone(memory.deleted_at)
 
         memory.delete()
         memory.refresh_from_db()
 
-        self.assertEqual(memory.description, previous_description)
+        self.assertEqual(memory.description, "Any short description")
         self.assertIsNotNone(memory.deleted_at)
 
     def test_undelete_model(self):
@@ -27,11 +26,10 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         memory.delete()
         memory.refresh_from_db()
 
-        previous_description = memory.description
         memory.description = "Any short description"
         memory.undelete()
         memory.refresh_from_db()
-        self.assertEqual(memory.description, previous_description)
+        self.assertEqual(memory.description, "Any short description")
         self.assertIsNone(memory.deleted_at)
 
     def test_hard_delete_model(self):
