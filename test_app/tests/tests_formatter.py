@@ -43,6 +43,11 @@ class TestFormatAsStr(BaseApiTest):
         as_str = serializers.as_str(timezoned)
         self.assertEqual("1990-07-19T15:43:20Z", as_str)
 
+    def test_format_utc_custom_datetime_format(self):
+        timezoned = self.non_utc(datetime(1990, 7, 19, 15, 43, 20, 999999))
+        as_str = serializers.as_str(timezoned, "%Y-%m-%dT%H:%M:%S%z")
+        self.assertEqual("1990-07-19T15:43:20+0000", as_str)
+
 
 class TestAssureTimezone(BaseApiTest):
     def non_utc(self, dt):

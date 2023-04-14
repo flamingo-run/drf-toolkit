@@ -48,12 +48,12 @@ DATETIME_FORMAT = settings.REST_FRAMEWORK.get("DATETIME_FORMAT", "%Y-%m-%dT%H:%M
 DEFAULT_TIMEZONE = pytz.timezone(settings.TIME_ZONE)
 
 
-def as_str(value):
+def as_str(value, datetime_format: str = None):
     if value is None:
         return None
     if isinstance(value, datetime):
         value = assure_tz(value.astimezone(tz=DEFAULT_TIMEZONE))
-        return value.strftime(DATETIME_FORMAT)
+        return value.strftime(datetime_format or DATETIME_FORMAT)
     return str(value)
 
 
