@@ -1,34 +1,89 @@
+import abc
 import logging
 import re
+from abc import ABC
+from typing import Any
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db import connections
+from django.db.models import Q, Model
 from django.db.utils import IntegrityError
 from rest_framework import response, status, views
 
 logger = logging.getLogger()
 
 
-class DuplicatedRecord(ValidationError):
+class DatabaseIntegrityError(ValidationError, abc.ABC):
+    status_code = status.HTTP_400_BAD_REQUEST
+
     def __init__(self, model_klass, body, integrity_error):
         self.integrity_error = integrity_error
         self.model = model_klass
         self.data = body
-        self.engine = self._get_engine(integrity_error=self.integrity_error)
-        self.constraints, self.values = self._parse_error()
+        self.engine = connections['default'].vendor
+        self.outcome = self.process()
+        message = self.build_message()
+        super().__init__(message=message, code=self.status_code)
 
-        model_name = self.model.__name__
-        violation = " and ".join([f"{constraint}={value}" for constraint, value in zip(self.constraints, self.values)])
-        message = f"A {model_name} with `{violation}` already exists."
-        super().__init__(message=message, code=status.HTTP_409_CONFLICT)
+    @abc.abstractmethod
+    def build_message(self) -> str:
+        ...
+
+    @abc.abstractmethod
+    def _parse_psql(self):
+        ...
+
+    @abc.abstractmethod
+    def _parse_sqlite(self):
+        ...
 
     @classmethod
-    def verify(cls, integrity_error):
-        return cls._get_engine(integrity_error=integrity_error) is not None
+    @abc.abstractmethod
+    def verify(cls, integrity_error: IntegrityError) -> bool:
+        ...
 
     @property
     def response(self):
         return response.Response(data={"errors": self.message}, status=self.code, exception=self)
+
+    def process(self):
+        match self.engine:
+            case "sqlite":
+                return self._parse_sqlite()
+            case "postgresql":
+                return self._parse_psql()
+        raise TypeError(f"Unknown database engine {self.engine}")
+
+
+class DuplicatedRecord(DatabaseIntegrityError):
+    status_code = status.HTTP_409_CONFLICT
+
+    @property
+    def constraints(self) -> tuple[str]:
+        return self.outcome[0]
+
+    @property
+    def values(self) -> tuple[Any]:
+        return self.outcome[1]
+
+    @classmethod
+    def verify(cls, integrity_error: IntegrityError) -> bool:
+        return "UNIQUE constraint failed" in str(integrity_error) \
+            or "duplicate key value violates unique" in str(integrity_error)
+
+    def build_message(self) -> str:
+        model_name = self.model.__name__
+        violation = " and ".join([f"{constraint}={value}" for constraint, value in zip(self.constraints, self.values)])
+        return f"A {model_name} with `{violation}` already exists."
+
+    def get_params(self) -> dict[str, Any]:
+        return dict(zip(self.constraints, self.values))
+
+    def get_filter(self) -> Q:
+        return Q(**self.get_params())
+
+    def get_object(self) -> Model:
+        return self.model.objects.get(self.get_filter())
 
     def _parse_psql(self):
         # Parse SQL-provided error output for constraint failures, such as:
@@ -55,31 +110,34 @@ class DuplicatedRecord(ValidationError):
         values = [self.data[key] for key in keys]
         return keys, values
 
-    @classmethod
-    def _get_engine(cls, integrity_error):
-        known_messages = {
-            "psql": "duplicate key value violates unique",
-            "sqlite": "UNIQUE constraint failed",
-        }
 
-        error = str(integrity_error)
-        for engine, message in known_messages.items():
-            if message in error:
-                return engine
+class InvalidRecord(DatabaseIntegrityError):
+    def build_message(self) -> str:
+        model_name = self.model.__name__
+        name = self.outcome
+        check = self.constraint_check or ""
+        return f"This {model_name} violates the check `{name}` which states `{str(check)}`"
+
+    @property
+    def constraint_check(self) -> Q | None:
+        for constraint in self.model._meta.constraints:
+            if constraint.name == self.outcome:
+                return constraint.check
         return None
 
-    def _parse_error(self):
-        parser = getattr(self, f"_parse_{self.engine}")
-        return parser()
+    def _parse_psql(self):
+        error_detail = self.integrity_error.args[0].splitlines()[0]
+        parsed = re.search(r"violates check constraint \"(?P<name>.*)\"", error_detail)
+        return parsed.group("name")
 
-    def get_params(self):
-        return dict(zip(self.constraints, self.values))
+    def _parse_sqlite(self):
+        constraint_name = self.integrity_error.args[0].split(":")[-1].strip()
+        return constraint_name
 
-    def get_filter(self):
-        return Q(**self.get_params())
-
-    def get_object(self):
-        return self.model.objects.get(self.get_filter())
+    @classmethod
+    def verify(cls, integrity_error: IntegrityError) -> bool:
+        return "CHECK constraint failed" in str(integrity_error) or \
+            "violates check constraint" in str(integrity_error)
 
 
 class UpdatingSoftDeletedException(Exception):
@@ -103,6 +161,13 @@ def custom_exception_handler(exc, context):
         if isinstance(exc, IntegrityError):
             if DuplicatedRecord.verify(exc):
                 error = DuplicatedRecord(
+                    model_klass=context["view"].get_queryset().model,
+                    body=context["request"].data,
+                    integrity_error=exc,
+                )
+                return error.response
+            if InvalidRecord.verify(exc):
+                error = InvalidRecord(
                     model_klass=context["view"].get_queryset().model,
                     body=context["request"].data,
                     integrity_error=exc,
