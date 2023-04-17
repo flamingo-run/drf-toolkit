@@ -1,10 +1,12 @@
-from unittest.mock import ANY, patch
+from unittest.mock import ANY
 
-from django.db import IntegrityError
 from rest_framework import status
 
 from drf_kit.tests import BaseApiTest
 from test_app import models
+from test_app.tests.factories.beast_factories import BeastFactory
+from test_app.tests.factories.house_factories import HouseFactory
+from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -14,16 +16,6 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
     def setUp(self):
         super().setUp()
         self._set_up_houses()
-
-    def _simulate_integrity_error(self, constraint="(id)=(42)"):
-        # IntegrityError by duplicate key is a very rare exception because the serializer
-        # validators pre-check before committing them to the database
-        # Then we have to simulate this error happening
-        klass_name = "django.db.models.Model.save"
-        error = IntegrityError(
-            "duplicate key value violates unique constraint potato\n" f"DETAIL:  Key {constraint} already exists."
-        )
-        return patch(klass_name, side_effect=error)
 
     def test_list_endpoint(self):
         url = self.url
@@ -67,23 +59,6 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         houses = models.House.objects.all()
         self.assertEqual(5, houses.count())
 
-    def test_post_endpoint_with_existing(self):
-        url = self.url
-        data = {
-            "name": "Gryffindor",
-            "points_boost": 66.6,
-        }
-
-        with self._simulate_integrity_error():
-            response = self.client.post(url, data=data)
-
-        self.assertEqual(409, response.status_code)
-        expected = {"errors": "A House with `id=42` already exists."}
-        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
-
-        houses = models.House.objects.all()
-        self.assertEqual(4, houses.count())
-
     def test_patch_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}"
@@ -96,23 +71,6 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         expected_house["points_boost"] = "3.14"
 
         self.assertResponseUpdated(expected_item=expected_house, response=response)
-
-        houses = models.House.objects.all()
-        self.assertEqual(4, houses.count())
-
-    def test_patch_endpoint_with_existing(self):
-        house = self.houses[0]
-        url = f"{self.url}/{house.pk}"
-        data = {
-            "points_boost": 3.14,
-        }
-
-        with self._simulate_integrity_error():
-            response = self.client.patch(url, data=data)
-
-        self.assertEqual(409, response.status_code)
-        expected = {"errors": "A House with `id=42` already exists."}
-        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
 
         houses = models.House.objects.all()
         self.assertEqual(4, houses.count())
@@ -135,3 +93,60 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
 
         houses = models.House.objects.all()
         self.assertEqual(3, houses.count())
+
+
+class TestConstraintView(HogwartsTestMixin, BaseApiTest):
+    url = "/beasts"
+
+    def test_post_endpoint_with_existing(self):
+        beast = BeastFactory()
+
+        url = self.url
+        data = {
+            "name": beast.name,
+            "age": beast.age,
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(409, response.status_code)
+        expected = {"errors": f"A Beast with `name={beast.name} and age={beast.age}` already exists."}
+        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
+
+        beasts = models.Beast.objects.all()
+        self.assertEqual(1, beasts.count())
+
+    def test_patch_endpoint_with_existing(self):
+        existing_beast, beast = BeastFactory.create_batch(2)
+
+        url = f"{self.url}/{beast.pk}"
+        data = {
+            "name": existing_beast.name,
+            "age": existing_beast.age,
+        }
+
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(409, response.status_code)
+        expected = {"errors": f"A Beast with `name={existing_beast.name} and age={existing_beast.age}` already exists."}
+        self.assertResponse(expected_status=status.HTTP_409_CONFLICT, expected_body=expected, response=response)
+
+        beasts = models.Beast.objects.all()
+        self.assertEqual(2, beasts.count())
+
+    def test_post_endpoint_with_constraint_error(self):
+        url = self.url
+        data = {
+            "name": "Griffin",
+            "age": -42,
+        }
+
+        response = self.client.post(url, data=data)
+
+        expected = {
+            "errors": f"This Beast violates the check `minimum-beast-age` which states `(AND: ('age__gte', 0))`",
+        }
+        self.assertResponse(expected_status=status.HTTP_400_BAD_REQUEST, expected_body=expected, response=response)
+
+        beasts = models.Beast.objects.all()
+        self.assertEqual(0, beasts.count())

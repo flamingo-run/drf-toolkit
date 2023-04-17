@@ -109,3 +109,8 @@ class WandViewSet(NonDestructiveModelViewSet):
     queryset = models.Wand.objects.all()
     serializer_class = serializers.WandSerializer
     filterset_class = filters.WandFilterSet
+
+
+class BestViewSet(ModelViewSet):
+    queryset = models.Beast.objects.all()
+    serializer_class = serializers.BeastSerializer

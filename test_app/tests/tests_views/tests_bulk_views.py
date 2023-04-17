@@ -7,29 +7,6 @@ from test_app.tests.tests_views.tests_crud_views import TestCRUDView
 class TestBulkView(TestCRUDView):
     url = "/houses-bulk"
 
-    def test_post_endpoint_with_existing(self):
-        url = self.url
-        data = [
-            {
-                "name": "#Always",
-                "points_boost": 3.1,
-            },
-            {
-                "name": "Gryffindor",
-                "points_boost": 66.6,
-            },
-        ]
-
-        with self._simulate_integrity_error():
-            response = self.client.post(url, data=data, format="json")
-
-        self.assertEqual(409, response.status_code)
-        expected = "A House with `id=42` already exists."
-        self.assertResponseMatch(expected=expected, received=response.json()["errors"])
-
-        houses = models.House.objects.all()
-        self.assertEqual(4, houses.count())
-
     def test_post_endpoint(self):
         url = self.url
         data = [
@@ -72,18 +49,6 @@ class TestBulkView(TestCRUDView):
             "points_boost": 3.14,
         }
         response = self.client.patch(url, data=data)
-        self.assertEqual(405, response.status_code)
-
-    def test_patch_endpoint_with_existing(self):
-        house = self.houses[0]
-        url = f"{self.url}/{house.pk}"
-        data = {
-            "points_boost": 3.14,
-        }
-
-        with self._simulate_integrity_error():
-            response = self.client.patch(url, data=data)
-
         self.assertEqual(405, response.status_code)
 
     def test_put_endpoint(self):

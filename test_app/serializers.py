@@ -147,3 +147,13 @@ class WandSerializer(serializers.BaseModelSerializer):
             "id",
             "name",
         )
+
+
+class BeastSerializer(serializers.BaseModelSerializer):
+    class Meta(serializers.BaseModelSerializer.Meta):
+        model = models.Beast
+        fields = (
+            "id",
+            "name",
+            "age",
+        )

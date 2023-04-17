@@ -75,4 +75,10 @@ router.register(
     "wand",
 )
 
+router.register(
+    r"beasts",
+    views.BestViewSet,
+    "beast",
+)
+
 urlpatterns = router.urls
