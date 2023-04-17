@@ -151,7 +151,7 @@ class AvailabilityManager(models.Manager):
     def future(self, at: datetime | None = None):
         return super().get_queryset().filter(AvailabilityFilters.future(dt=at))
 
-    def same_availability_of(self, obj: "drf_kit.models.AvailabilityModel"):
+    def same_availability_of(self, obj: "drf_kit.models.AvailabilityModel"):  # noqa: F821
         if not hasattr(obj, "starts_at") or not hasattr(obj, "ends_at"):
             raise TypeError(f"Expected AvailabilityModel, got {type(obj)}")
 

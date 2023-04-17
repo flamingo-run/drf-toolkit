@@ -47,7 +47,7 @@ class NestedViewMixin:
                     raise ValidationError(
                         f"{self.serializer_field_nest} provided in the body ({provided_nest_pk})"
                         f"differs from the URL's ({nest_pk}). "
-                        f"You can omit it from the request body."
+                        f"You can omit it from the request body.",
                     )
             kwargs["data"][self.serializer_field_nest] = nest_pk
         return super().get_serializer(*args, **kwargs)
@@ -56,7 +56,7 @@ class NestedViewMixin:
         try:
             pk = self.kwargs[self.lookup_url_kwarg_nest]
         except KeyError as exc:
-            raise Exception(f"{self.lookup_url_kwarg_nest} not found in {self.kwargs}") from exc
+            raise ValueError(f"{self.lookup_url_kwarg_nest} not found in {self.kwargs}") from exc
 
         try:
             return self.queryset_nest.get(**{self.pk_field_nest: pk})  # pylint:disable=no-member

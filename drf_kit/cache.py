@@ -10,7 +10,7 @@ from rest_framework_extensions.key_constructor.constructors import KeyConstructo
 
 class QueryListParamsKeyBit(bits.AllArgsMixin, bits.KeyBitDictBase):
     def get_source_dict(self, params, view_instance, view_method, request, args, kwargs):
-        data = {k: request.query_params.getlist(k) for k in request.GET.keys()}
+        data = {k: request.query_params.getlist(k) for k in request.GET}
         data["renderer_type"] = request.accepted_media_type
         return data
 
@@ -35,7 +35,11 @@ class CacheResponse(decorators.CacheResponse):
         kwargs,
     ):
         key = self.calculate_key(
-            view_instance=view_instance, view_method=view_method, request=request, args=args, kwargs=kwargs
+            view_instance=view_instance,
+            view_method=view_method,
+            request=request,
+            args=args,
+            kwargs=kwargs,
         )
 
         cache_control = request.headers.get("cache-control", "default").split(",")

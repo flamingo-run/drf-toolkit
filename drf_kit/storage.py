@@ -32,10 +32,7 @@ class BaseDataStoragePath:
 
     @classmethod
     def _get_pk(cls, instance):
-        if isinstance(instance, dict):
-            pk = instance.get("id")
-        else:
-            pk = instance.pk
+        pk = instance.get("id") if isinstance(instance, dict) else instance.pk
 
         if not pk:
             pk = uuid.uuid4()

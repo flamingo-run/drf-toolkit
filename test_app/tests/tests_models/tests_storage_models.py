@@ -41,7 +41,7 @@ class TestModelStorage(BaseApiTest):
         )
 
     def test_invalid_file_path(self):
-        a_file = SimpleUploadedFile("wtf", "42".encode())
+        a_file = SimpleUploadedFile("wtf", b"42")
 
         with self.assertLogs(level="WARNING") as log:
             wizard = WizardFactory(

@@ -8,7 +8,6 @@ import drf_kit.models.file_models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("test_app", "0005_article_article_test_app_ar_updated_d2ab7e_idx_and_more"),
     ]
@@ -49,7 +48,9 @@ class Migration(migrations.Migration):
                 (
                     "newspaper",
                     models.OneToOneField(
-                        null=True, on_delete=django.db.models.deletion.SET_NULL, to="test_app.newspaper"
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="test_app.newspaper",
                     ),
                 ),
             ],

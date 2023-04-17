@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("test_app", "0002_auto_20220118_1400"),
     ]
@@ -15,7 +14,10 @@ class Migration(migrations.Migration):
             model_name="patronus",
             name="memory",
             field=models.OneToOneField(
-                db_column="flashback_id", null=True, on_delete=django.db.models.deletion.CASCADE, to="test_app.memory"
+                db_column="flashback_id",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="test_app.memory",
             ),
         ),
         migrations.AlterField(

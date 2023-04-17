@@ -8,7 +8,6 @@ import drf_kit.models.file_models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("test_app", "0001_initial"),
     ]
@@ -24,7 +23,11 @@ class Migration(migrations.Migration):
                 (
                     "order",
                     models.PositiveIntegerField(
-                        blank=True, db_index=True, default=None, null=True, verbose_name="order"
+                        blank=True,
+                        db_index=True,
+                        default=None,
+                        null=True,
+                        verbose_name="order",
                     ),
                 ),
                 ("type", models.CharField(max_length=100)),

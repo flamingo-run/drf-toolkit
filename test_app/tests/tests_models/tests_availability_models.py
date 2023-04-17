@@ -122,14 +122,14 @@ class TestAvailabilityModelFrozenInTime(TestAvailabilityModel):
             [
                 self.factory_class(starts_at=self.past_date, ends_at=self.now),
                 self.factory_class(starts_at=None, ends_at=self.now),
-            ]
+            ],
         )
 
         self.current.extend(
             [
                 self.factory_class(starts_at=self.now, ends_at=self.future_date),
                 self.factory_class(starts_at=self.now, ends_at=None),
-            ]
+            ],
         )
 
 
@@ -139,9 +139,9 @@ class TestAvailabilityModelSimilar(HogwartsTestMixin, BaseApiTest):
             wizard=WizardFactory(),
         )
 
-        past_3, past_2, past_1, future_1, future_2, future_3 = [
+        past_3, past_2, past_1, future_1, future_2, future_3 = (
             parse("2000-12-15T00:00:00Z") + timedelta(days=i) for i in (-15, -10, -5, 5, 10, 15)
-        ]
+        )
 
         RoomOfRequirementFactory.create(starts_at=past_1, ends_at=future_1, **config)  # current
         RoomOfRequirementFactory.create(starts_at=past_2, ends_at=past_1, **config)  # past
@@ -169,9 +169,9 @@ class TestAvailabilityModelSimilar(HogwartsTestMixin, BaseApiTest):
             wizard=WizardFactory(),
         )
 
-        past_3, past_2, past_1, future_1, future_2, future_3 = [
+        past_3, past_2, past_1, future_1, future_2, future_3 = (
             parse("2000-12-15T00:00:00Z") + timedelta(days=i) for i in (-15, -10, -5, 5, 10, 15)
-        ]
+        )
 
         RoomOfRequirementFactory.create(starts_at=None, ends_at=None, **config)  # current
 
@@ -199,9 +199,9 @@ class TestAvailabilityModelSimilar(HogwartsTestMixin, BaseApiTest):
             wizard=WizardFactory(),
         )
 
-        past_3, past_2, past_1, future_1, future_2, future_3 = [
+        past_3, past_2, past_1, future_1, future_2, future_3 = (
             parse("2000-12-15T00:00:00Z") + timedelta(days=i) for i in (-15, -10, -5, 5, 10, 15)
-        ]
+        )
 
         RoomOfRequirementFactory.create(starts_at=None, ends_at=past_2, **config)  # past
         RoomOfRequirementFactory.create(starts_at=future_2, ends_at=None, **config)  # future

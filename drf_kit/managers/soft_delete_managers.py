@@ -53,10 +53,7 @@ class SoftDeleteManager(models.Manager):
         return self._get_base_queryset(*args, **kwargs).filter(*args, **kwargs)
 
     def _get_base_queryset(self, *args, **kwargs):
-        if "pk" in kwargs:
-            qs = self.all_with_deleted()
-        else:
-            qs = self.all()
+        qs = self.all_with_deleted() if "pk" in kwargs else self.all()
 
         if not issubclass(qs.__class__, SoftDeleteQuerySet):
             qs.__class__ = SoftDeleteQuerySet

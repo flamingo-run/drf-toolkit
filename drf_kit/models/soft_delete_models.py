@@ -24,6 +24,8 @@ class SoftDeleteModelMixin(models.Model):
         default=None,
     )
 
+    objects = managers.SoftDeleteManager()
+
     class Meta:
         abstract = True
         indexes = [
@@ -34,8 +36,6 @@ class SoftDeleteModelMixin(models.Model):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         pre_save.connect(verify_soft_deletion, cls)
-
-    objects = managers.SoftDeleteManager()
 
     @property
     def is_deleted(self):

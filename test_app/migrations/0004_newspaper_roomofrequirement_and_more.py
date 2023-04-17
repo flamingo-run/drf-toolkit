@@ -8,7 +8,6 @@ import drf_kit.models.file_models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("test_app", "0003_patronus_memory_alter_patronus_color"),
     ]
@@ -47,7 +46,10 @@ class Migration(migrations.Migration):
                 (
                     "wizard",
                     models.ForeignKey(
-                        blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to="test_app.wizard"
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="test_app.wizard",
                     ),
                 ),
             ],
@@ -81,7 +83,8 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="newspaper",
             constraint=models.CheckConstraint(
-                check=models.Q(("starts_at__lte", models.F("ends_at"))), name="newspaper_invalid_date_range"
+                check=models.Q(("starts_at__lte", models.F("ends_at"))),
+                name="newspaper_invalid_date_range",
             ),
         ),
         migrations.AddIndex(
@@ -99,7 +102,8 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="roomofrequirement",
             constraint=models.CheckConstraint(
-                check=models.Q(("starts_at__lte", models.F("ends_at"))), name="roomofrequirement_invalid_date_range"
+                check=models.Q(("starts_at__lte", models.F("ends_at"))),
+                name="roomofrequirement_invalid_date_range",
             ),
         ),
     ]

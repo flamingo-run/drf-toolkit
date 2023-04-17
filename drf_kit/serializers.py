@@ -74,7 +74,7 @@ class JSONEncoder(DjangoJSONEncoder):
         if isinstance(o, datetime):
             value = assure_tz(o.astimezone(tz=DEFAULT_TIMEZONE))
             return value.strftime(DATETIME_FORMAT)
-        if isinstance(o, (ZoneInfo, pytz.tzinfo.DstTzInfo)):
+        if isinstance(o, ZoneInfo | pytz.tzinfo.DstTzInfo):
             return str(o)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None

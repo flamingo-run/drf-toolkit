@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from drf_kit.tests import BaseApiTest
@@ -90,39 +90,44 @@ class TestLockAssertion(BaseApiTest):
 
     def test_execute_lock_side_effect_callable(self):
         def _effect():
-            raise Exception("Dementors")
+            raise ValueError("Dementors")
 
-        with self.patch_cache_lock(lock_side_effect=_effect) as lock:
-            with self.assertRaisesMessage(Exception, expected_message="Dementors"):
-                tasks.LockableTask().run()
+        with (
+            self.patch_cache_lock(lock_side_effect=_effect) as lock,
+            self.assertRaisesMessage(ValueError, expected_message="Dementors"),
+        ):
+            tasks.LockableTask().run()
 
         lock.assert_called()
 
     def test_execute_lock_side_effect_error(self):
         effect = Exception("Dementors")
 
-        with self.patch_cache_lock(lock_side_effect=effect) as lock:
-            with self.assertRaisesMessage(Exception, expected_message="Dementors"):
-                tasks.LockableTask().run()
+        with (
+            self.patch_cache_lock(lock_side_effect=effect) as lock,
+            self.assertRaisesMessage(Exception, expected_message="Dementors"),
+        ):
+            tasks.LockableTask().run()
 
         lock.assert_called()
 
     def test_execute_lock_side_effect_error_class(self):
         effect = Exception
 
-        with self.patch_cache_lock(lock_side_effect=effect) as lock:
-            with self.assertRaises(Exception):
-                tasks.LockableTask().run()
+        with self.patch_cache_lock(lock_side_effect=effect) as lock, self.assertRaises(Exception):
+            tasks.LockableTask().run()
 
         lock.assert_called()
 
     def test_execute_unlock_side_effect(self):
         def _effect():
-            raise Exception("Dementors")
+            raise ValueError("Dementors")
 
-        with self.patch_cache_lock(unlock_side_effect=_effect) as lock:
-            with self.assertRaisesMessage(Exception, expected_message="Dementors"):
-                tasks.LockableTask().run()
+        with (
+            self.patch_cache_lock(unlock_side_effect=_effect) as lock,
+            self.assertRaisesMessage(ValueError, expected_message="Dementors"),
+        ):
+            tasks.LockableTask().run()
 
         lock.assert_called()
 
@@ -278,11 +283,11 @@ class TestResponseMatch(BaseApiTest):
         self._assert_not_match(expected, received, message)
 
     def test_match_error_types(self):
-        expected = {"birthday": datetime(2022, 1, 1, 0, 0, 0)}
+        expected = {"birthday": datetime(2022, 1, 1, 0, 0, 0, tzinfo=UTC)}
         received = {"birthday": "2022-01-01 00:00:00"}
 
         message = (
             "There's 1 fields that differ\n- birthday: Received `<class 'str'> - 2022-01-01 00:00:00`, "
-            "but expected `<class 'datetime.datetime'> - 2022-01-01 00:00:00` "
+            "but expected `<class 'datetime.datetime'> - 2022-01-01 00:00:00+00:00` "
         )
         self._assert_not_match(expected, received, message)

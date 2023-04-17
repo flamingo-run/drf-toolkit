@@ -57,9 +57,8 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
     def test_soft_delete_model(self):
         memory = MemoryFactory()
 
-        with self.patch_notify_task() as some_task:
-            with warnings.catch_warnings(record=True) as warn:
-                memory.delete()
+        with self.patch_notify_task() as some_task, warnings.catch_warnings(record=True) as warn:
+            memory.delete()
 
         self.assertEqual("[ERASED]", str(warn[-1].message))
         some_task.assert_called_once_with(recovered=False)
@@ -69,9 +68,8 @@ class TestSoftDeleteSignals(HogwartsTestMixin, BaseApiTest):
         memory.delete()
         memory.refresh_from_db()
 
-        with self.patch_notify_task() as some_task:
-            with warnings.catch_warnings(record=True) as warn:
-                memory.undelete()
+        with self.patch_notify_task() as some_task, warnings.catch_warnings(record=True) as warn:
+            memory.undelete()
 
         self.assertEqual("[RECOVERED]", str(warn[0].message))
         some_task.assert_called_once_with(recovered=True)

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import factory
 from factory.fuzzy import FuzzyDateTime
@@ -13,7 +13,7 @@ class WizardFactory(factory.django.DjangoModelFactory):
     picture = factory.django.FileField(filename="wiz.jpg")
     extra_picture = factory.django.FileField(filename="more_wiz.jpg")
     house = None
-    received_letter_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
+    received_letter_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=UTC))
 
     class Meta:
         model = Wizard

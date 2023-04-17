@@ -1,12 +1,11 @@
 import abc
 import logging
 import re
-from abc import ABC
 from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.db import connections
-from django.db.models import Q, Model
+from django.db.models import Model, Q
 from django.db.utils import IntegrityError
 from rest_framework import response, status, views
 
@@ -20,7 +19,7 @@ class DatabaseIntegrityError(ValidationError, abc.ABC):
         self.integrity_error = integrity_error
         self.model = model_klass
         self.data = body
-        self.engine = connections['default'].vendor
+        self.engine = connections["default"].vendor
         self.outcome = self.process()
         message = self.build_message()
         super().__init__(message=message, code=self.status_code)
@@ -68,8 +67,9 @@ class DuplicatedRecord(DatabaseIntegrityError):
 
     @classmethod
     def verify(cls, integrity_error: IntegrityError) -> bool:
-        return "UNIQUE constraint failed" in str(integrity_error) \
-            or "duplicate key value violates unique" in str(integrity_error)
+        return "UNIQUE constraint failed" in str(integrity_error) or "duplicate key value violates unique" in str(
+            integrity_error,
+        )
 
     def build_message(self) -> str:
         model_name = self.model.__name__
@@ -136,8 +136,7 @@ class InvalidRecord(DatabaseIntegrityError):
 
     @classmethod
     def verify(cls, integrity_error: IntegrityError) -> bool:
-        return "CHECK constraint failed" in str(integrity_error) or \
-            "violates check constraint" in str(integrity_error)
+        return "CHECK constraint failed" in str(integrity_error) or "violates check constraint" in str(integrity_error)
 
 
 class UpdatingSoftDeletedException(Exception):
@@ -151,10 +150,7 @@ def custom_exception_handler(exc, context):
     if resp is None:
         if isinstance(exc, ValidationError):
             msg = getattr(exc, "message", exc.args[0])
-            if isinstance(msg, (dict, str)):
-                data = msg
-            else:
-                data = exc.messages
+            data = msg if isinstance(msg, dict | str) else exc.messages
 
             status_code = getattr(exc, "code", "") or status.HTTP_400_BAD_REQUEST
             return response.Response(data={"errors": data}, status=status_code, exception=exc)

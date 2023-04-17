@@ -57,7 +57,7 @@ class TestIncludeUnavailableFilterSet(HogwartsTestMixin, BaseApiTest):
             TeacherFactory(
                 name="Nicholas de Mimsy-Porpington",
                 is_ghost=True,
-            )
+            ),
         )
 
     def test_filter_default(self):

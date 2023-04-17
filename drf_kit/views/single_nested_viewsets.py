@@ -7,7 +7,7 @@ from drf_kit.views.viewsets import CachedReadOnlyModelViewSet, CacheResponseMixi
 
 
 class SingleNestedViewMixin(NestedViewMixin):
-    http_method_names = ModelViewSet.http_method_names + ["put"]
+    http_method_names = [*ModelViewSet.http_method_names, "put"]
 
     def get_object(self):
         return self.filter_queryset(self.get_queryset()).first()

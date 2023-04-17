@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytz
 
@@ -19,27 +19,27 @@ class TestFormatAsStr(BaseApiTest):
         self.assertEqual("True", as_str)
 
     def test_format_naive_datetime(self):
-        naive = datetime(1990, 7, 19, 15, 43, 20)
+        naive = datetime(1990, 7, 19, 15, 43, 20, tzinfo=UTC)
         as_str = serializers.as_str(naive)
         self.assertEqual("1990-07-19T15:43:20Z", as_str)
 
     def test_format_naive_milliseconds_datetime(self):
-        naive = datetime(1990, 7, 19, 15, 43, 20, 999999)
+        naive = datetime(1990, 7, 19, 15, 43, 20, 999999, tzinfo=UTC)
         as_str = serializers.as_str(naive)
         self.assertEqual("1990-07-19T15:43:20Z", as_str)
 
     def test_format_utc_timezoned_datetime(self):
-        timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=timezone.utc)
+        timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=UTC)
         as_str = serializers.as_str(timezoned)
         self.assertEqual("1990-07-19T15:43:20Z", as_str)
 
     def test_format_non_utc_timezoned_datetime(self):
-        timezoned = self.non_utc(datetime(1990, 7, 19, 15, 43, 20))
+        timezoned = self.non_utc(datetime(1990, 7, 19, 15, 43, 20))  # noqa: DTZ001
         as_str = serializers.as_str(timezoned)
         self.assertEqual("1990-07-19T07:43:20Z", as_str)
 
     def test_format_utc_timezoned_milliseconds_datetime(self):
-        timezoned = datetime(1990, 7, 19, 15, 43, 20, 999999, tzinfo=timezone.utc)
+        timezoned = datetime(1990, 7, 19, 15, 43, 20, 999999, tzinfo=UTC)
         as_str = serializers.as_str(timezoned)
         self.assertEqual("1990-07-19T15:43:20Z", as_str)
 
@@ -54,21 +54,21 @@ class TestAssureTimezone(BaseApiTest):
 
     def test_isoformat(self):
         value = "2022-01-01T10:20:34T"
-        expected = datetime(2022, 1, 1, 10, 20, 34, tzinfo=timezone.utc)
+        expected = datetime(2022, 1, 1, 10, 20, 34, tzinfo=UTC)
         assured_dt = serializers.assure_tz(value)
         self.assertEqual(expected, assured_dt)
 
     def test_timezoned_datetime(self):
-        timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=timezone.utc)
+        timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=UTC)
         assured_dt = serializers.assure_tz(timezoned)
         self.assertEqual(timezoned, assured_dt)
 
     def test_naive_datetime(self):
-        timezoned = datetime(1990, 7, 19, 15, 43, 20)
+        timezoned = datetime(1990, 7, 19, 15, 43, 20, tzinfo=UTC)
         assured_dt = serializers.assure_tz(timezoned)
-        self.assertEqual(timezoned.replace(tzinfo=timezone.utc), assured_dt)
+        self.assertEqual(timezoned.replace(tzinfo=UTC), assured_dt)
 
     def test_naive_datetime_custom_timezone(self):
-        timezoned = datetime(1990, 7, 19, 15, 43, 20)
+        timezoned = datetime(1990, 7, 19, 15, 43, 20)  # noqa: DTZ001
         assured_dt = serializers.assure_tz(timezoned, tz=pytz.timezone("Hongkong"))
         self.assertEqual(self.non_utc(timezoned), assured_dt)

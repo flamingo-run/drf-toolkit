@@ -8,7 +8,6 @@ import test_app.storage
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -56,7 +55,9 @@ class Migration(migrations.Migration):
                 (
                     "spell",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name="spell_casts", to="test_app.spell"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="spell_casts",
+                        to="test_app.spell",
                     ),
                 ),
             ],
@@ -83,7 +84,9 @@ class Migration(migrations.Migration):
                 (
                     "extra_picture",
                     models.FileField(
-                        blank=True, null=True, upload_to=test_app.storage.StoragePath._preserve_name_upload
+                        blank=True,
+                        null=True,
+                        upload_to=test_app.storage.StoragePath._preserve_name_upload,
                     ),
                 ),
                 ("received_letter_at", models.DateTimeField(blank=True, null=True)),
@@ -212,7 +215,11 @@ class Migration(migrations.Migration):
                 (
                     "order",
                     models.PositiveIntegerField(
-                        blank=True, db_index=True, default=None, null=True, verbose_name="order"
+                        blank=True,
+                        db_index=True,
+                        default=None,
+                        null=True,
+                        verbose_name="order",
                     ),
                 ),
                 ("year", models.IntegerField()),
@@ -220,7 +227,9 @@ class Migration(migrations.Migration):
                 (
                     "wizard",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name="placements", to="test_app.wizard"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="placements",
+                        to="test_app.wizard",
                     ),
                 ),
             ],
@@ -235,7 +244,9 @@ class Migration(migrations.Migration):
             model_name="spellcast",
             name="wizard",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, related_name="spell_casts", to="test_app.wizard"
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="spell_casts",
+                to="test_app.wizard",
             ),
         ),
         migrations.CreateModel(
@@ -266,7 +277,9 @@ class Migration(migrations.Migration):
                 (
                     "owner",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name="memories", to="test_app.wizard"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="memories",
+                        to="test_app.wizard",
                     ),
                 ),
             ],

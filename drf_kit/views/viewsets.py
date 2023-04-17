@@ -75,10 +75,7 @@ class MultiSerializerMixin:
         action = self._get_action()
 
         queryset = querysets.get(action)
-        if not queryset:
-            queryset = super().get_queryset(*args, **kwargs)
-        else:
-            queryset = queryset.all()
+        queryset = super().get_queryset(*args, **kwargs) if not queryset else queryset.all()
         return queryset
 
     def _get_action(self):

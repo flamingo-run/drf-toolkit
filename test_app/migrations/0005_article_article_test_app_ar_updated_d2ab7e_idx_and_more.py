@@ -8,7 +8,6 @@ import drf_kit.models.file_models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("test_app", "0004_newspaper_roomofrequirement_and_more"),
     ]

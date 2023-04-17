@@ -2,9 +2,10 @@
 import inspect
 import os
 import re
+from collections.abc import Callable
 from contextlib import contextmanager
 from io import StringIO
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 from unittest.mock import ANY, patch
 
 from django.core.cache import cache
@@ -44,7 +45,7 @@ class BaseApiTest(APITransactionTestCase):
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
         self.assertTrue(pattern.match(str(file)))
 
-    def assertResponseList(self, expected_items: List[Dict], response, response_key: str = "results"):
+    def assertResponseList(self, expected_items: list[dict], response, response_key: str = "results"):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_items,
@@ -52,7 +53,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=response_key,
         )
 
-    def assertResponseDetail(self, expected_item: Dict, response):
+    def assertResponseDetail(self, expected_item: dict, response):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_item,
@@ -98,8 +99,8 @@ class BaseApiTest(APITransactionTestCase):
         self,
         expected_status: int,
         response: Response,
-        expected_body: Optional[Any] = None,
-        response_key: Optional[str] = None,
+        expected_body: Any | None = None,
+        response_key: str | None = None,
     ):
         response_content = (
             response.json() if response.headers.get("Content-Type") == "application/json" else response.content.decode()
@@ -108,10 +109,7 @@ class BaseApiTest(APITransactionTestCase):
         self.assertEqual(expected_status, response.status_code, msg)
 
         if expected_body is not None:
-            if response_key:
-                body = response_content[response_key]
-            else:
-                body = response_content
+            body = response_content[response_key] if response_key else response_content
             self.assertResponseMatch(expected=expected_body, received=body)
         else:
             msg = f"Expected body to be empty, but received {response_content}"
@@ -156,7 +154,7 @@ class BaseApiTest(APITransactionTestCase):
                 return {}
 
             if isinstance(expected_item, list):
-                if not isinstance(received_item, (list, set)):
+                if not isinstance(received_item, list | set):
                     msg = f"Received `{received_item}`, but expected to `{expected_item}`"
                     return {"__match__": msg}
 
@@ -183,17 +181,18 @@ class BaseApiTest(APITransactionTestCase):
                     return {"__eq__": msg}
                 try:
                     self.assertEqual(expected_item, set(received_item))
-                    return {}
+
                 except AssertionError:
                     msg = (
                         f"Received `{', '.join(sorted(received_item))}`, "
                         f"but expected to have `{', '.join(sorted(expected_item))}` items"
                     )
                     return {"__eq__": msg}
+                else:
+                    return {}
 
             try:
                 self.assertEqual(expected_item, received_item)
-                return {}
             except AssertionError:
                 msg = f"Received `{received_item}`, but expected `{expected_item}`"
                 if not isinstance(received_item, type(expected_item)):
@@ -203,6 +202,8 @@ class BaseApiTest(APITransactionTestCase):
                     )
 
                 return {"__eq__": msg}
+            else:
+                return {}
 
         errors = _compare(expected_item=expected, received_item=received)
         if errors:
@@ -222,8 +223,8 @@ class BaseApiTest(APITransactionTestCase):
 
     def patch_cache_lock(
         self,
-        lock_side_effect: Optional[Union[Callable, Exception, Type[Exception]]] = None,
-        unlock_side_effect: Optional[Union[Callable, Exception, Type[Exception]]] = None,
+        lock_side_effect: Callable | Exception | type[Exception] | None = None,
+        unlock_side_effect: Callable | Exception | type[Exception] | None = None,
     ):
         class CacheAssertion:
             def __init__(self):

@@ -23,7 +23,7 @@ class HouseStatsSerializer(HouseSerializer):
     wizard_count = IntegerField(read_only=True)
 
     class Meta(HouseSerializer.Meta):
-        fields = HouseSerializer.Meta.fields + ("wizard_count",)
+        fields = (*HouseSerializer.Meta.fields, "wizard_count")
 
 
 class WizardShortSerializer(serializers.BaseModelSerializer):
@@ -41,7 +41,8 @@ class WizardSerializer(WizardShortSerializer):
     house = HouseSerializer(read_only=True)
 
     class Meta(WizardShortSerializer.Meta):
-        fields = WizardShortSerializer.Meta.fields + (
+        fields = (
+            *WizardShortSerializer.Meta.fields,
             "id",
             "created_at",
             "updated_at",
@@ -86,7 +87,7 @@ class PatronusSerializer(serializers.BaseModelSerializer):
 class TeacherSerializer(WizardSerializer):
     class Meta(WizardSerializer.Meta):
         model = models.Teacher
-        fields = WizardSerializer.Meta.fields + ("is_ghost",)
+        fields = (*WizardSerializer.Meta.fields, "is_ghost")
 
 
 class SpellSerializer(serializers.BaseModelSerializer):

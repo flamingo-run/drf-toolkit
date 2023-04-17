@@ -5,8 +5,6 @@ from rest_framework import status
 from drf_kit.tests import BaseApiTest
 from test_app import models
 from test_app.tests.factories.beast_factories import BeastFactory
-from test_app.tests.factories.house_factories import HouseFactory
-from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -144,7 +142,7 @@ class TestConstraintView(HogwartsTestMixin, BaseApiTest):
         response = self.client.post(url, data=data)
 
         expected = {
-            "errors": f"This Beast violates the check `minimum-beast-age` which states `(AND: ('age__gte', 0))`",
+            "errors": "This Beast violates the check `minimum-beast-age` which states `(AND: ('age__gte', 0))`",
         }
         self.assertResponse(expected_status=status.HTTP_400_BAD_REQUEST, expected_body=expected, response=response)
 

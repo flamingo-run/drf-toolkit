@@ -23,6 +23,8 @@ class AvailabilityModelMixin(models.Model):
         default=None,
     )
 
+    objects = managers.AvailabilityManager()
+
     class Meta:
         abstract = True
         indexes = [
@@ -35,8 +37,6 @@ class AvailabilityModelMixin(models.Model):
                 name="%(class)s_invalid_date_range",
             ),
         ]
-
-    objects = managers.AvailabilityManager()
 
     @property
     def is_future(self) -> bool:
