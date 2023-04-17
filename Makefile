@@ -20,14 +20,13 @@ check:
 
 lint:
 	@echo "Checking code style ..."
-	DJANGO_SETTINGS_MODULE=test_app.settings APP_NAME=sample-app ENV=test poetry run pylint ./drf_kit ./test_app
 	poetry run black --check .
-	poetry run isort --check .
+	poetry run ruff check .
 
 style:
 	@echo "Applying code style ..."
 	poetry run black .
-	poetry run isort .
+	poetry run ruff . --fix
 
 
 unit:

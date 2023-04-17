@@ -15,14 +15,13 @@ djangorestframework = "^3"
 django-filter = "^22.0"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respct_to to be FK only
 drf-extensions = "^0.7"
+psycopg = {version = "^3", "extras" = ["binary"] }
 
 
-[tool.poetry.dev-dependencies]
-pylint = "*"
-pylint-django = "*"
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
 coverage = "*"
 black = "*"
-isort = "*"
 safety = "*"
 factory-boy = "*"
 freezegun = "*"
@@ -33,33 +32,26 @@ line-length = 120
 target-version = ['py311']
 
 
-[tool.isort]
-profile = "black"
-line_length = 120
-include_trailing_comma = true
-multi_line_output = 3
+[tool.ruff]
+select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
+ignore = ["PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912"]
+line-length = 120
+target-version = "py311"
 
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"settings.py" = ["F403", "F404", "F405"]
 
-[tool.pylint.main]
-ignore = "migrations"
-load-plugins = "pylint_django"
-recursive = true
-init-hook = 'import sys; sys.path.append("./")'
-disable = "C0114, C0115, C0116, W0212, W0511, W0613, W1203, R0401, R0901, R0903, R0913, R0801, R0902, R0911, R0914, R0912"
-
-[tool.pylint.format]
-max-line-length = "120"
-
-[tool.pylint.basic]
-good-names= "i, j, k, m, n, dt, db, pk, tz, qs, ex, _, s, fk, ct, id, at"
+[tool.ruff.isort]
+known-first-party = ["test_app", "drf_kit"]
 
 
 [tool.coverage.run]
 branch = true
-source = ["drf_kit"]
+source = ["django_nilo"]
 omit = ["*/manage.py", "*/settings.py", "*/wsgi.py"]
 
 
 [build-system]
-requires = ["poetry"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
