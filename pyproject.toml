@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.20.0"
+version = "1.21.0"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -12,7 +12,7 @@ packages = [
 python = ">=3.10,<3.12"
 Django = ">=3,<5"
 djangorestframework = "^3"
-django-filter = "^22.0"
+django-filter = "^23.0"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respct_to to be FK only
 drf-extensions = "^0.7"
 psycopg = {version = "^3", "extras" = ["binary"] }
