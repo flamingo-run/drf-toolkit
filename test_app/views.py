@@ -13,6 +13,7 @@ from drf_kit.views import (
     WriteOnlyModelViewSet,
     WriteOnlyNestedModelViewSet,
 )
+from drf_kit.views.viewsets import SearchMixin
 from test_app import filters, models, serializers
 
 
@@ -29,7 +30,7 @@ class HouseViewSet(StatsViewMixin, ModelViewSet):
         )
 
 
-class TeacherViewSet(CachedModelViewSet):
+class TeacherViewSet(SearchMixin, CachedModelViewSet):
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
     filterset_class = filters.TeacherFilterSet

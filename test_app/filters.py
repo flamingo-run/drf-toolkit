@@ -9,6 +9,7 @@ class TeacherFilterSet(filters.IncludeUnavailableFilterSet):
         model = models.Teacher
         fields = [
             "id",
+            "name",
             "include_unavailable",
             "is_half_blood",
         ]
