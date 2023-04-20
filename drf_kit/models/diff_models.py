@@ -1,3 +1,4 @@
+import contextlib
 import logging
 
 from drf_kit.serializers import as_dict
@@ -40,14 +41,9 @@ class ModelDiffMixin:
             if not getattr(field, "editable", False):
                 continue
             serializable_value = field.value_from_object(self)
-            try:
+            with contextlib.suppress(Exception):
                 serializable_value = field.get_prep_value(value=serializable_value)
-            except Exception:  # pylint: disable=broad-except
-                # The prep-value might fail because Django performs a check
-                # (eg. the field cannot be empty)
-                # But we don't really care for that, we just want their serializable versions
-                # and not necessarily their database-compliant versions
-                ...
+
             data[_field_name(field)] = serializable_value
 
         return as_dict(data)
