@@ -16,6 +16,14 @@ class FilterBackend(DjangoFilterBackend):
             raise ValidationError(str(exc)) from exc
 
 
+class FilterInBodyBackend(DjangoFilterBackend):
+    def get_filterset_kwargs(self, request, queryset, view):
+        # Instead of data=request.query_params, we use data=request.data
+        return super().get_filterset_kwargs(request, queryset, view) | {
+            "data": request.data,
+        }
+
+
 class IntBooleanFilter(Filter):
     field_class = IntegerField
 

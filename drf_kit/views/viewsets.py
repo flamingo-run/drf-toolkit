@@ -2,11 +2,12 @@ import logging
 
 from django.db import IntegrityError
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
-from drf_kit import exceptions
+from drf_kit import exceptions, filters
 from drf_kit.cache import cache_key_constructor, cache_response
 from drf_kit.exceptions import DuplicatedRecord
 
@@ -143,6 +144,12 @@ class MultiSerializerMixin:
 
     def get_exception_handler(self):
         return exceptions.custom_exception_handler
+
+
+class SearchMixin:
+    @action(detail=False, methods=["post"], filter_backends=[filters.FilterInBodyBackend])
+    def search(self, request):
+        return self.list(request)
 
 
 class ModelViewSet(MultiSerializerMixin, viewsets.ModelViewSet):
