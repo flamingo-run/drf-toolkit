@@ -77,7 +77,7 @@ router.register(
 
 router.register(
     r"beasts",
-    views.BestViewSet,
+    views.BeastViewSet,
     "beast",
 )
 
