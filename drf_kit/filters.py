@@ -2,6 +2,7 @@ import functools
 
 from django.db.models import Q
 from django.forms import IntegerField
+from django.http import QueryDict
 from django_filters import MultipleChoiceFilter
 from django_filters.fields import MultipleChoiceField
 from django_filters.rest_framework import DjangoFilterBackend, Filter, FilterSet
@@ -19,8 +20,20 @@ class FilterBackend(DjangoFilterBackend):
 class FilterInBodyBackend(DjangoFilterBackend):
     def get_filterset_kwargs(self, request, queryset, view):
         # Instead of data=request.query_params, we use data=request.data
+        # The format must be as close as possible to the format of query_params (i.e. QueryDict)
+        # so filter backends won't know the difference
+
+        request_data = request.data.copy() or {}
+        if isinstance(request_data, QueryDict):
+            query = request_data
+        elif isinstance(request_data, dict):
+            query = QueryDict(mutable=True)
+            for key, value in request.data.items():
+                request_data[key] = value
+        else:
+            raise TypeError("request.data must be present")
         return super().get_filterset_kwargs(request, queryset, view) | {
-            "data": request.data,
+            "data": query,
         }
 
 

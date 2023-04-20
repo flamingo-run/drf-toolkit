@@ -2,7 +2,7 @@
 import inspect
 import os
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from contextlib import contextmanager
 from io import StringIO
 from typing import Any
@@ -10,6 +10,7 @@ from unittest.mock import ANY, patch
 
 from django.core.cache import cache
 from django.core.management import call_command
+from django.db.models import Model
 from django.utils.connection import ConnectionProxy
 from rest_framework import status
 from rest_framework.response import Response
@@ -45,7 +46,21 @@ class BaseApiTest(APITransactionTestCase):
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
         self.assertTrue(pattern.match(str(file)))
 
-    def assertResponseList(self, expected_items: list[dict], response, response_key: str = "results"):
+    def assertResponseItems(
+        self, expected_items: Iterable[int | str | Model], response, response_key: str = "results", pk_field: str = "id",
+    ):
+        self.assertStatusCode(expected_status=status.HTTP_200_OK, response=response)
+
+        def _extract_id(i: int | str | Model):
+            if isinstance(i, Model):
+                return getattr(i, pk_field)
+            return i
+
+        expected_ids = {_extract_id(i=item) for item in expected_items}
+        received_ids = {s[pk_field] for s in response.json()[response_key]}
+        self.assertEqual(expected_ids, received_ids)
+
+    def assertResponseList(self, expected_items: Iterable[dict], response, response_key: str = "results"):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_items,
@@ -95,6 +110,16 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
+    def _extract_response_content(self, response: Response) -> dict | str:
+        return (
+            response.json() if response.headers.get("Content-Type") == "application/json" else response.content.decode()
+        )
+
+    def assertStatusCode(self, expected_status: int, response: Response):
+        response_content = self._extract_response_content(response)
+        msg = f"Expected status code {expected_status}, but received {response.status_code} with {response_content}"
+        self.assertEqual(expected_status, response.status_code, msg)
+
     def assertResponse(
         self,
         expected_status: int,
@@ -102,12 +127,9 @@ class BaseApiTest(APITransactionTestCase):
         expected_body: Any | None = None,
         response_key: str | None = None,
     ):
-        response_content = (
-            response.json() if response.headers.get("Content-Type") == "application/json" else response.content.decode()
-        )
-        msg = f"Expected status code {expected_status}, but received {response.status_code} with {response_content}"
-        self.assertEqual(expected_status, response.status_code, msg)
+        self.assertStatusCode(expected_status=expected_status, response=response)
 
+        response_content = self._extract_response_content(response)
         if expected_body is not None:
             body = response_content[response_key] if response_key else response_content
             self.assertResponseMatch(expected=expected_body, received=body)
