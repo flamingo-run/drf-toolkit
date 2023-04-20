@@ -47,7 +47,11 @@ class BaseApiTest(APITransactionTestCase):
         self.assertTrue(pattern.match(str(file)))
 
     def assertResponseItems(
-        self, expected_items: Iterable[int | str | Model], response, response_key: str = "results", pk_field: str = "id",
+        self,
+        expected_items: Iterable[int | str | Model],
+        response,
+        response_key: str = "results",
+        pk_field: str = "id",
     ):
         self.assertStatusCode(expected_status=status.HTTP_200_OK, response=response)
 

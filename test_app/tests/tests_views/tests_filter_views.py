@@ -1,4 +1,3 @@
-
 from rest_framework import status
 
 from drf_kit.tests import BaseApiTest

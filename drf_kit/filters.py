@@ -27,14 +27,22 @@ class FilterInBodyBackend(DjangoFilterBackend):
         if isinstance(request_data, QueryDict):
             query = request_data
         elif isinstance(request_data, dict):
-            query = QueryDict(mutable=True)
-            for key, value in request.data.items():
-                request_data[key] = value
+            query = self.dict_to_query(body=request_data)
         else:
             raise TypeError("request.data must be present")
         return super().get_filterset_kwargs(request, queryset, view) | {
             "data": query,
         }
+
+    @classmethod
+    def dict_to_query(cls, body: dict) -> QueryDict:
+        query = QueryDict(mutable=True)
+        for key, value in body.items():
+            if isinstance(value, list):
+                query.setlist(key, value)
+            else:
+                query[key] = value
+        return query
 
 
 class IntBooleanFilter(Filter):
