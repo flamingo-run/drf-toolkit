@@ -1,6 +1,7 @@
 from unittest.mock import ANY
 
 from drf_kit.serializers import as_str
+from test_app import models
 from test_app.tests.factories.house_factories import HouseFactory
 from test_app.tests.factories.memory_factories import MemoryFactory
 from test_app.tests.factories.patronus_factories import PatronusFactory
@@ -13,6 +14,21 @@ from test_app.tests.factories.wizard_factories import WizardFactory
 
 
 class HogwartsTestMixin:
+    @classmethod
+    def expected_teacher(cls, teacher: models.Teacher) -> dict:
+        return {
+            "id": teacher.id,
+            "created_at": ANY,
+            "updated_at": ANY,
+            "name": teacher.name,
+            "age": teacher.age,
+            "is_half_blood": teacher.is_half_blood,
+            "received_letter_at": as_str(teacher.received_letter_at),
+            "picture": teacher.picture.url if teacher.picture else None,
+            "is_ghost": teacher.is_ghost,
+            "house": None,
+        }
+
     def _set_up_wizards(self):
         self.wizards = [
             WizardFactory(
@@ -99,21 +115,7 @@ class HogwartsTestMixin:
 
     @property
     def expected_teachers(self):
-        return [
-            {
-                "id": teacher.id,
-                "created_at": ANY,
-                "updated_at": ANY,
-                "name": teacher.name,
-                "age": teacher.age,
-                "is_half_blood": teacher.is_half_blood,
-                "received_letter_at": as_str(teacher.received_letter_at),
-                "picture": teacher.picture.url if teacher.picture else None,
-                "is_ghost": teacher.is_ghost,
-                "house": None,
-            }
-            for teacher in self.teachers
-        ]
+        return [self.expected_teacher(teacher) for teacher in self.teachers]
 
     def _set_up_houses(self):
         self.houses = [
