@@ -15,7 +15,8 @@ djangorestframework = "^3"
 django-filter = "^23.0"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respct_to to be FK only
 drf-extensions = "^0.7"
-psycopg = {version = "^3", "extras" = ["binary"] }
+# psycopg = {version = "^3", "extras" = ["binary"] }  # NewRelic is not compatible
+psycopg2-binary = "^2"
 
 
 [tool.poetry.group.dev.dependencies]
