@@ -34,7 +34,10 @@ class BaseApiTest(APITransactionTestCase):
             call_command("makemigrations", app_name, "--check", "--dry-run", interactive=False, stdout=out)
         except SystemExit:
             message = f"Missing migration. Run python manage.py makemigrations {app_name}"
-        self.assertIn("No changes", out.getvalue(), msg=message)
+
+        # When running parallel tests, the output might come empty
+        if output := out.getvalue():
+            self.assertIn("No changes", output, msg=message)
 
     def uuid_file_path_regex(self, prefix, pk, name, extension):
         uuid_regex = r"[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}"
