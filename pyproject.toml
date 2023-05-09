@@ -12,8 +12,8 @@ packages = [
 python = ">=3.10,<3.12"
 Django = ">=3,<5"
 djangorestframework = "^3"
-django-filter = "^23.0"
-django-ordered-model = "<3.7.2"  # this version blocks order_with_respct_to to be FK only
+django-filter = "^23"
+django-ordered-model = "<3.7.2"  # this version blocks order_with_respect_to to be FK only
 drf-extensions = "^0.7"
 # psycopg = {version = "^3", "extras" = ["binary"] }  # NewRelic is not compatible
 psycopg2-binary = "^2"
@@ -21,11 +21,16 @@ psycopg2-binary = "^2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
-coverage = "*"
 black = "*"
 safety = "*"
 factory-boy = "*"
 freezegun = "*"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-rerunfailures = "*"
+pytest-xdist = "*"
+pytest-sugar = "*"
+pytest-random-order = "*"
 
 
 [tool.black]
@@ -47,9 +52,15 @@ target-version = "py311"
 known-first-party = ["test_app", "drf_kit"]
 
 
+[tool.pytest.ini_options]
+addopts = "-n auto --reruns 1 --random-order --cov"
+python_files = ["tests_*.py"]
+DJANGO_SETTINGS_MODULE = "test_app.settings"
+pythonpath = [".", "test_app", "drf_kit"]
+
 [tool.coverage.run]
 branch = true
-source = ["django_nilo"]
+source = ["drf_kit"]
 omit = ["*/manage.py", "*/settings.py", "*/wsgi.py"]
 
 
