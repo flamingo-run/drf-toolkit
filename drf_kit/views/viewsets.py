@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from drf_kit import exceptions, filters
-from drf_kit.cache import cache_key_constructor, cache_response
+from drf_kit.cache import cache_response
 from drf_kit.exceptions import DuplicatedRecord
 
 logger = logging.getLogger(__name__)
@@ -166,11 +166,11 @@ class NonDestructiveModelViewSet(ModelViewSet):
 
 
 class CacheResponseMixin(BaseCacheResponseMixin):
-    @cache_response(key_func=cache_key_constructor)
+    @cache_response()
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    @cache_response(key_func=cache_key_constructor)
+    @cache_response()
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
