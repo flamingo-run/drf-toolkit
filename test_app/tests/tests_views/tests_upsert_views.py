@@ -1,7 +1,10 @@
 from unittest.mock import ANY
 
+from rest_framework import status
+
 from drf_kit.tests import BaseApiTest
 from test_app import models
+from test_app.tests.factories.tri_wizard_placement_factories import TriWizardPlacementFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -94,6 +97,46 @@ class TestUpsertView(HogwartsTestMixin, BaseApiTest):
 
         placements = models.TriWizardPlacement.objects.all()
         self.assertEqual(4, placements.count())
+
+    def test_post_with_one_duplicate_prize(self):
+        placement = TriWizardPlacementFactory(prize="ball-red")
+        TriWizardPlacementFactory.create_batch(3)  # noise
+
+        url = self.url
+        data = {
+            "wizard_id": self.wizards[0].pk,
+            "prize": "ball",
+            "year": 2000,
+        }
+
+        response = self.client.post(url, data=data)
+
+        expected = {
+            "id": placement.pk,  # upserted
+            "wizard_id": self.wizards[0].pk,  # updated
+            "year": 2000,  # updated
+        }
+        self.assertResponseUpdated(expected_item=expected, response=response)
+
+        placement.refresh_from_db()
+        self.assertEqual(placement.prize, "ball")  # updated
+
+    def test_post_with_many_duplicate_prize(self):
+        placement_a = TriWizardPlacementFactory(prize="ball-red", year=1990)
+        placement_b = TriWizardPlacementFactory(prize="ball-blue", year=1991)
+        TriWizardPlacementFactory.create_batch(3)  # noise
+
+        url = self.url
+        data = {
+            "wizard_id": self.wizards[0].pk,
+            "prize": "ball",
+            "year": 2000,
+        }
+
+        response = self.client.post(url, data=data)
+        self.assertEqual(status.HTTP_409_CONFLICT, response.status_code)
+        expected_error = {"errors": f"Model is duplicated with Placement {placement_a.pk} | Placement {placement_b.pk}"}
+        self.assertEqual(expected_error, response.json())
 
     def test_patch_endpoint(self):
         placements = self.placements[0]

@@ -178,6 +178,9 @@ class TriWizardPlacement(OrderedModel):
             "order",
         ]
 
+    def __str__(self):
+        return f"Placement {self.pk}"
+
 
 class Tale(SoftDeleteInheritanceOrderedModel):
     description = models.TextField()
