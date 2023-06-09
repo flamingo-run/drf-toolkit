@@ -1,6 +1,7 @@
 import abc
 import logging
 import re
+from collections.abc import Iterable
 from typing import Any
 
 from django.core.exceptions import ValidationError
@@ -137,6 +138,18 @@ class InvalidRecord(DatabaseIntegrityError):
     @classmethod
     def verify(cls, integrity_error: IntegrityError) -> bool:
         return "CHECK constraint failed" in str(integrity_error) or "violates check constraint" in str(integrity_error)
+
+
+class ConflictException(ValidationError):
+    status_code = status.HTTP_409_CONFLICT
+
+    def __init__(self, with_models: Iterable[Model], message: str | None = None):
+        self.with_models = list(with_models)
+        message = message or self.build_message()
+        super().__init__(message=message, code=self.status_code)
+
+    def build_message(self) -> str:
+        return f"Model is duplicated with {' | '.join([str(model) for model in self.with_models])}"
 
 
 class UpdatingSoftDeletedException(Exception):

@@ -9,7 +9,7 @@ from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from drf_kit import exceptions, filters
 from drf_kit.cache import cache_response
-from drf_kit.exceptions import DuplicatedRecord
+from drf_kit.exceptions import ConflictException, DuplicatedRecord
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +202,11 @@ class UpsertMixin(MultiSerializerMixin):
                 raise
             error = DuplicatedRecord(model_klass=self.get_queryset().model, body=request.data, integrity_error=exc)
             instance = self.get_queryset().get(error.get_filter())
-            return self.upsert(instance=instance, data=request.data, *args, **kwargs)
+        except ConflictException as exc:
+            if len(exc.with_models) != 1:  # Upsert can only handle conflict with 1 model
+                raise
+            instance = exc.with_models[0]
+        return self.upsert(instance=instance, data=request.data, *args, **kwargs)
 
     def upsert(self, instance, data, *args, **kwargs):
         partial = True
