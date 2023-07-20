@@ -41,7 +41,9 @@ class Migration(migrations.Migration):
             model_name="beast",
             name="category",
             field=models.ForeignKey(
-                null=True, on_delete=django.db.models.deletion.CASCADE, to="test_app.beastcategory",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="test_app.beastcategory",
             ),
         ),
     ]

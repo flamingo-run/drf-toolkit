@@ -1,5 +1,6 @@
 from django.db import models
 
+from drf_kit.fields import SlugifyField
 from drf_kit.models import (
     AvailabilityModel,
     BaseModel,
@@ -236,6 +237,7 @@ class ExclusiveArticle(SoftDeleteModel):
         on_delete=models.CASCADE,
     )
     title = models.CharField(max_length=30, default="?")
+    slug = SlugifyField(null=True)
 
 
 class ExclusiveNews(SoftDeleteModel):
