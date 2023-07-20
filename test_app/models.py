@@ -256,3 +256,13 @@ class Beast(SoftDeleteModel):
             models.UniqueConstraint(fields=["name", "age"], name="single-beast-per-year"),
             models.CheckConstraint(check=models.Q(age__gte=0), name="minimum-beast-age"),
         ]
+
+
+class BeastOwnership(SoftDeleteModel):
+    owner = models.ForeignKey(to="test_app.BeastOwner", on_delete=models.CASCADE)
+    beast = models.ForeignKey(to="test_app.Beast", on_delete=models.CASCADE, related_name="ownerships")
+
+
+class BeastOwner(SoftDeleteModel):
+    name = models.CharField(max_length=100)
+    beasts = models.ManyToManyField(to="test_app.Beast", through=BeastOwnership, related_name="owners")

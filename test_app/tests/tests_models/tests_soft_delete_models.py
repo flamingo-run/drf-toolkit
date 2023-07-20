@@ -1,7 +1,10 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import Article, ExclusiveArticle, ExclusiveNews, Memory, News, Newspaper
+from test_app.models import Article, BeastOwnership, ExclusiveArticle, ExclusiveNews, Memory, News, Newspaper
 from test_app.tests.factories.article_factories import ArticleFactory, ExclusiveArticleFactory
+from test_app.tests.factories.beast_factories import BeastFactory
+from test_app.tests.factories.beast_owner_factories import BeastOwnerFactory
+from test_app.tests.factories.beast_ownership_factories import BeastOwnershipFactory
 from test_app.tests.factories.memory_factories import MemoryFactory
 from test_app.tests.factories.news_factories import ExclusiveNewsFactory, NewsFactory
 from test_app.tests.factories.newsaper_factories import NewspaperFactory
@@ -150,6 +153,26 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
         memories = wizard.memories.all_with_deleted()
         self.assertEqual(2, memories.count())
+
+    def test_get_m2m(self):
+        owner = BeastOwnerFactory()
+        ownership_a, ownership_b, ownership_c = BeastOwnershipFactory.create_batch(3, owner=owner)
+
+        self.assertEqual(3, owner.beasts.count())
+        ownership_b.delete()
+
+        self.assertEqual(2, BeastOwnership.objects.count())
+        self.assertEqual(2, owner.beasts.count())
+
+    def test_get_m2m_reverse(self):
+        beast = BeastFactory()
+        ownership_a, ownership_b, ownership_c = BeastOwnershipFactory.create_batch(3, beast=beast)
+
+        self.assertEqual(3, beast.owners.count())
+        ownership_b.delete()
+
+        self.assertEqual(2, BeastOwnership.objects.count())
+        self.assertEqual(2, beast.owners.count())
 
 
 class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
