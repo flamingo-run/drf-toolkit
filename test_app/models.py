@@ -247,9 +247,14 @@ class ExclusiveNews(SoftDeleteModel):
     description = models.TextField(default="?")
 
 
+class BeastCategory(SoftDeleteModel):
+    name = models.CharField(max_length=100)
+
+
 class Beast(SoftDeleteModel):
     name = models.CharField(max_length=100)
     age = models.IntegerField()
+    category = models.ForeignKey(to=BeastCategory, on_delete=models.CASCADE, null=True, related_name="beasts")
 
     class Meta(BaseModel.Meta):
         constraints = [

@@ -1,7 +1,7 @@
 from collections.abc import Generator, Iterable
 
 from django.db import models
-from django.db.models import ManyToManyRel, Q, query
+from django.db.models import ManyToManyRel, ManyToOneRel, Q, query
 from ordered_model.models import OrderedModelQuerySet
 
 from drf_kit.managers.availability_managers import AvailabilityManager
@@ -43,30 +43,43 @@ class SoftDeleteQuerySet(query.QuerySet):
             kwargs |= extra_filter
         return super().filter(*args, **kwargs)
 
-    def _get_m2m_relations_for(self, fields: Iterable[str]) -> Generator[ManyToManyRel, None, None]:
+    def _get_m2m_relations_for(self, fields: Iterable[str]) -> Generator["SoftDeleteModel", None, None]:  # noqa: F821
         from drf_kit.models import SoftDeleteModel
 
         related_fields = {field.split("__")[0] for field in fields}
 
         # Check if any of the fields being used to filter has a M2M relationship with SoftDelete
-        def _is_m2m_with_soft_delete(field_name: str, m2m_rel: ManyToManyRel) -> bool:
-            return field_name in related_fields and m2m_rel.through and issubclass(m2m_rel.through, SoftDeleteModel)
+        def _get_m2m_with_soft_delete(
+            field_name: str, m2m_rel: ManyToManyRel | ManyToOneRel,
+        ) -> type[SoftDeleteModel] | None:
+            if field_name not in related_fields:
+                return None
+            if isinstance(m2m_rel, ManyToManyRel) and m2m_rel.through and issubclass(m2m_rel.through, SoftDeleteModel):
+                return m2m_rel.through
+            if isinstance(m2m_rel, ManyToOneRel) and issubclass(m2m_rel.model, SoftDeleteModel):
+                return m2m_rel.model
+            return None
 
         for rel_obj in self.model._meta.related_objects:  # Direct M2M relations
-            if _is_m2m_with_soft_delete(field_name=rel_obj.name, m2m_rel=rel_obj):
-                yield rel_obj
+            if rel_model := _get_m2m_with_soft_delete(field_name=rel_obj.name, m2m_rel=rel_obj):
+                yield rel_model
 
         for field_obj in self.model._meta.many_to_many:  # Reverse M2M relations
             rel_obj = field_obj.remote_field
-            if _is_m2m_with_soft_delete(field_name=field_obj.name, m2m_rel=rel_obj):
-                yield rel_obj
+            if rel_model := _get_m2m_with_soft_delete(field_name=field_obj.name, m2m_rel=rel_obj):
+                yield rel_model
 
     def _get_extra_filters(self, fields: Iterable[str]) -> Generator[dict[str, bool], None, None]:
-        for rel_obj in self._get_m2m_relations_for(fields=fields):
-            for field in rel_obj.through._meta.get_fields():
+        for rel_model in self._get_m2m_relations_for(fields=fields):
+            field_name = None
+            for field in rel_model._meta.get_fields():
                 # Locate the reverse-name of the field that points to the M2m through model
                 if isinstance(field, models.ForeignKey) and field.related_model == self.model:
                     field_name = field.remote_field.name
+                elif isinstance(field, models.ManyToOneRel) and field.field.related_model == self.model:
+                    field_name = field.field.remote_field.name
+
+                if field_name:
                     yield {f"{field_name}__deleted_at__isnull": True}
                     break
 

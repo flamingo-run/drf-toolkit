@@ -43,7 +43,9 @@ class Migration(migrations.Migration):
                 (
                     "beast",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name="ownerships", to="test_app.beast",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ownerships",
+                        to="test_app.beast",
                     ),
                 ),
                 ("owner", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="test_app.beastowner")),

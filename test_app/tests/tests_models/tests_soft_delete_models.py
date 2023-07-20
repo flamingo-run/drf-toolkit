@@ -1,7 +1,17 @@
 from drf_kit import exceptions
 from drf_kit.tests import BaseApiTest
-from test_app.models import Article, BeastOwnership, ExclusiveArticle, ExclusiveNews, Memory, News, Newspaper
+from test_app.models import (
+    Article,
+    BeastCategory,
+    BeastOwnership,
+    ExclusiveArticle,
+    ExclusiveNews,
+    Memory,
+    News,
+    Newspaper,
+)
 from test_app.tests.factories.article_factories import ArticleFactory, ExclusiveArticleFactory
+from test_app.tests.factories.beast_category_factories import BeastCategoryFactory
 from test_app.tests.factories.beast_factories import BeastFactory
 from test_app.tests.factories.beast_owner_factories import BeastOwnerFactory
 from test_app.tests.factories.beast_ownership_factories import BeastOwnershipFactory
@@ -173,6 +183,19 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
         self.assertEqual(2, BeastOwnership.objects.count())
         self.assertEqual(2, beast.owners.count())
+
+    def test_get_m2o(self):
+        category_a, category_b = BeastCategoryFactory.create_batch(2)
+        BeastFactory.create_batch(2, category=category_a)
+        beast_b1, beast_b2 = BeastFactory.create_batch(2, category=category_b)
+
+        self.assertEqual(2, BeastCategory.objects.count())
+        self.assertEqual(2, BeastCategory.objects.filter(beasts__age__gte=1).distinct().count())
+        beast_b1.delete()
+        beast_b2.delete()
+
+        self.assertEqual(2, BeastCategory.objects.count())
+        self.assertEqual(1, BeastCategory.objects.filter(beasts__age__gte=1).distinct().count())
 
 
 class TestSoftDeleteCascadeModel(HogwartsTestMixin, BaseApiTest):
