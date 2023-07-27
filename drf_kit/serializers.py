@@ -2,6 +2,7 @@ import inspect
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from decimal import Decimal
 
 import pytz
 from dateutil import parser
@@ -74,6 +75,8 @@ class JSONEncoder(DjangoJSONEncoder):
         if isinstance(o, datetime):
             value = assure_tz(o.astimezone(tz=DEFAULT_TIMEZONE))
             return value.strftime(DATETIME_FORMAT)
+        if isinstance(o, Decimal):
+            return str(o)
         if isinstance(o, ZoneInfo | pytz.tzinfo.DstTzInfo):
             return str(o)
         if issubclass(o.__class__, FieldFile):
