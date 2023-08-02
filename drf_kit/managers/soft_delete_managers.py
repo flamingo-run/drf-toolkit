@@ -1,5 +1,6 @@
 from collections.abc import Generator, Iterable
 
+from django.conf import settings
 from django.db import models
 from django.db.models import ManyToManyRel, ManyToOneRel, Q, query
 from ordered_model.models import OrderedModelQuerySet
@@ -39,9 +40,16 @@ class SoftDeleteQuerySet(query.QuerySet):
         # https://docs.djangoproject.com/en/dev/topics/db/managers/#base-managers
         # So we must manually detect if a M2M relationship is being filtered
         # and add the extra filter to exclude deleted objects
-        for extra_filter in self._get_extra_filters(fields=kwargs.keys()):
-            kwargs |= extra_filter
-        return super().filter(*args, **kwargs)
+        added_filters = False
+        if getattr(settings, "SOFT_DELETE_M2M_EXCLUDE_DELETED", False):
+            for extra_filter in self._get_extra_filters(fields=kwargs.keys()):
+                kwargs |= extra_filter
+                added_filters = True
+
+        qs = super().filter(*args, **kwargs)
+        if added_filters:
+            qs = qs.distinct()
+        return qs
 
     def _get_m2m_relations_for(self, fields: Iterable[str]) -> Generator["SoftDeleteModel", None, None]:  # noqa: F821
         from drf_kit.models import SoftDeleteModel
