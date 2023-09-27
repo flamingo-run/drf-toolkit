@@ -1,8 +1,10 @@
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import pytz
+from django.db.backends.postgresql.psycopg_any import Range
 
-from drf_kit.serializers import as_dict
+from drf_kit.serializers import as_dict, as_str
 from drf_kit.tests import BaseApiTest
 
 
@@ -18,3 +20,17 @@ class TestAsDict(BaseApiTest):
         pytz_timezone = as_dict(pytz.timezone(timezone_key))
         self.assertEqual(timezone_key, pytz_timezone)
         self.assertIsInstance(pytz_timezone, str)
+
+    def test_range_as_dict(self):
+        lower = datetime(2023, 9, 27, 15, 0, 0, tzinfo=UTC)
+        upper = lower + timedelta(days=5)
+        range = Range(lower=lower, upper=upper)
+        self.assertEqual(as_dict(range), [as_str(lower), as_str(upper)])
+
+        lower = datetime(2023, 9, 27, 15, 0, 0, tzinfo=UTC)
+        range = Range(lower=lower)
+        self.assertEqual(as_dict(range), [as_str(lower), None])
+
+        upper = datetime(2023, 9, 27, 15, 0, 0, tzinfo=UTC)
+        range = Range(upper=upper)
+        self.assertEqual(as_dict(range), [None, as_str(upper)])
