@@ -58,7 +58,8 @@ class SoftDeleteQuerySet(query.QuerySet):
 
         # Check if any of the fields being used to filter has a M2M relationship with SoftDelete
         def _get_m2m_with_soft_delete(
-            field_name: str, m2m_rel: ManyToManyRel | ManyToOneRel,
+            field_name: str,
+            m2m_rel: ManyToManyRel | ManyToOneRel,
         ) -> type[SoftDeleteModel] | None:
             if field_name not in related_fields:
                 return None
