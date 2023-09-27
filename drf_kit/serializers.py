@@ -1,14 +1,15 @@
 import inspect
 import json
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import pytz
 from dateutil import parser
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.db.backends.postgresql.psycopg_any import Range
 from django.db.models.fields.files import FieldFile
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -81,6 +82,8 @@ class JSONEncoder(DjangoJSONEncoder):
             return str(o)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
+        if isinstance(o, Range):
+            return (o.lower, o.upper)
         if hasattr(o, "_json") and callable(o._json) and not inspect.isclass(o):
             return o._json()
         if hasattr(o, "__dict__"):
