@@ -117,7 +117,7 @@ class InvalidRecord(DatabaseIntegrityError):
         model_name = self.model.__name__
         name = self.outcome
         check = self.constraint_check or ""
-        return f"This {model_name} violates the check `{name}` which states `{str(check)}`"
+        return f"This {model_name} violates the check `{name}` which states `{check!s}`"
 
     @property
     def constraint_check(self) -> Q | None:
