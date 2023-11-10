@@ -59,15 +59,16 @@ class TestVeryCustomView(HogwartsTestMixin, BaseApiTest):
         }
         self.assertResponseCreate(expected_item=expected, response=response)
 
-    def test_update_endpoint(self):
+    def test_update(self):
         wizard = self.wizards[0]
-        url = f"{self.url}/{wizard.pk}"
-        data = {
-            "age": 99,
-            "plz_ignore_me": 666,
-        }
-        response = self.client.patch(url, data)
 
-        expected = self.expected_detailed_wizards[0]
-        expected["age"] = 99
-        self.assertResponseUpdated(expected_item=expected, response=response)
+        url = f"{self.url}/{wizard.id}"
+        response = self.client.patch(url)
+        self.assertResponseAccepted(response=response)
+
+    def test_destroy(self):
+        wizard = self.wizards[0]
+
+        url = f"{self.url}/{wizard.id}"
+        response = self.client.delete(url)
+        self.assertResponseAccepted(response=response, expected_item="enqueue to be deleted")

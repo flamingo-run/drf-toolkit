@@ -1,4 +1,6 @@
 from django.db.models import Count
+from rest_framework import status
+from rest_framework.response import Response
 
 from drf_kit.views import (
     BulkMixin,
@@ -49,6 +51,12 @@ class WizardViewSet(ModelViewSet):
 
     queryset_update = models.Wizard.objects.filter(age__lte=18)
     serializer_update_class = serializers.WizardUpdaterSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_202_ACCEPTED, data="enqueue to be deleted")
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class HouseWizardsViewSet(NestedModelViewSet):

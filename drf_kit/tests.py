@@ -75,7 +75,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=response_key,
         )
 
-    def assertResponseDetail(self, expected_item: dict, response):
+    def assertResponseDetail(self, expected_item: dict, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_item,
@@ -83,7 +83,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseCreate(self, expected_item, response):
+    def assertResponseCreate(self, expected_item: dict, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_201_CREATED,
             expected_body=expected_item,
@@ -91,7 +91,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseUpdated(self, expected_item, response):
+    def assertResponseUpdated(self, expected_item: dict, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_item,
@@ -99,7 +99,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseDeleted(self, response):
+    def assertResponseDeleted(self, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_204_NO_CONTENT,
             expected_body="",
@@ -107,12 +107,20 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseNotAllowed(self, response):
+    def assertResponseNotAllowed(self, response: Response):
         method = response.request["REQUEST_METHOD"]
         expected = {"detail": f'Method "{method}" not allowed.'}
         self.assertResponse(
             expected_status=status.HTTP_405_METHOD_NOT_ALLOWED,
             expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
+    def assertResponseAccepted(self, response: Response, expected_item: Any = ANY):
+        self.assertResponse(
+            expected_status=status.HTTP_202_ACCEPTED,
+            expected_body=expected_item,
             response=response,
             response_key=None,
         )
