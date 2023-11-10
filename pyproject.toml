@@ -22,7 +22,6 @@ psycopg2-binary = "^2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
-black = "*"
 safety = "*"
 factory-boy = "*"
 freezegun = "*"
@@ -41,7 +40,7 @@ target-version = ['py311']
 
 [tool.ruff]
 select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
-ignore = ["PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
+ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
 line-length = 120
 target-version = "py311"
 
