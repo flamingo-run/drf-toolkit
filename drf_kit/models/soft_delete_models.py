@@ -72,7 +72,10 @@ class SoftDeleteModelMixin(models.Model):
                 except related.related_model.DoesNotExist:
                     continue
 
-                match related.one_to_one, on_delete,:
+                match (
+                    related.one_to_one,
+                    on_delete,
+                ):
                     case True, "CASCADE":
                         value.delete()
                     case True, "SET_NULL":
