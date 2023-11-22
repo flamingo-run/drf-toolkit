@@ -15,7 +15,6 @@ djangorestframework = "^3"
 django-filter = "^23"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respect_to to be FK only
 drf-extensions = "^0.7"
-urllib3 = { version = "<2" }  # restricted by: https://github.com/ionrock/cachecontrol/issues/292
 # psycopg = {version = "^3", "extras" = ["binary"] }  # blocked by: https://github.com/newrelic/newrelic-python-agent/issues/585
 psycopg2-binary = "^2"
 
