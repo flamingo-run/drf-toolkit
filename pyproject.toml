@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.27.0"
+version = "1.28.0"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -9,7 +9,7 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.10,<=3.12"
 Django = ">=3,<5"
 djangorestframework = "^3"
 django-filter = "^23"
@@ -33,16 +33,11 @@ pytest-sugar = "*"
 pytest-random-order = "*"
 
 
-[tool.black]
-line-length = 120
-target-version = ['py311']
-
-
 [tool.ruff]
 select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
 ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
