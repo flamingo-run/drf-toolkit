@@ -76,11 +76,11 @@ WSGI_APPLICATION = "test_app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "test-app",
-        "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", "sample_app"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASS", ""),
+        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+        "PORT": os.environ.get("DB_PORT", 5432),
     },
     "lite": {
         "ENGINE": "django.db.backends.sqlite3",

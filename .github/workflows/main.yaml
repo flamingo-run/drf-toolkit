@@ -61,7 +61,11 @@ jobs:
           POSTGRES_DB: sample_app
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
       matrix:
@@ -82,7 +86,9 @@ jobs:
       - name: Unit test with Django test suite
         run: make unit
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/sample_app
+          DB_USER: postgres
+          DB_PASS: postgres
+          DB_NAME: sample_app
           LOG_LEVEL: ERROR
 
       - name: Report Coverage
