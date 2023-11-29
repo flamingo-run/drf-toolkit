@@ -34,6 +34,7 @@ class BaseApiTest(APITransactionTestCase):
             call_command("makemigrations", app_name, "--check", "--dry-run", interactive=False, stdout=out)
         except SystemExit:
             message = f"Missing migration. Run python manage.py makemigrations {app_name}"
+            raise AssertionError(message)
 
         # When running parallel tests, the output might come empty
         if output := out.getvalue():
