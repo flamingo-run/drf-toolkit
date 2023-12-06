@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.29.0"
+version = "1.29.1"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -9,8 +9,8 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<=3.12"
-Django = ">=3,<6"
+python = "~3.11||~3.12"
+Django = "~4||~5"
 djangorestframework = "^3"
 django-filter = "^23"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respect_to to be FK only
