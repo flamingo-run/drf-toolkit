@@ -118,6 +118,15 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
+    def assertResponseNotFound(self, response: Response):
+        expected = {"detail": "Not found."}
+        self.assertResponse(
+            expected_status=status.HTTP_404_NOT_FOUND,
+            expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
     def assertResponseAccepted(self, response: Response, expected_item: Any = ANY):
         self.assertResponse(
             expected_status=status.HTTP_202_ACCEPTED,

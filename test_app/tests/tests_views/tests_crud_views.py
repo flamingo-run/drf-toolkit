@@ -82,6 +82,11 @@ class TestCRUDView(HogwartsTestMixin, BaseApiTest):
         response = self.client.put(url, data=data)
         self.assertResponseNotAllowed(response=response)
 
+    def test_not_found_endpoint(self):
+        url = f"{self.url}/1234123"
+        response = self.client.get(url)
+        self.assertResponseNotFound(response=response)
+
     def test_delete_endpoint(self):
         house = self.houses[0]
         url = f"{self.url}/{house.pk}"
