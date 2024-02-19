@@ -5,6 +5,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from drf_kit import exceptions, filters
@@ -148,7 +149,11 @@ class MultiSerializerMixin:
 
 
 class SearchMixin:
-    @action(detail=False, methods=["post"], filter_backends=[filters.FilterInBodyBackend])
+    @action(
+        detail=False,
+        methods=["post"],
+        filter_backends=[filters.FilterInBodyBackend, *api_settings.DEFAULT_FILTER_BACKENDS],
+    )
     def search(self, request):
         return self.list(request)
 
