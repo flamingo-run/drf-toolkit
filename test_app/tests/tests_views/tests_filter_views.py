@@ -50,3 +50,18 @@ class TestFilterView(HogwartsTestMixin, BaseApiTest):
         search = "potato"
         response = self.client.post(url, data=search, content_type="application/text")
         self.assertEqual(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, response.status_code)
+
+    def test_search_body_ordered(self):
+        teachers = []
+        for i in range(10, 20):
+            teachers.append(TeacherFactory(id=i, is_ghost=False, picture=None))
+        expected_teachers = [self.expected_teacher(teacher) for teacher in teachers]
+
+        for i in range(200, 210):
+            TeacherFactory(id=i, is_ghost=True, picture=None)  # noise
+
+        url = f"{self.url}/search?sort=id"
+        search = {"is_ghost": False}
+        response = self.client.post(url, data=search)
+
+        self.assertResponseList(expected_items=expected_teachers, response=response)
