@@ -81,4 +81,10 @@ router.register(
     "beast",
 )
 
+router.register(
+    r"wizards-custom-filter",
+    views.WizardCustomFilterViewSet,
+    "wizard-custom-filter",
+)
+
 urlpatterns = router.urls

@@ -1,3 +1,4 @@
+from drf_kit import filters
 from drf_kit.tests import BaseApiTest
 from test_app.tests.factories.teacher_factories import TeacherFactory
 from test_app.tests.tests_base import HogwartsTestMixin
@@ -239,3 +240,9 @@ class TestNullableFilterSet(HogwartsTestMixin, BaseApiTest):
 
         expected_response = ["Field 'id' expected a number but got 'nullable'."]
         self.assertEqual(expected_response, response.json())
+
+
+class TestAllOfFilter(BaseApiTest):
+    def test_raise_exception_when_created_alloffilter_with_conjoined_false(self):
+        with self.assertRaisesMessage(ValueError, "AllOfFilter must be cojoined=True"):
+            filters.AllOfFilter(conjoined=False)

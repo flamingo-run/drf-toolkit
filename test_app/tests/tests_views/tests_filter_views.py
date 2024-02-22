@@ -1,7 +1,10 @@
 from rest_framework import status
 
 from drf_kit.tests import BaseApiTest
+from test_app.tests.factories.spell_cast_factories import CombatSpellCastFactory
+from test_app.tests.factories.spell_factories import SpellFactory
 from test_app.tests.factories.teacher_factories import TeacherFactory
+from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -65,3 +68,45 @@ class TestFilterView(HogwartsTestMixin, BaseApiTest):
         response = self.client.post(url, data=search)
 
         self.assertResponseList(expected_items=expected_teachers, response=response)
+
+
+class TestAllOfFilterView(HogwartsTestMixin, BaseApiTest):
+    url = "/wizards-custom-filter"
+
+    def setUp(self):
+        super().setUp()
+
+        self.spell_a = SpellFactory()
+        self.spell_b = SpellFactory()
+
+        self.wizard_a = WizardFactory()
+        self.wizard_b = WizardFactory()
+
+        CombatSpellCastFactory(wizard=self.wizard_a, spell=self.spell_a)
+        CombatSpellCastFactory(wizard=self.wizard_a, spell=self.spell_b)
+
+        CombatSpellCastFactory(wizard=self.wizard_b, spell=self.spell_a)
+
+        self.wizard_noise = WizardFactory()
+        self.spell_noise = SpellFactory()
+        CombatSpellCastFactory(wizard=self.wizard_noise, spell=self.spell_noise)
+
+    def test_filter_querystring(self):
+        response = self.client.get(self.url, data={"spell_name": self.spell_a.name})
+        self.assertResponseItems(expected_items=[self.wizard_a, self.wizard_b], response=response)
+
+    def test_filter_multiple_spell_name_conjoined_return_wizards(self):
+        response = self.client.get(self.url, data={"spell_name": [self.spell_a.name, self.spell_b.name]})
+        self.assertResponseItems(expected_items=[self.wizard_a], response=response)
+
+    def test_filter_multiple_spell_name_disjointed_not_return_wizards(self):
+        response = self.client.get(self.url, data={"spell_name": [self.spell_a.name, self.spell_noise.name]})
+        self.assertResponseItems(expected_items=[], response=response)
+
+    def test_filter_empty_spell_name_return_all_wizards(self):
+        response = self.client.get(self.url, data={"spell_name": []})
+        self.assertResponseItems(expected_items=[self.wizard_a, self.wizard_b, self.wizard_noise], response=response)
+
+    def test_filter_wrong_spell_name_value_not_return_wizards(self):
+        response = self.client.get(self.url, data={"spell_name": ["mandragora"]})
+        self.assertResponseItems(expected_items=[], response=response)

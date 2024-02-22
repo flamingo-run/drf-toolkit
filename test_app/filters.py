@@ -21,3 +21,11 @@ class WandFilterSet(filters.BaseFilterSet):
     class Meta:
         model = models.Wand
         fields = ["holder_id"]
+
+
+class WizardFilterSet(filters.BaseFilterSet):
+    spell_name = filters.AllOfFilter(field_name="spell_casts__spell__name", conjoined=True)
+
+    class Meta:
+        model = models.Wizard
+        fields = ["spell_name"]
