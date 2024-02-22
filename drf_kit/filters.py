@@ -100,6 +100,15 @@ class AnyOfFilter(MultipleChoiceFilter):
         return qs.distinct() if self.distinct else qs
 
 
+class AllOfFilter(MultipleChoiceFilter):
+    field_class = _OpenChoiceField
+
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get("conjoined", True):
+            raise ValueError("AllOfFilter must be cojoined=True")
+        super().__init__(*args, **kwargs)
+
+
 class AnyOfOrNullFilter(MultipleChoiceFilter):
     NULL_VALUE = "null"
     field_class = _OpenChoiceField
