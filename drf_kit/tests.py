@@ -24,8 +24,10 @@ class BaseApiTest(APITransactionTestCase):
         super().setUp()
         cache.clear()
 
-    def real_cache(self):
-        return self.settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}})
+    def real_cache(self, caches: dict | None = None):
+        if not caches:
+            caches = {}
+        return self.settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}} | caches)
 
     def assertNoPendingMigration(self, app_name):  # pylint: disable=invalid-name
         out = StringIO()
