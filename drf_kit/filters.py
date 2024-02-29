@@ -105,7 +105,9 @@ class AllOfFilter(MultipleChoiceFilter):
 
     def __init__(self, *args, **kwargs):
         if not kwargs.get("conjoined", True):
-            raise ValueError("AllOfFilter must be cojoined=True")
+            raise ValueError("AllOfFilter must be conjoined=True")
+        else:
+            kwargs.setdefault("conjoined", True)
         super().__init__(*args, **kwargs)
 
 

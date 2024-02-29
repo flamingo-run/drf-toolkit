@@ -244,5 +244,5 @@ class TestNullableFilterSet(HogwartsTestMixin, BaseApiTest):
 
 class TestAllOfFilter(BaseApiTest):
     def test_raise_exception_when_created_alloffilter_with_conjoined_false(self):
-        with self.assertRaisesMessage(ValueError, "AllOfFilter must be cojoined=True"):
+        with self.assertRaisesMessage(ValueError, "AllOfFilter must be conjoined=True"):
             filters.AllOfFilter(conjoined=False)
