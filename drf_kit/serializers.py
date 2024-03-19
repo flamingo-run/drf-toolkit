@@ -29,6 +29,11 @@ class BaseModelSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("id", "created_at", "updated_at")
 
+    def get_unique_together_validators(self):
+        # Disable DRF UniqueTogetherValidator because the constraint is already enforced at the database level
+        # and the exception handler will parse it as status.HTTP_409_CONFLICT
+        return []
+
 
 class ForeignKeyField(PrimaryKeyRelatedField):
     def __init__(self, queryset, write_only=True, m2m=False, **kwargs):

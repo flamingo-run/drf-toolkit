@@ -50,7 +50,7 @@ class TestVeryCustomView(HogwartsTestMixin, BaseApiTest):
             "id": ANY,
             "name": "Luna Lovegood",
             "age": None,
-            "is_half_blood": False,
+            "is_half_blood": True,
             "received_letter_at": None,
             "created_at": ANY,
             "updated_at": ANY,

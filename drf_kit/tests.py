@@ -8,6 +8,7 @@ from io import StringIO
 from typing import Any
 from unittest.mock import ANY, patch
 
+import rest_framework
 from django.core.cache import cache
 from django.core.management import call_command
 from django.db.models import Model
@@ -121,7 +122,11 @@ class BaseApiTest(APITransactionTestCase):
         )
 
     def assertResponseNotFound(self, response: Response):
-        expected = {"detail": "Not found."}
+        if rest_framework.__version__ >= "3.15.0":
+            expected = {"detail": re.compile("No .* matches the given query.")}
+        else:
+            expected = {"detail": "Not found."}
+
         self.assertResponse(
             expected_status=status.HTTP_404_NOT_FOUND,
             expected_body=expected,
