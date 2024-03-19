@@ -1,4 +1,5 @@
-import pytz
+import zoneinfo
+
 from django.conf import settings
 from django.db.models import SlugField
 from django.utils.text import slugify
@@ -10,7 +11,7 @@ class DefaultTimezoneDateTimeField(DateTimeField):
         # Prevents that an auto-generated DateTimeField uses the Django's *current* timezone
         # The current timezone can be changed by middleware
         # (e.g. the admin can run in -0300, temporarily setting the Django current timezone to -0300)
-        default_timezone = pytz.timezone(settings.TIME_ZONE)
+        default_timezone = zoneinfo.ZoneInfo(settings.TIME_ZONE)
         super().__init__(default_timezone=default_timezone, *args, **kwargs)
 
 

@@ -1,6 +1,5 @@
+import zoneinfo
 from datetime import UTC, datetime
-
-import pytz
 
 from drf_kit import serializers
 from drf_kit.tests import BaseApiTest
@@ -8,7 +7,7 @@ from drf_kit.tests import BaseApiTest
 
 class TestFormatAsStr(BaseApiTest):
     def non_utc(self, dt):
-        return pytz.timezone("Hongkong").localize(dt)
+        return dt.replace(tzinfo=zoneinfo.ZoneInfo("Hongkong"))
 
     def test_format_none(self):
         as_str = serializers.as_str(None)
@@ -46,7 +45,7 @@ class TestFormatAsStr(BaseApiTest):
 
 class TestAssureTimezone(BaseApiTest):
     def non_utc(self, dt):
-        return pytz.timezone("Hongkong").localize(dt)
+        return dt.astimezone(tz=zoneinfo.ZoneInfo("Hongkong"))
 
     def test_empty_date(self):
         as_str = serializers.assure_tz(None)
@@ -70,5 +69,5 @@ class TestAssureTimezone(BaseApiTest):
 
     def test_naive_datetime_custom_timezone(self):
         timezoned = datetime(1990, 7, 19, 15, 43, 20)  # noqa: DTZ001
-        assured_dt = serializers.assure_tz(timezoned, tz=pytz.timezone("Hongkong"))
+        assured_dt = serializers.assure_tz(timezoned, tz=zoneinfo.ZoneInfo("Hongkong"))
         self.assertEqual(self.non_utc(timezoned), assured_dt)

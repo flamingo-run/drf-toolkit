@@ -1,10 +1,10 @@
 import inspect
 import json
+import zoneinfo
 from datetime import datetime
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
-import pytz
 from dateutil import parser
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
@@ -47,7 +47,7 @@ class ForeignKeyField(PrimaryKeyRelatedField):
 
 
 DATETIME_FORMAT = settings.REST_FRAMEWORK.get("DATETIME_FORMAT", "%Y-%m-%dT%H:%M:%SZ")
-DEFAULT_TIMEZONE = pytz.timezone(settings.TIME_ZONE)
+DEFAULT_TIMEZONE = zoneinfo.ZoneInfo(settings.TIME_ZONE)
 
 
 def as_str(value):
@@ -59,13 +59,16 @@ def as_str(value):
     return str(value)
 
 
-def assure_tz(dt: datetime | str, tz: str = DEFAULT_TIMEZONE):
+def assure_tz(dt: datetime | str | None, tz: str | ZoneInfo = DEFAULT_TIMEZONE):
     if isinstance(dt, str):
         dt = parser.parse(dt)
     if not dt:
         return dt
-    if not dt.tzinfo:
-        dt = tz.localize(dt)
+
+    if isinstance(tz, str):
+        tz = zoneinfo.ZoneInfo(tz)
+    if not dt.tzinfo or dt.tzinfo != tz:
+        dt = dt.astimezone(tz=tz)
     return dt
 
 
@@ -78,7 +81,7 @@ class JSONEncoder(DjangoJSONEncoder):
             return value.strftime(DATETIME_FORMAT)
         if isinstance(o, Decimal):
             return str(o)
-        if isinstance(o, ZoneInfo | pytz.tzinfo.DstTzInfo):
+        if isinstance(o, ZoneInfo):
             return str(o)
         if issubclass(o.__class__, FieldFile):
             return o.url if bool(o) else None
