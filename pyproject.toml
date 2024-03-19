@@ -33,16 +33,18 @@ pytest-random-order = "*"
 
 
 [tool.ruff]
-select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
-ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
 line-length = 120
 target-version = "py312"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
+ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "settings.py" = ["F403", "F404", "F405"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["test_app", "drf_kit"]
 
 
