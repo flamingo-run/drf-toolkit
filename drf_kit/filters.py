@@ -69,7 +69,7 @@ class BaseFilterSet(FilterSet):
         if data is not None:
             data = data.copy()
 
-            for name, filter_obj in self.base_filters.items():  # pylint: disable=no-member
+            for name, filter_obj in self.base_filters.items():
                 initial = filter_obj.extra.get("initial", None)
                 if not data.get(name) and initial is not None:
                     data[name] = initial

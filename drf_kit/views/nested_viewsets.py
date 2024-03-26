@@ -59,9 +59,9 @@ class NestedViewMixin:
             raise ValueError(f"{self.lookup_url_kwarg_nest} not found in {self.kwargs}") from exc
 
         try:
-            return self.queryset_nest.get(**{self.pk_field_nest: pk})  # pylint:disable=no-member
-        except self.queryset_nest.model.DoesNotExist as exc:  # pylint:disable=no-member
-            model_name = self.queryset_nest.model  # pylint:disable=no-member
+            return self.queryset_nest.get(**{self.pk_field_nest: pk})
+        except self.queryset_nest.model.DoesNotExist as exc:
+            model_name = self.queryset_nest.model
             raise Http404(f"{model_name} with ID {pk} not found") from exc
         except ValueError as exc:
             raise ValidationError(exc) from exc

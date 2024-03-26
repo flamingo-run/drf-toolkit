@@ -108,5 +108,5 @@ class TestManyToManyView(HogwartsTestMixin, BaseApiTest):
         response = self.client.delete(url)
         self.assertResponseDeleted(response=response)
 
-        with self.assertRaises(models.SpellCast.DoesNotExist):  # pylint: disable=no-member
+        with self.assertRaises(models.SpellCast.DoesNotExist):
             spell_cast.refresh_from_db()

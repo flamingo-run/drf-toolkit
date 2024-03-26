@@ -32,9 +32,9 @@ class BaseModel(ModelDiffMixin, BoundedFileMixin, models.Model):
 
     def admin_edit_url(self):
         return reverse(
-            f"admin:{self._meta.app_label}_{self._meta.model_name}_change",  # pylint: disable=no-member
+            f"admin:{self._meta.app_label}_{self._meta.model_name}_change",
             args=[self.pk],
         )
 
     def __repr__(self):
-        return f"<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>"  # pylint: disable=no-member
+        return f"<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>"

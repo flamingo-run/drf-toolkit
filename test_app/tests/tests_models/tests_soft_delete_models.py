@@ -54,7 +54,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
         self.assertIsNotNone(memory.deleted_at)
 
         memory.delete()
-        with self.assertRaises(Memory.DoesNotExist):  # pylint: disable=no-member
+        with self.assertRaises(Memory.DoesNotExist):
             memory.refresh_from_db()
 
     def test_hard_with_queryset(self):
@@ -63,7 +63,7 @@ class TestSoftDeleteModel(HogwartsTestMixin, BaseApiTest):
 
         Memory.objects.all().hard_delete()
 
-        with self.assertRaises(Memory.DoesNotExist):  # pylint: disable=no-member
+        with self.assertRaises(Memory.DoesNotExist):
             memory.refresh_from_db()
 
     def test_update_deleted_using_model(self):

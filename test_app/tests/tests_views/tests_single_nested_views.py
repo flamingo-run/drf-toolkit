@@ -190,7 +190,7 @@ class TestSingleNestView(HogwartsTestMixin, BaseApiTest):
         self.assertResponseDeleted(response=response)
 
         wizard.refresh_from_db()
-        with self.assertRaises(models.Patronus.DoesNotExist):  # pylint: disable=no-member
+        with self.assertRaises(models.Patronus.DoesNotExist):
             _ = wizard.patronus
 
     def test_delete_endpoint_with_pk(self):

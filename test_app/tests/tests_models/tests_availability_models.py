@@ -48,12 +48,12 @@ class TestAvailabilityModel(HogwartsTestMixin, BaseApiTest):
             self.factory_class(starts_at=self.very_future_date, ends_at=None),
         ]
 
-    def assertObjects(self, qs, expected):  # pylint: disable=invalid-name
+    def assertObjects(self, qs, expected):
         self.assertEqual(len(expected), qs.count())
         for obj in qs:
             self.assertIn(obj, expected)
 
-    def assertInconsistent(self):  # pylint: disable=invalid-name
+    def assertInconsistent(self):
         return self.assertRaisesRegex(expected_exception=IntegrityError, expected_regex=r"_invalid_date_range")
 
     def test_query_default(self):

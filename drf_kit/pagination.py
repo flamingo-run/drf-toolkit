@@ -34,7 +34,7 @@ class CustomPagePagination(PageNumberPagination):
         try:
             self.page = paginator.page(int(page_number) + self._shift)
         except InvalidPage as exc:
-            msg = self.invalid_page_message.format(  # pylint: disable=no-member
+            msg = self.invalid_page_message.format(
                 page_number=page_number,
                 message=str(exc),
             )

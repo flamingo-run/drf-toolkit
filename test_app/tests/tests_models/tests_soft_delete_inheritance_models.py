@@ -7,7 +7,7 @@ from test_app.tests.tests_base import HogwartsTestMixin
 
 class TestSoftDeleteInheritanceOrderedModel(HogwartsTestMixin, BaseApiTest):
     # ORDERING FEATURES
-    def assertOrder(self, obj, expected_order):  # pylint:disable=invalid-name
+    def assertOrder(self, obj, expected_order):
         obj.refresh_from_db()
         self.assertEqual(expected_order, obj.order)
 

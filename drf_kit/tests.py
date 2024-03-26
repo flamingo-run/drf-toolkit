@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 import inspect
 import os
 import re
@@ -30,7 +29,7 @@ class BaseApiTest(APITransactionTestCase):
             caches = {}
         return self.settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}} | caches)
 
-    def assertNoPendingMigration(self, app_name):  # pylint: disable=invalid-name
+    def assertNoPendingMigration(self, app_name):
         out = StringIO()
         message = None
         try:
@@ -49,7 +48,7 @@ class BaseApiTest(APITransactionTestCase):
         path_regex = rf"^{prefix_regex}\.{extension}$" if extension else prefix_regex
         return re.compile(path_regex)
 
-    def assertUUIDFilePath(self, prefix, name, extension, pk, file):  # pylint: disable=invalid-name
+    def assertUUIDFilePath(self, prefix, name, extension, pk, file):
         pattern = self.uuid_file_path_regex(prefix=prefix, pk=pk, name=name, extension=extension)
         self.assertTrue(pattern.match(str(file)))
 
@@ -169,7 +168,7 @@ class BaseApiTest(APITransactionTestCase):
             msg = f"Expected body to be empty, but received {response_content}"
             self.assertEqual(expected_body, response.content.decode(), msg)
 
-    def assertResponseMatch(self, expected, received):  # pylint: disable=invalid-name
+    def assertResponseMatch(self, expected, received):
         def _assert_dict(expected_item, received_item, idx=None):
             msg = f"At item #{idx}:: " if idx else ""
             if expected_item == received_item:

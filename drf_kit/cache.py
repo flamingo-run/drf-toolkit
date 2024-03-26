@@ -89,4 +89,4 @@ class CacheResponse(decorators.CacheResponse):
         return response
 
 
-cache_response = CacheResponse  # pylint: disable=invalid-name
+cache_response = CacheResponse
