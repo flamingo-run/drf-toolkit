@@ -120,6 +120,17 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
+    def assertResponseNotAuthenticated(
+        self, response: Response, message: str = "Authentication credentials were not provided."
+    ):
+        expected = {"detail": message}
+        self.assertResponse(
+            expected_status=status.HTTP_401_UNAUTHORIZED,
+            expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
     def assertResponseNotFound(self, response: Response):
         if rest_framework.__version__ >= "3.15.0":
             expected = {"detail": re.compile("No .* matches the given query.")}
