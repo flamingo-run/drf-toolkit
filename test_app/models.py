@@ -1,3 +1,5 @@
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import DateTimeRangeField, RangeOperators
 from django.db import models
 
 from drf_kit.fields import SlugifyField
@@ -273,3 +275,24 @@ class BeastOwnership(SoftDeleteModel):
 class BeastOwner(SoftDeleteModel):
     name = models.CharField(max_length=100)
     beasts = models.ManyToManyField(to="test_app.Beast", through=BeastOwnership, related_name="owners")
+
+
+class TrainingPitch(BaseModel):
+    name = models.CharField(max_length=100)
+
+
+class Reservation(BaseModel):
+    wizard = models.ForeignKey(to="test_app.Wizard", on_delete=models.CASCADE, related_name="reservations")
+    pitch = models.ForeignKey(to="test_app.TrainingPitch", on_delete=models.CASCADE, related_name="reservations")
+    period = DateTimeRangeField()
+
+    class Meta:
+        constraints = [
+            ExclusionConstraint(
+                name="exclude_overlapping_reservations",
+                expressions=[
+                    ("period", RangeOperators.OVERLAPS),
+                    ("pitch_id", RangeOperators.EQUAL),
+                ],
+            ),
+        ]

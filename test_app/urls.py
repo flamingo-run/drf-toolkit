@@ -87,4 +87,9 @@ router.register(
     "wizard-custom-filter",
 )
 
+router.register(
+    r"reservations",
+    views.ReservationViewSet,
+    "reservation",
+)
 urlpatterns = router.urls
