@@ -131,6 +131,17 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
+    def assertResponseForbidden(
+        self, response: Response, message: str = "You do not have permission to perform this action."
+    ):
+        expected = {"detail": message}
+        self.assertResponse(
+            expected_status=status.HTTP_403_FORBIDDEN,
+            expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
     def assertResponseNotFound(self, response: Response):
         if rest_framework.__version__ >= "3.15.0":
             expected = {"detail": re.compile("No .* matches the given query.")}
