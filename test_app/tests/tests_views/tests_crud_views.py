@@ -149,7 +149,7 @@ class TestConstraintView(HogwartsTestMixin, BaseApiTest):
         expected = {
             "errors": "This Beast violates the check `minimum-beast-age` which states `(AND: ('age__gte', 0))`",
         }
-        self.assertResponse(expected_status=status.HTTP_400_BAD_REQUEST, expected_body=expected, response=response)
+        self.assertResponseBadRequest(response=response, expected=expected)
 
         beasts = models.Beast.objects.all()
         self.assertEqual(0, beasts.count())

@@ -121,6 +121,14 @@ class BaseApiTest(APITransactionTestCase):
         logger.info("Please use assertResponseDelete instead")
         self.assertResponseDelete(response=response)
 
+    def assertResponseBadRequest(self, response: Response, expected: dict = ANY):
+        self.assertResponse(
+            expected_status=status.HTTP_400_BAD_REQUEST,
+            expected_body=expected,
+            response=response,
+            response_key=None,
+        )
+
     def assertResponseNotAllowed(self, response: Response):
         method = response.request["REQUEST_METHOD"]
         expected = {"detail": f'Method "{method}" not allowed.'}
