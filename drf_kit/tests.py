@@ -1,4 +1,5 @@
 import inspect
+import logging
 import os
 import re
 from collections.abc import Callable, Iterable
@@ -15,6 +16,8 @@ from django.utils.connection import ConnectionProxy
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APITransactionTestCase
+
+logger = logging.getLogger("drf-kit")
 
 
 class BaseApiTest(APITransactionTestCase):
@@ -94,7 +97,7 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseUpdated(self, expected_item: dict, response: Response):
+    def assertResponseUpdate(self, expected_item: dict, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_200_OK,
             expected_body=expected_item,
@@ -102,13 +105,21 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseDeleted(self, response: Response):
+    def assertResponseUpdated(self, expected_item: dict, response: Response):
+        logger.info("Please use assertResponseUpdate instead")
+        self.assertResponseUpdate(expected_item=expected_item, response=response)
+
+    def assertResponseDelete(self, response: Response):
         self.assertResponse(
             expected_status=status.HTTP_204_NO_CONTENT,
             expected_body="",
             response=response,
             response_key=None,
         )
+
+    def assertResponseDeleted(self, response: Response):
+        logger.info("Please use assertResponseDelete instead")
+        self.assertResponseDelete(response=response)
 
     def assertResponseNotAllowed(self, response: Response):
         method = response.request["REQUEST_METHOD"]
