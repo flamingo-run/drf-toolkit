@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drf-kit"
-version = "1.35.0"
+version = "1.36.0"
 description = "DRF Toolkit"
 authors = ["Nilo Saude <tech@nilo.co>"]
 packages = [
@@ -12,7 +12,7 @@ packages = [
 python = "~3.11||~3.12"
 Django = "~4||~5"
 djangorestframework = "^3"
-django-filter = "^23"
+django-filter = "^24"
 django-ordered-model = "<3.7.2"  # this version blocks order_with_respect_to to be FK only
 drf-extensions = "^0.7"
 # psycopg = {version = "^3", "extras" = ["binary"] }  # blocked by: https://github.com/newrelic/newrelic-python-agent/issues/585
