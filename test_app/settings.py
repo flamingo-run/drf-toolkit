@@ -88,6 +88,7 @@ DATABASES = {
         "NAME": str(BASE_DIR / "db.sqlite3"),
     },
 }
+DATABASE_ROUTERS = ["test_app.database_routers.FeatureRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
