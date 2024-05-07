@@ -63,3 +63,5 @@ wizard/
 test_app/wizard/
 
 *.sqlite3
+
+.run/
