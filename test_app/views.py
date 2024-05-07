@@ -129,3 +129,8 @@ class WizardCustomFilterViewSet(ModelViewSet):
     queryset = models.Wizard.objects.all()
     serializer_class = serializers.WizardSerializer
     filterset_class = filters.WizardFilterSet
+
+
+class ReservationViewSet(ModelViewSet):
+    queryset = models.Reservation.objects.all()
+    serializer_class = serializers.ReservationSerializer

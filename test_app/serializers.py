@@ -1,4 +1,4 @@
-from rest_framework.fields import CharField, IntegerField
+from rest_framework.fields import CharField, IntegerField, ListField
 
 from drf_kit import serializers
 from test_app import models
@@ -157,4 +157,19 @@ class BeastSerializer(serializers.BaseModelSerializer):
             "id",
             "name",
             "age",
+        )
+
+
+class ReservationSerializer(serializers.BaseModelSerializer):
+    period = ListField(write_only=False)
+    wizard_id = serializers.ForeignKeyField(queryset=models.Wizard.objects.all(), write_only=False)
+    pitch_id = serializers.ForeignKeyField(queryset=models.TrainingPitch.objects.all(), write_only=False)
+
+    class Meta(serializers.BaseModelSerializer.Meta):
+        model = models.Reservation
+        fields = (
+            "id",
+            "wizard_id",
+            "pitch_id",
+            "period",
         )
