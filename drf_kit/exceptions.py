@@ -148,6 +148,26 @@ class ConflictException(ValidationError):
         return f"Model is duplicated with {' | '.join([str(model) for model in self.with_models])}"
 
 
+class ExclusionDuplicatedRecord(DatabaseIntegrityError):
+    status_code = status.HTTP_409_CONFLICT
+
+    def build_message(self) -> str:
+        model_name = self.model.__name__
+        name = self.outcome
+        return f"This {model_name} violates exclusion constraint `{name}`"
+
+    def _parse_psql(self):
+        error_detail = self.integrity_error.args[0].splitlines()[0]
+        parsed = re.search(r"violates exclusion constraint \"(?P<name>.*)\"", error_detail)
+        return parsed.group("name")
+
+    def _parse_sqlite(self): ...
+
+    @classmethod
+    def verify(cls, integrity_error: IntegrityError) -> bool:
+        return "violates exclusion constraint" in str(integrity_error)
+
+
 class UpdatingSoftDeletedException(Exception):
     def __init__(self):
         message = "It's not possible to save changes to a soft deleted model. Undelete it first."
@@ -173,6 +193,13 @@ def custom_exception_handler(exc, context):
                 return error.response
             if InvalidRecord.verify(exc):
                 error = InvalidRecord(
+                    model_klass=context["view"].get_queryset().model,
+                    body=context["request"].data,
+                    integrity_error=exc,
+                )
+                return error.response
+            if ExclusionDuplicatedRecord.verify(exc):
+                error = ExclusionDuplicatedRecord(
                     model_klass=context["view"].get_queryset().model,
                     body=context["request"].data,
                     integrity_error=exc,

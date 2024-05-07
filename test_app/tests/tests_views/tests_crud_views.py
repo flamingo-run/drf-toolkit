@@ -1,10 +1,13 @@
+from datetime import timedelta
 from unittest.mock import ANY
 
 from rest_framework import status
 
+from drf_kit.serializers import as_dict
 from drf_kit.tests import BaseApiTest
 from test_app import models
 from test_app.tests.factories.beast_factories import BeastFactory
+from test_app.tests.factories.training_pitch_factories import ReservationFactory, TrainingPitchFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
 
@@ -149,7 +152,42 @@ class TestConstraintView(HogwartsTestMixin, BaseApiTest):
         expected = {
             "errors": "This Beast violates the check `minimum-beast-age` which states `(AND: ('age__gte', 0))`",
         }
-        self.assertResponseBadRequest(response=response, expected=expected)
+        self.assertResponse(expected_status=status.HTTP_400_BAD_REQUEST, expected_body=expected, response=response)
 
         beasts = models.Beast.objects.all()
         self.assertEqual(0, beasts.count())
+
+
+class TestExclusionConstraintView(HogwartsTestMixin, BaseApiTest):
+    url = "/reservations"
+
+    def test_post_endpoint_with_overlap_period(self):
+        reservation = ReservationFactory()
+
+        url = self.url
+        data = {
+            "wizard_id": reservation.wizard.pk,
+            "pitch_id": reservation.pitch.pk,
+            "period": as_dict(reservation.period),
+        }
+        response = self.client.post(url, data=data, format="json")
+        self.assertEqual(409, response.status_code)
+
+        reservation = models.Reservation.objects.all()
+        self.assertEqual(1, reservation.count())
+
+    def test_patch_endpoint_with_overlap_period(self):
+        pitch = TrainingPitchFactory(name="Quidditch")
+        existing_reservation = ReservationFactory(pitch_id=pitch.pk)
+
+        _, upper = existing_reservation.period
+        later_period = (upper + timedelta(hours=1), upper + timedelta(hours=2))
+        reservation = ReservationFactory(pitch_id=pitch.pk, period=later_period)
+
+        url = f"{self.url}/{reservation.pk}"
+        data = {"period": as_dict(existing_reservation.period)}
+        response = self.client.patch(url, data=data, format="json")
+        self.assertEqual(409, response.status_code)
+
+        reservation = models.Reservation.objects.all()
+        self.assertEqual(2, reservation.count())
