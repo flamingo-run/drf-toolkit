@@ -1,6 +1,7 @@
 import logging
 
 from django.db import IntegrityError
+from django.db.models import Model
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
@@ -202,16 +203,26 @@ class UpsertMixin(MultiSerializerMixin):
     def create(self, request, *args, **kwargs):
         try:
             return super().create(request, *args, **kwargs)
-        except IntegrityError as exc:
-            if not DuplicatedRecord.verify(integrity_error=exc):
+        except (IntegrityError, ConflictException) as exc:
+            instance = self.get_duplicated_record(
+                model_klass=self.get_queryset().model, body=request.data, exception=exc
+            )
+            if not instance:
                 raise
-            error = DuplicatedRecord(model_klass=self.get_queryset().model, body=request.data, integrity_error=exc)
-            instance = self.get_queryset().get(error.get_filter())
-        except ConflictException as exc:
-            if len(exc.with_models) != 1:  # Upsert can only handle conflict with 1 model
-                raise
-            instance = exc.with_models[0]
         return self.upsert(instance=instance, data=request.data, *args, **kwargs)
+
+    def get_duplicated_record(self, model_klass: type[Model], body: dict, exception: Exception) -> Model | None:
+        if isinstance(exception, IntegrityError):
+            if DuplicatedRecord.verify(integrity_error=exception):
+                error = DuplicatedRecord(model_klass=model_klass, body=body, integrity_error=exception)
+            else:
+                return None
+            return self.get_queryset().get(error.get_filter())
+        if isinstance(exception, ConflictException):
+            if len(exception.with_models) != 1:  # Upsert can only handle conflict with 1 model
+                return None
+            return exception.with_models[0]
+        return None
 
     def upsert(self, instance, data, *args, **kwargs):
         partial = True
