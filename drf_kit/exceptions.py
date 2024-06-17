@@ -148,24 +148,57 @@ class ConflictException(ValidationError):
         return f"Model is duplicated with {' | '.join([str(model) for model in self.with_models])}"
 
 
-class ExclusionDuplicatedRecord(DatabaseIntegrityError):
-    status_code = status.HTTP_409_CONFLICT
-
+class ExclusionDuplicatedRecord(DuplicatedRecord):
     def build_message(self) -> str:
         model_name = self.model.__name__
-        name = self.outcome
-        return f"This {model_name} violates exclusion constraint `{name}`"
+        return f"This {model_name} violates exclusion constraint `{self.constraint_name}`"
 
     def _parse_psql(self):
         error_detail = self.integrity_error.args[0].splitlines()[0]
         parsed = re.search(r"violates exclusion constraint \"(?P<name>.*)\"", error_detail)
-        return parsed.group("name")
+        constraint_name = parsed.group("name")
+
+        error_detail = self.integrity_error.args[0].splitlines()[1].split("conflicts with existing key")[-1].strip()
+        keys_str = error_detail.split("=")[0][1:-1]
+        values_str = error_detail.split("=")[1][1:-2]
+
+        keys = [key.strip() for key in keys_str.split(",")]
+        csv_regex = re.compile(
+            r"""
+            (                  # Start capturing here.
+              [\d\w\s]+?         # Either a series of non-comma non-quote characters.
+              |                # OR
+              [\[\(](.*)[\]\)]
+            )                  # Done capturing.
+            \s*                # Allow arbitrary space before the comma.
+            (?:,|$)            # Followed by a comma or the end of a string.
+            """,
+            re.VERBOSE,
+        )
+
+        def _clean(v):
+            v = v.strip()
+            if v == "":
+                return None
+            return v
+
+        values = []
+        for match in csv_regex.findall(values_str):
+            value = _clean(match[0])
+            if value.startswith("(") or value.startswith("["):
+                value = [_clean(item) for item in value[1:-1].split(",")]
+            values.append(value)
+        return keys, values, constraint_name
 
     def _parse_sqlite(self): ...
 
     @classmethod
     def verify(cls, integrity_error: IntegrityError) -> bool:
         return "violates exclusion constraint" in str(integrity_error)
+
+    @property
+    def constraint_name(self):
+        return self.outcome[2]
 
 
 class UpdatingSoftDeletedException(Exception):
