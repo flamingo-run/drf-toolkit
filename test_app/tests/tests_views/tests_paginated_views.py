@@ -53,3 +53,9 @@ class TestPaginatedView(BaseApiTest):
         self.assertEqual(list(range(49, 50)), [spell["id"] for spell in response.json()["results"]])
         self.assertEqual(None, response.json().get("next"))
         self.assertRegex(response.json()["previous"], r"page=4")
+
+    def test_invalid_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 15000})
+        self.assertResponseNotFound(response=response, expected_item={"detail": "Invalid page."})
