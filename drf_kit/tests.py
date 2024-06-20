@@ -161,8 +161,10 @@ class BaseApiTest(APITransactionTestCase):
             response_key=None,
         )
 
-    def assertResponseNotFound(self, response: Response):
-        if rest_framework.__version__ >= "3.15.0":
+    def assertResponseNotFound(self, response: Response, expected_item: Any = ANY):
+        if expected_item:
+            expected = expected_item
+        elif rest_framework.__version__ >= "3.15.0":
             expected = {"detail": re.compile("No .* matches the given query.")}
         else:
             expected = {"detail": "Not found."}
