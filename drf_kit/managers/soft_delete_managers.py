@@ -131,4 +131,5 @@ class SoftDeleteOrderedManager(SoftDeleteManager):
     queryset_class = SoftDeleteOrderedQueryset
 
 
-class SoftDeleteAvailabilityManager(AvailabilityManager, SoftDeleteManager): ...
+class SoftDeleteAvailabilityManager(AvailabilityManager, SoftDeleteManager):
+    ...
