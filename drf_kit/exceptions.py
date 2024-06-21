@@ -26,21 +26,17 @@ class DatabaseIntegrityError(ValidationError, abc.ABC):
         super().__init__(message=message, code=self.status_code)
 
     @abc.abstractmethod
-    def build_message(self) -> str:
-        ...
+    def build_message(self) -> str: ...  # fmt: skip
 
     @abc.abstractmethod
-    def _parse_psql(self):
-        ...
+    def _parse_psql(self): ...  # fmt: skip
 
     @abc.abstractmethod
-    def _parse_sqlite(self):
-        ...
+    def _parse_sqlite(self): ...  # fmt: skip
 
     @classmethod
     @abc.abstractmethod
-    def verify(cls, integrity_error: IntegrityError) -> bool:
-        ...
+    def verify(cls, integrity_error: IntegrityError) -> bool: ...  # fmt: skip
 
     @property
     def response(self):
@@ -194,8 +190,7 @@ class ExclusionDuplicatedRecord(DuplicatedRecord):
             values.append(value)
         return keys, values, constraint_name
 
-    def _parse_sqlite(self):
-        ...
+    def _parse_sqlite(self): ...
 
     @classmethod
     def verify(cls, integrity_error: IntegrityError) -> bool:
