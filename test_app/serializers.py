@@ -173,3 +173,9 @@ class ReservationSerializer(serializers.BaseModelSerializer):
             "pitch_id",
             "period",
         )
+
+
+class TrainingPitchSerializer(serializers.BaseModelSerializer):
+    class Meta(serializers.BaseModelSerializer.Meta):
+        model = models.TrainingPitch
+        fields = ("id",)

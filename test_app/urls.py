@@ -93,4 +93,10 @@ router.register(
     "reservation",
 )
 
+router.register(
+    r"training-pitches",
+    views.TrainingPitchViewSet,
+    "training-pitches",
+)
+
 urlpatterns = router.urls

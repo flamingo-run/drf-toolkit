@@ -29,3 +29,11 @@ class WizardFilterSet(filters.BaseFilterSet):
     class Meta:
         model = models.Wizard
         fields = ["spell_name"]
+
+
+class TrainingPitchFilterSet(filters.BaseFilterSet):
+    name = filters.AnyOfFilter(initial=["Poppins"])
+
+    class Meta:
+        model = models.TrainingPitch
+        fields = ["name"]
