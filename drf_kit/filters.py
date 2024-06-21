@@ -81,6 +81,12 @@ class _OpenChoiceField(MultipleChoiceField):
     def valid_value(self, value):
         return True
 
+    def clean(self, value):
+        # when the value is set by Field.initial, it turns into a list of lists because each
+        # field in the query parameters (set up at the Django view layer) defaults to being a list
+        value = value[0] if value and isinstance(value, list) and isinstance(value[0], list) else value
+        return super().clean(value)
+
 
 class AnyOfFilter(MultipleChoiceFilter):
     field_class = _OpenChoiceField

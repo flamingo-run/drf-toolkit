@@ -4,6 +4,7 @@ from drf_kit.tests import BaseApiTest
 from test_app.tests.factories.spell_cast_factories import CombatSpellCastFactory
 from test_app.tests.factories.spell_factories import SpellFactory
 from test_app.tests.factories.teacher_factories import TeacherFactory
+from test_app.tests.factories.training_pitch_factories import TrainingPitchFactory
 from test_app.tests.factories.wizard_factories import WizardFactory
 from test_app.tests.tests_base import HogwartsTestMixin
 
@@ -68,6 +69,18 @@ class TestFilterView(HogwartsTestMixin, BaseApiTest):
         response = self.client.post(url, data=search)
 
         self.assertResponseList(expected_items=expected_teachers, response=response)
+
+
+class TestAnyOfFilter(BaseApiTest):
+    def test_with_initial_value(self):
+        pitch = TrainingPitchFactory(name="Poppins")
+        TrainingPitchFactory(name="Big House")
+
+        url = "/training-pitches"
+        response = self.client.get(url)
+        expected_ids = [pitch.pk]
+        result_ids = [r["id"] for r in response.json()["results"]]
+        self.assertEqual(expected_ids, result_ids)
 
 
 class TestAllOfFilterView(HogwartsTestMixin, BaseApiTest):
