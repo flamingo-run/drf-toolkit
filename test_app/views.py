@@ -123,6 +123,7 @@ class WandViewSet(NonDestructiveModelViewSet):
 class BeastViewSet(ModelViewSet):
     queryset = models.Beast.objects.all()
     serializer_class = serializers.BeastSerializer
+    filterset_class = filters.BeastFilterSet
 
 
 class WizardCustomFilterViewSet(ModelViewSet):

@@ -259,6 +259,7 @@ class Beast(SoftDeleteModel):
     name = models.CharField(max_length=100)
     age = models.IntegerField()
     category = models.ForeignKey(to=BeastCategory, on_delete=models.CASCADE, null=True, related_name="beasts")
+    is_active = models.BooleanField(default=True)
 
     class Meta(BaseModel.Meta):
         constraints = [

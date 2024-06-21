@@ -73,6 +73,8 @@ class BaseFilterSet(FilterSet):
                 initial = filter_obj.extra.get("initial", None)
                 if not data.get(name) and initial is not None:
                     data[name] = initial
+                    if callable(initial):
+                        data[name] = initial(request=kwargs["request"])
 
         super().__init__(data, *args, **kwargs)
 

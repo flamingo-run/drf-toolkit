@@ -37,3 +37,15 @@ class TrainingPitchFilterSet(filters.BaseFilterSet):
     class Meta:
         model = models.TrainingPitch
         fields = ["name"]
+
+
+def get_default_is_active(request) -> int:
+    return 1
+
+
+class BeastFilterSet(filters.BaseFilterSet):
+    is_active = filters.IntBooleanFilter(initial=get_default_is_active)
+
+    class Meta:
+        model = models.Beast
+        fields = ["is_active"]
