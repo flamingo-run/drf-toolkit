@@ -2,9 +2,11 @@ import logging
 
 from django.db import IntegrityError
 from django.db.models import Model
+from django.http import QueryDict
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
@@ -156,7 +158,16 @@ class SearchMixin:
         filter_backends=[filters.FilterInBodyBackend, *api_settings.DEFAULT_FILTER_BACKENDS],
     )
     def search(self, request):
-        return self.list(request)
+        #  Before making the proxy to `list`, convert data from body to query params
+        new_request = clone_request(request=request, method="GET")
+
+        query_params = QueryDict(mutable=True)
+        for key, value in request.data.items():
+            query_params[key] = value
+
+        new_request.GET |= query_params
+
+        return self.list(new_request)
 
 
 class ModelViewSet(MultiSerializerMixin, viewsets.ModelViewSet):
