@@ -70,6 +70,20 @@ class TestFilterView(HogwartsTestMixin, BaseApiTest):
 
         self.assertResponseList(expected_items=expected_teachers, response=response)
 
+    def test_search_miss_with_different_body(self):
+        url = f"{self.url}/search?name=Herminione"
+        data = {"age": 20, "is_half_blood": False}
+
+        response_json_miss = self.client.post(url, data=data)
+        self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
+        self.assertEqual("MISS", response_json_miss["X-Cache"])
+
+        data = {"age": 25, "is_half_blood": True}
+
+        response_json_hit = self.client.post(url, data=data)
+        self.assertEqual(status.HTTP_200_OK, response_json_hit.status_code)
+        self.assertEqual("MISS", response_json_hit["X-Cache"])
+
 
 class TestAnyOfFilter(BaseApiTest):
     def test_with_initial_value(self):
