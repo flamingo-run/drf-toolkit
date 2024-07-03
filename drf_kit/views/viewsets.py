@@ -10,7 +10,7 @@ from rest_framework.settings import api_settings
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from drf_kit import exceptions, filters
-from drf_kit.cache import cache_response
+from drf_kit.cache import body_cache_key_constructor, cache_response
 from drf_kit.exceptions import ConflictException, DuplicatedRecord, ExclusionDuplicatedRecord
 
 logger = logging.getLogger(__name__)
@@ -149,12 +149,15 @@ class MultiSerializerMixin:
         return exceptions.custom_exception_handler
 
 
+search_action = action(
+    detail=False,
+    methods=["post"],
+    filter_backends=[filters.FilterInBodyBackend, *api_settings.DEFAULT_FILTER_BACKENDS],
+)
+
+
 class SearchMixin:
-    @action(
-        detail=False,
-        methods=["post"],
-        filter_backends=[filters.FilterInBodyBackend, *api_settings.DEFAULT_FILTER_BACKENDS],
-    )
+    @search_action
     def search(self, request):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -193,11 +196,30 @@ class CachedModelViewSet(CacheResponseMixin, ModelViewSet):
     pass
 
 
+class CachedSearchableMixin(SearchMixin, CacheResponseMixin):
+    @search_action
+    @cache_response(key_func=body_cache_key_constructor)
+    def search(self, request, *args, **kwargs):
+        return super().search(request, *args, **kwargs)
+
+
+class CachedSearchableModelViewSet(CachedSearchableMixin, ModelViewSet):
+    pass
+
+
 class CachedReadOnlyModelViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     pass
 
 
+class CachedSearchableReadOnlyModelViewSet(CachedSearchableMixin, ReadOnlyModelViewSet):
+    pass
+
+
 class CachedNonDestructiveModelViewSet(CacheResponseMixin, NonDestructiveModelViewSet):
+    pass
+
+
+class CachedSearchableNonDestructiveModelViewSet(CachedSearchableMixin, NonDestructiveModelViewSet):
     pass
 
 

@@ -25,6 +25,18 @@ class CacheKeyConstructor(KeyConstructor):
 cache_key_constructor = CacheKeyConstructor()
 
 
+class BodyKeyBit(bits.AllArgsMixin, bits.KeyBitDictBase):
+    def get_source_dict(self, params, view_instance, view_method, request, args, kwargs):
+        return request.POST
+
+
+class BodyCacheKeyConstructor(CacheKeyConstructor):
+    body = BodyKeyBit()
+
+
+body_cache_key_constructor = BodyCacheKeyConstructor()
+
+
 class CacheResponse(decorators.CacheResponse):
     def process_cache_response(
         self,
