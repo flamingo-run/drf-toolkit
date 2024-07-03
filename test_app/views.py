@@ -4,7 +4,6 @@ from rest_framework.response import Response
 
 from drf_kit.views import (
     BulkMixin,
-    CachedModelViewSet,
     ModelViewSet,
     NestedModelViewSet,
     NonDestructiveModelViewSet,
@@ -15,7 +14,7 @@ from drf_kit.views import (
     WriteOnlyModelViewSet,
     WriteOnlyNestedModelViewSet,
 )
-from drf_kit.views.viewsets import SearchMixin
+from drf_kit.views.viewsets import CachedSearchableModelViewSet
 from test_app import filters, models, serializers
 
 
@@ -32,7 +31,7 @@ class HouseViewSet(StatsViewMixin, ModelViewSet):
         )
 
 
-class TeacherViewSet(SearchMixin, CachedModelViewSet):
+class TeacherViewSet(CachedSearchableModelViewSet):
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
     filterset_class = filters.TeacherFilterSet
