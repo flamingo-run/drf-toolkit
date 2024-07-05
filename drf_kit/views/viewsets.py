@@ -212,7 +212,10 @@ class CachedReadOnlyModelViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
 
 
 class CachedSearchableReadOnlyModelViewSet(CachedSearchableMixin, ReadOnlyModelViewSet):
-    pass
+    http_method_names = [*ReadOnlyModelViewSet.http_method_names, "post"]
+
+    def create(self, request, *args, **kwargs):
+        self.http_method_not_allowed(request=request)
 
 
 class CachedNonDestructiveModelViewSet(CacheResponseMixin, NonDestructiveModelViewSet):
