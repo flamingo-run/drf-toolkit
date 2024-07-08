@@ -76,3 +76,32 @@ class TestModelDiff(BaseApiTest):
         self.assertEqual((100, 200), wizard._diff["house_id"])
         self.assertEqual(old_url.removeprefix("/"), wizard._diff["picture"][0])
         self.assertEqual(new_url.removeprefix("/"), wizard._diff["picture"][1])
+
+    def test_no_deferred_fields(self):
+        WizardFactory(name="Harry Potter", age=12)
+
+        with self.assertNumQueries(1):
+            # 1 SELECT with only
+            wizard = Wizard.objects.first()
+
+        with self.assertNumQueries(0):
+            diff = wizard._diff
+
+        expected_diff = {}
+        self.assertEqual(expected_diff, diff)
+        self.assertFalse(wizard._has_changed)
+
+    def test_deferred_fields(self):
+        WizardFactory(name="Harry Potter", age=12)
+
+        with self.assertNumQueries(2):
+            # 1 SELECT with only
+            # 1 SELECT with all fields (diff model)
+            wizard = Wizard.objects.only("name").first()
+
+        with self.assertNumQueries(0):
+            diff = wizard._diff
+
+        expected_diff = {}
+        self.assertEqual(expected_diff, diff)
+        self.assertFalse(wizard._has_changed)

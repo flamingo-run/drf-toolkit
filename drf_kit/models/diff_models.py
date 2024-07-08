@@ -37,6 +37,13 @@ class ModelDiffMixin:
     def _dict(self):
         # ref: https://github.com/django/django/blob/4.0.2/django/forms/models.py#L86
         data = {}
+
+        # If there's any deferred field (i.e. lazy loading),
+        # refresh the whole object at once, instead of letting `value_from_object` refresh one by one
+        # TODO: Lazily compute the diff only for the deferred fields
+        if self.get_deferred_fields():
+            self.refresh_from_db(fields=[field.attname for field in self._meta.concrete_fields])
+
         for field in self._meta.fields:
             if not getattr(field, "editable", False):
                 continue
