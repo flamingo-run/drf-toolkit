@@ -1,6 +1,7 @@
 from django.contrib.postgres.constraints import ExclusionConstraint
 from django.contrib.postgres.fields import DateTimeRangeField, RangeOperators
 from django.db import models
+from django.db.models import Value
 
 from drf_kit.fields import SlugifyField
 from drf_kit.models import (
@@ -23,6 +24,11 @@ class Wizard(BaseModel):
     age = models.IntegerField(
         null=True,
         blank=True,
+    )
+    minimum_age = models.GeneratedField(
+        expression=Value(11),
+        output_field=models.IntegerField(),
+        db_persist=True,
     )
     is_half_blood = models.BooleanField(default=True)
     picture = models.FileField(

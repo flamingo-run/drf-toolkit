@@ -1,6 +1,8 @@
 import contextlib
 import logging
 
+from django.db.models import GeneratedField
+
 from drf_kit.serializers import as_dict
 
 logger = logging.getLogger(__name__)
@@ -40,8 +42,18 @@ class ModelDiffMixin:
 
         # If there's any deferred field (i.e. lazy loading),
         # refresh the whole object at once, instead of letting `value_from_object` refresh one by one
-        # TODO: Lazily compute the diff only for the deferred fields
-        if self.get_deferred_fields():
+        # TODO: Lazily compute the diff only for the deferred fields, otherwise .only() will be useless
+        lazy_fields = []
+        deferred_fields = self.get_deferred_fields()
+        for field in self._meta.get_fields():
+            if isinstance(field, GeneratedField):
+                continue
+            if field.name in deferred_fields:
+                lazy_fields.append(field)
+
+        if lazy_fields:
+            # refresh_from_db() will populate the deferred fields, this is causing max-recursing error,
+            # so we refresh all of them at once
             self.refresh_from_db(fields=[field.attname for field in self._meta.concrete_fields])
 
         for field in self._meta.fields:
