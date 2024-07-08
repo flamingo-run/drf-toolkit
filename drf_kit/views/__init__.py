@@ -1,6 +1,8 @@
 from drf_kit.views.nested_viewsets import (
     CachedNestedModelViewSet,
     CachedReadOnlyNestedModelViewSet,
+    CachedSearchableNestedModelViewSet,
+    CachedSearchableReadOnlyNestedModelViewSet,
     NestedModelViewSet,
     ReadOnlyNestedModelViewSet,
     WriteOnlyNestedModelViewSet,
@@ -51,4 +53,6 @@ __all__ = (
     "WriteOnlyModelViewSet",
     "UpsertMixin",
     "StatsViewMixin",
+    "CachedSearchableNestedModelViewSet",
+    "CachedSearchableReadOnlyNestedModelViewSet",
 )
