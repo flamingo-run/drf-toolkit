@@ -196,6 +196,16 @@ class CachedModelViewSet(CacheResponseMixin, ModelViewSet):
     pass
 
 
+# Because of the way views with `@action` decorators get registered by DRF,
+# enabling new cached-searchable viewsets requires creating new classes
+# with specific inheritance order. This is why many new classes were added.
+
+# A way of avoiding this can be by simplifying cached-search inheritance,
+# which is not being done now.
+
+
+# TODO: simplify cached-search inheritance so that leaf viewsets can inherit from `CachedSearchableMixin`
+# and they are good to go.
 class CachedSearchableMixin(SearchMixin, CacheResponseMixin):
     @search_action
     @cache_response(key_func=body_cache_key_constructor)

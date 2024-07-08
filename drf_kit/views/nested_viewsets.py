@@ -5,7 +5,13 @@ from django.http import Http404
 from rest_framework.exceptions import ValidationError
 
 from drf_kit import UNSET
-from drf_kit.views.viewsets import CachedReadOnlyModelViewSet, CacheResponseMixin, ModelViewSet, ReadOnlyModelViewSet
+from drf_kit.views.viewsets import (
+    CachedReadOnlyModelViewSet,
+    CachedSearchableMixin,
+    CacheResponseMixin,
+    ModelViewSet,
+    ReadOnlyModelViewSet,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +85,23 @@ class CachedNestedModelViewSet(CacheResponseMixin, NestedModelViewSet):
     pass
 
 
+class CachedSearchableNestedModelViewSet(CachedSearchableMixin, NestedModelViewSet):
+    pass
+
+
 class ReadOnlyNestedModelViewSet(NestedViewMixin, ReadOnlyModelViewSet):
     pass
 
 
 class CachedReadOnlyNestedModelViewSet(NestedViewMixin, CachedReadOnlyModelViewSet):
     pass
+
+
+class CachedSearchableReadOnlyNestedModelViewSet(CachedSearchableMixin, CachedReadOnlyModelViewSet):
+    http_method_names = [*CachedReadOnlyNestedModelViewSet.http_method_names, "post"]
+
+    def create(self, request, *args, **kwargs):
+        self.http_method_not_allowed(request=request)
 
 
 class WriteOnlyNestedModelViewSet(NestedViewMixin, ModelViewSet):
