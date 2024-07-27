@@ -38,6 +38,25 @@ body_cache_key_constructor = BodyCacheKeyConstructor()
 
 
 class CacheResponse(decorators.CacheResponse):
+    def __init__(self, timeout=None, key_func=None, cache=None, cache_errors=None, cache_error_func=None):
+        """
+        :param cache_error_func: Function to be called when an error occurs while trying to get the cache.
+        parameters to this function include the exception that was raised, the key that was used to get the cache,
+        the request that was made and whether the error occurred when fetching the cache or when setting it.
+
+        This function should look like this:
+        def cache_error_func(exception: Exception, key: str, request: Request, get_cache: bool):
+            pass
+        """
+        super().__init__(
+            timeout,
+            key_func,
+            cache,
+            cache_errors,
+        )
+
+        self.cache_error_func = cache_error_func
+
     def process_cache_response(
         self,
         view_instance,
@@ -62,7 +81,7 @@ class CacheResponse(decorators.CacheResponse):
             response_dict = None
         else:
             valid_cache_control = False
-            response_dict = self.cache.get(key)
+            response_dict = self._get_cached_result(key, request)
 
         if not response_dict:
             response = view_method(view_instance, request, *args, **kwargs)
@@ -81,7 +100,7 @@ class CacheResponse(decorators.CacheResponse):
                     response.headers.copy(),
                 )
 
-                self.cache.set(key, response_dict, self.timeout)
+                self._set_cached_result(key, request, response_dict)
             cache_hit = False
         else:
             try:
@@ -99,6 +118,22 @@ class CacheResponse(decorators.CacheResponse):
             response._closable_objects = []
 
         return response
+
+    def _get_cached_result(self, key, request) -> dict | None:
+        try:
+            return self.cache.get(key)
+        except Exception as exc:
+            if self.cache_error_func:
+                self.cache_error_func(exception=exc, key=key, request=request, get_cache=True)
+
+            return None
+
+    def _set_cached_result(self, key, request, response_dict):
+        try:
+            self.cache.set(key, response_dict, self.timeout)
+        except Exception as exc:
+            if self.cache_error_func:
+                self.cache_error_func(exception=exc, key=key, request=request, get_cache=False)
 
 
 cache_response = CacheResponse
