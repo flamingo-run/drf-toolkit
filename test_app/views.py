@@ -1,7 +1,9 @@
 from django.db.models import Count
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from drf_kit.cache import cache_response
 from drf_kit.views import (
     BulkMixin,
     ModelViewSet,
@@ -31,11 +33,27 @@ class HouseViewSet(StatsViewMixin, ModelViewSet):
         )
 
 
+def handle_cache_error_helper(exception, key, request, get_cache):
+    pass
+
+
+# TODO: make tests mock this function instead of the helper.
+# This function calls a helper so the test can mock it. For some reason,
+# trying to mock `handle_cache_error` directly does not work.
+def handle_cache_error(exception, key, request, get_cache):
+    handle_cache_error_helper(exception, key, request, get_cache)
+
+
 class TeacherViewSet(CachedSearchableModelViewSet):
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
     filterset_class = filters.TeacherFilterSet
     ordering_fields = ("name", "id")
+
+    @action(detail=False, methods=["get"])
+    @cache_response(cache_error_func=handle_cache_error)
+    def patronus(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_200_OK)
 
 
 class WizardViewSet(ModelViewSet):
