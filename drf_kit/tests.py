@@ -9,6 +9,7 @@ from typing import Any
 from unittest.mock import ANY, patch
 
 import rest_framework
+from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.db.models import Model
@@ -30,7 +31,9 @@ class BaseApiTest(APITransactionTestCase):
     def real_cache(self, caches: dict | None = None):
         if not caches:
             caches = {}
-        return self.settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}} | caches)
+            for cache_name in getattr(settings, "CACHES", {}):
+                caches[cache_name] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+        return self.settings(CACHES=caches)
 
     def assertNoPendingMigration(self, app_name):
         out = StringIO()
