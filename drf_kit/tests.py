@@ -67,9 +67,11 @@ class BaseApiTest(APITransactionTestCase):
     ):
         self.assertStatusCode(expected_status=status.HTTP_200_OK, response=response)
 
-        def _extract_id(i: int | str | Model):
+        def _extract_id(i: int | str | Model | dict):
             if isinstance(i, Model):
                 return getattr(i, pk_field)
+            if isinstance(i, dict):
+                return i[pk_field]
             return i
 
         expected_ids = {_extract_id(i=item) for item in expected_items}
