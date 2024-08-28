@@ -235,7 +235,7 @@ class TestResponseMatch(BaseApiTest):
         received = {"name": "Harry", "friends": ["Hagrid", "Hermione", "Dumbledore"]}
         self._assert_match(expected, received)
 
-        received = {"name": "Harry", "friends": {"Hermione", "Hagrid", "Dumbledore"}}
+        received = {"name": "Harry", "friends": {"Hagrid", "Hermione", "Dumbledore"}}
         self._assert_match(expected, received)
 
         received = {"name": "Harry", "friends": ["Hagrid", "Hermione"]}

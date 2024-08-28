@@ -272,7 +272,7 @@ class BaseApiTest(APITransactionTestCase):
                 return _assert_dict(expected_item=expected_item, received_item=received_item)
 
             if isinstance(expected_item, set):
-                if not isinstance(received_item, list):
+                if not isinstance(received_item, list | set):
                     msg = (
                         f"Received `{received_item}`, "
                         f"but expected to have `{', '.join(sorted(expected_item))}` items"
