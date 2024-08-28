@@ -1,7 +1,8 @@
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from django.core.cache import cache
 from rest_framework import status
+from rest_framework.response import Response
 
 from drf_kit.cache import CacheResponse
 from drf_kit.tests import BaseApiTest
@@ -105,3 +106,44 @@ class TestCachedView(HogwartsTestMixin, BaseApiTest):
         self.assertEqual(status.HTTP_200_OK, response_json_miss.status_code)
         self.assertEqual("HIT", response_json_miss["X-Cache"])
         self.assertEqual(None, response_json_miss.get("Cache-Control"))
+
+    def test_cache_skip_on_cache_get_and_call_view_action(self):
+        url = self.url
+
+        with (
+            patch("django.core.cache.backends.locmem.LocMemCache.get", side_effect=Exception),
+            patch("drf_kit.views.viewsets.MultiSerializerMixin.list", return_value=Response()) as list_method,
+        ):
+            self.client.get(url)
+
+        list_method.assert_called_once()
+
+    def test_cache_skip_on_cache_set(self):
+        url = self.url
+
+        with (
+            patch("django.core.cache.backends.locmem.LocMemCache.set", side_effect=Exception),
+        ):
+            self.client.get(url)  # No exception should be raised from this call
+
+    def test_cache_custom_handler_on_cache_get_error(self):
+        url = f"{self.url}/patronus"
+
+        with (
+            patch("django.core.cache.backends.locmem.LocMemCache.get", side_effect=Exception),
+            patch("test_app.views.handle_cache_error_helper") as error_handler,
+        ):
+            self.client.get(url)
+
+        error_handler.assert_called_once_with(ANY, ANY, ANY, True)
+
+    def test_cache_custom_handler_on_cache_set_error(self):
+        url = f"{self.url}/patronus"
+
+        with (
+            patch("django.core.cache.backends.locmem.LocMemCache.set", side_effect=Exception),
+            patch("test_app.views.handle_cache_error_helper") as error_handler,
+        ):
+            self.client.get(url)
+
+        error_handler.assert_called_once_with(ANY, ANY, ANY, False)
