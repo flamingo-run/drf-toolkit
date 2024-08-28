@@ -159,6 +159,16 @@ class TestResponseMatch(BaseApiTest):
         message = "There's 1 fields that differ\n- name: Received `Potter`, but expected `Harry` "
         self._assert_not_match(expected, received, message)
 
+    def test_match_equivalent_types(self):
+        expected = {"name": "Harry", "muggle": True}
+
+        received = {"name": "Harry", "muggle": True}
+        self._assert_match(expected, received)
+
+        received = {"name": "Harry", "muggle": 1}
+        message = "There's 1 fields that differ\n- muggle: Received `<class 'int'>`, but expected `<class 'bool'>` "
+        self._assert_not_match(expected, received, message)
+
     def test_match_regex(self):
         expected = {"name": re.compile("H.*y"), "age": 13}
 
