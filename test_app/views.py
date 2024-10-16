@@ -2,6 +2,7 @@ from django.db.models import Count
 from rest_framework import status
 from rest_framework.response import Response
 
+from drf_kit import pagination
 from drf_kit.views import (
     BulkMixin,
     ModelViewSet,
@@ -83,6 +84,10 @@ class SpellViewSet(ReadOnlyModelViewSet):
 
     queryset_detail = models.Spell.objects.all()
     serializer_detail_class = serializers.SpellSerializer
+
+
+class SpellLightViewSet(SpellViewSet):
+    pagination_class = pagination.LightPagePagination
 
 
 class SpellCastViewSet(ModelViewSet):

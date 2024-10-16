@@ -64,3 +64,66 @@ class TestPaginatedView(BaseApiTest):
 
         response = self.client.get(url, {"page_size": 12, "page": 15000})
         self.assertResponseNotFound(response=response, expected_item={"detail": "Invalid page."})
+
+
+class TestLightPaginatedView(TestPaginatedView):
+    url = "/spells-light"
+
+    def test_first_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12})
+
+        self.assertEqual(list(range(1, 13)), [spell["id"] for spell in response.json()["results"]])
+        self.assertRegex(response.json()["next"], r"page=2")
+        self.assertEqual(None, response.json()["previous"])
+        self.assertNotIn("count", response.json())
+
+    def test_second_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 2})
+
+        self.assertEqual(list(range(13, 25)), [spell["id"] for spell in response.json()["results"]])
+        self.assertRegex(response.json()["next"], r"page=3")
+        self.assertNotRegex(response.json()["previous"], r"page=\d+")
+        self.assertNotIn("count", response.json())
+
+    def test_third_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 3})
+
+        self.assertEqual(list(range(25, 37)), [spell["id"] for spell in response.json()["results"]])
+        self.assertRegex(response.json()["next"], r"page=4")
+        self.assertRegex(response.json()["previous"], r"page=2")
+        self.assertNotIn("count", response.json())
+
+    def test_fourth_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 4})
+
+        self.assertEqual(list(range(37, 49)), [spell["id"] for spell in response.json()["results"]])
+        self.assertRegex(response.json()["next"], r"page=5")
+        self.assertRegex(response.json()["previous"], r"page=3")
+        self.assertNotIn("count", response.json())
+
+    def test_last_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 5})
+
+        self.assertEqual(list(range(49, 50)), [spell["id"] for spell in response.json()["results"]])
+        self.assertEqual(None, response.json().get("next"))
+        self.assertRegex(response.json()["previous"], r"page=4")
+        self.assertNotIn("count", response.json())
+
+    def test_invalid_page(self):
+        url = self.url
+
+        response = self.client.get(url, {"page_size": 12, "page": 15000})
+        self.assertEqual([], response.json()["results"])
+        self.assertEqual(None, response.json().get("next"))
+        self.assertRegex(response.json()["previous"], r"page=14999")
+        self.assertNotIn("count", response.json())

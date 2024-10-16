@@ -1,1 +1,2 @@
 from drf_kit.pagination.custom_pagination import CustomPagePagination
+from drf_kit.pagination.light_pagination import LightPagePagination

@@ -29,6 +29,12 @@ router.register(
 )
 
 router.register(
+    r"spells-light",
+    views.SpellLightViewSet,
+    "spell-light",
+)
+
+router.register(
     r"wizards/(?P<wizard_id>[^/.]+)/patronus",
     views.WizardPatronusViewSet,
     "wizard-to-patronus",
