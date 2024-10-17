@@ -2,6 +2,7 @@ import inspect
 import logging
 import os
 import re
+from collections import Counter
 from collections.abc import Callable, Iterable
 from contextlib import contextmanager
 from io import StringIO
@@ -75,8 +76,10 @@ class BaseApiTest(APITransactionTestCase):
             return i
 
         expected_ids = {_extract_id(i=item) for item in expected_items}
-        received_ids = {s[pk_field] for s in response.json()[response_key]}
-        self.assertEqual(expected_ids, received_ids)
+        received_ids = Counter(s[pk_field] for s in response.json()[response_key])
+        duplicate_ids = {k for k, v in received_ids.items() if v > 1}
+        self.assertEqual(set(), duplicate_ids, msg=f"Duplicate ids found in response: {duplicate_ids}")
+        self.assertEqual(expected_ids, set(received_ids.keys()))
 
     def assertResponseList(self, expected_items: Iterable[dict], response, response_key: str = "results"):
         self.assertResponse(
