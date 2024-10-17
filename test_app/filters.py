@@ -25,6 +25,7 @@ class WandFilterSet(filters.BaseFilterSet):
 
 class WizardFilterSet(filters.BaseFilterSet):
     spell_name = filters.AllOfFilter(field_name="spell_casts__spell__name")
+    any_spell_name = filters.AnyOfFilter(field_name="spell_casts__spell__name")
 
     class Meta:
         model = models.Wizard
