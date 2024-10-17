@@ -138,6 +138,10 @@ class TestAllOfFilterView(HogwartsTestMixin, BaseApiTest):
         response = self.client.get(self.url, data={"spell_name": [self.spell_a.name, self.spell_b.name]})
         self.assertResponseItems(expected_items=[self.wizard_a], response=response)
 
+    def test_filter_multiple_spell_name_any_of_through_relationship(self):
+        response = self.client.get(self.url, data={"any_spell_name": [self.spell_a.name, self.spell_b.name]})
+        self.assertResponseItems(expected_items=[self.wizard_a, self.wizard_b], response=response)
+
     def test_filter_multiple_spell_name_disjointed_not_return_wizards(self):
         response = self.client.get(self.url, data={"spell_name": [self.spell_a.name, self.spell_noise.name]})
         self.assertResponseItems(expected_items=[], response=response)

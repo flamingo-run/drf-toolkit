@@ -93,6 +93,10 @@ class _OpenChoiceField(MultipleChoiceField):
 class AnyOfFilter(MultipleChoiceFilter):
     field_class = _OpenChoiceField
 
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("distinct", None)
+        super().__init__(*args, **kwargs)
+
     def filter(self, qs, value):
         if not value:
             return qs
@@ -105,7 +109,10 @@ class AnyOfFilter(MultipleChoiceFilter):
             query_filter = Q(**predicate)
             qs = self.get_method(qs)(query_filter)
 
-        return qs.distinct() if self.distinct else qs
+        possibly_filtering_on_relationship = "__" in self.field_name
+        force_distinct = possibly_filtering_on_relationship if self.distinct is None else self.distinct
+
+        return qs.distinct() if force_distinct else qs
 
 
 class AllOfFilter(MultipleChoiceFilter):
