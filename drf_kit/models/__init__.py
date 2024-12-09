@@ -45,17 +45,17 @@ class InheritanceOrderedModel(OrderedModelMixin, InheritanceModelMixin, BaseMode
 
 
 __all__ = (
-    "ModelDiffMixin",
-    "BoundedFileMixin",
-    "BaseModel",
-    "SoftDeleteModel",
-    "OrderedModel",
-    "InheritanceModel",
-    "SoftDeleteInheritanceOrderedModel",
-    "SoftDeleteInheritanceModel",
-    "SoftDeleteOrderedModel",
-    "SoftDeleteAvailabilityModel",
-    "InheritanceOrderedModel",
     "AvailabilityModel",
     "AvailabilityModelMixin",
+    "BaseModel",
+    "BoundedFileMixin",
+    "InheritanceModel",
+    "InheritanceOrderedModel",
+    "ModelDiffMixin",
+    "OrderedModel",
+    "SoftDeleteAvailabilityModel",
+    "SoftDeleteInheritanceModel",
+    "SoftDeleteInheritanceOrderedModel",
+    "SoftDeleteModel",
+    "SoftDeleteOrderedModel",
 )

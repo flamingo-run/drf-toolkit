@@ -51,7 +51,7 @@ class SoftDeleteQuerySet(query.QuerySet):
             qs = qs.distinct()
         return qs
 
-    def _get_m2m_relations_for(self, fields: Iterable[str]) -> Generator["SoftDeleteModel", None, None]:  # noqa: F821
+    def _get_m2m_relations_for(self, fields: Iterable[str]) -> Generator["SoftDeleteModel"]:  # noqa: F821
         from drf_kit.models import SoftDeleteModel
 
         related_fields = {field.split("__")[0] for field in fields}
@@ -78,7 +78,7 @@ class SoftDeleteQuerySet(query.QuerySet):
             if rel_model := _get_m2m_with_soft_delete(field_name=field_obj.name, m2m_rel=rel_obj):
                 yield rel_model
 
-    def _get_extra_filters(self, fields: Iterable[str]) -> Generator[dict[str, bool], None, None]:
+    def _get_extra_filters(self, fields: Iterable[str]) -> Generator[dict[str, bool]]:
         for rel_model in self._get_m2m_relations_for(fields=fields):
             field_name = None
             for field in rel_model._meta.get_fields():
