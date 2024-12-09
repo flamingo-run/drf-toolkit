@@ -1,39 +1,35 @@
-[tool.poetry]
+[project]
 name = "drf-kit"
-version = "1.45.0"
+version = "1.46.0"
 description = "DRF Toolkit"
-authors = ["Nilo Saude <tech@nilo.co>"]
-packages = [
-    { include = "drf_kit" },
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.1",
+    "django-filter>=24",
+    "django-ordered-model<3.7.2",
+    "djangorestframework>=3.15",
+    "drf-extensions>=0.7",
+    "psycopg[binary]>=3.2",
 ]
 
-
-[tool.poetry.dependencies]
-python = "~3.11||~3.12"
-Django = "~4||~5"
-djangorestframework = "^3"
-django-filter = "^24"
-django-ordered-model = "<3.7.2"  # this version blocks order_with_respect_to to be FK only
-drf-extensions = "^0.7"
-psycopg = {version = "^3", "extras" = ["binary"] }
-
-
-[tool.poetry.group.dev.dependencies]
-ruff = "*"
-safety = "*"
-factory-boy = "*"
-freezegun = "*"
-pytest-cov = "*"
-pytest-django = "*"
-pytest-rerunfailures = "*"
-pytest-xdist = "*"
-pytest-sugar = "*"
-pytest-random-order = "*"
-
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.1",
+    "freezegun>=1.5.1",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.9.0",
+    "pytest-random-order>=1.1.1",
+    "pytest-rerunfailures>=15.0",
+    "pytest-sugar>=1.0.0",
+    "pytest-xdist>=3.6.1",
+    "ruff>=0.8.2",
+    "safety>=3.2.11",
+]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
@@ -58,7 +54,12 @@ branch = true
 source = ["drf_kit"]
 omit = ["*/manage.py", "*/settings.py", "*/wsgi.py"]
 
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["drf_kit"]
+
+[tool.uv]
+package = false
