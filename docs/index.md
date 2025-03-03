@@ -18,17 +18,35 @@ The DRF Toolkit applies common [RESTFul patterns](https://restfulapi.net/) to th
 
 Most use cases are covered by DRF Toolkit, allowing your project to be simpler so you can focus on the business logic.
 
+## Motivation
+
+While Django REST Framework provides excellent foundations for building APIs, developers often find themselves reimplementing common patterns or searching for multiple packages to fill functionality gaps. DRF Toolkit addresses these challenges by:
+
+- **Comprehensive Feature Set**: Providing a unified solution for common API requirements like soft deletion, diff tracking, advanced filtering, and nested resources, eliminating the need for multiple third-party packages.
+
+- **Enhanced Extensibility**: Offering base classes and mixins that seamlessly integrate with DRF, making it easy to extend and customize functionality while maintaining clean, maintainable code.
+
+- **Production-Ready Features**: Including optimized solutions for caching, pagination, and database operations that are battle-tested and performance-focused.
+
+- **Developer Experience**: Reducing boilerplate code and providing intuitive abstractions that make it easier to implement complex API patterns while following REST best practices.
+
+- **Missing DRF Features**: Filling gaps in DRF's core functionality with features like automatic field handling, enhanced model tracking, and comprehensive testing utilities.
+
 ## Features
 
 DRF Toolkit provides a comprehensive set of tools and utilities for Django REST Framework:
 
-- **Models**: Enhanced model functionality with diff tracking, soft delete, and more
-- **Serializers**: Advanced serialization with automatic field handling
-- **Views**: Extended viewsets with caching, filtering, and nested resources
-- **Filters**: Powerful filtering capabilities with multiple filter types
-- **Pagination**: Optimized pagination for better performance
-- **Caching**: Flexible caching system with custom key generation
-- **Signals**: Model operation tracking and signal management
-- **Testing**: Comprehensive testing utilities for API endpoints
+- [**Models**](models/index.md): Enhanced model functionality with diff tracking, soft delete, and more
+- [**Serializers**](serializers.md): Advanced serialization with automatic field handling
+- [**Views**](views.md): Extended viewsets with caching, filtering, and nested resources
+- [**Filters**](filters.md): Powerful filtering capabilities with multiple filter types
+- [**Pagination**](pagination.md): Optimized pagination for better performance
+- [**Caching**](caching.md): Flexible caching system with custom key generation
+- [**Signals**](signals.md): Model operation tracking and signal management
+- [**Testing**](testing.md): Comprehensive testing utilities for API endpoints
+
+Additional features include:
+- [**Fields**](fields.md): Custom model and serializer fields
+- [**Storage**](storage.md): Enhanced file storage capabilities
 
 Check out our detailed documentation sections to learn more about each feature.
