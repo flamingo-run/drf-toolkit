@@ -1,5 +1,6 @@
 site_name: DRF Toolkit
 site_description: A comprehensive toolkit that extends Django REST Framework with enhanced functionality and common patterns
+site_url: https://drf-kit.flamingo.codes
 theme:
   name: material
   palette:
