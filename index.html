@@ -17,7 +17,7 @@
         <link rel="next" href="quick_start.html">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="assets/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
     
     
@@ -252,6 +252,15 @@
   <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Motivation
     </span>
   </a>
   
@@ -989,6 +998,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Motivation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     <span class="md-ellipsis">
       Features
@@ -1025,18 +1043,40 @@
 <p>DRF supports many great <a href="https://www.django-rest-framework.org/community/third-party-packages/">plugins</a> that extend its capabilities even further.</p>
 <p>The DRF Toolkit applies common <a href="https://restfulapi.net/">RESTFul patterns</a> to the framework by adding base classes that can be used in your existing DRF projects.</p>
 <p>Most use cases are covered by DRF Toolkit, allowing your project to be simpler so you can focus on the business logic.</p>
+<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<p>While Django REST Framework provides excellent foundations for building APIs, developers often find themselves reimplementing common patterns or searching for multiple packages to fill functionality gaps. DRF Toolkit addresses these challenges by:</p>
+<ul>
+<li>
+<p><strong>Comprehensive Feature Set</strong>: Providing a unified solution for common API requirements like soft deletion, diff tracking, advanced filtering, and nested resources, eliminating the need for multiple third-party packages.</p>
+</li>
+<li>
+<p><strong>Enhanced Extensibility</strong>: Offering base classes and mixins that seamlessly integrate with DRF, making it easy to extend and customize functionality while maintaining clean, maintainable code.</p>
+</li>
+<li>
+<p><strong>Production-Ready Features</strong>: Including optimized solutions for caching, pagination, and database operations that are battle-tested and performance-focused.</p>
+</li>
+<li>
+<p><strong>Developer Experience</strong>: Reducing boilerplate code and providing intuitive abstractions that make it easier to implement complex API patterns while following REST best practices.</p>
+</li>
+<li>
+<p><strong>Missing DRF Features</strong>: Filling gaps in DRF's core functionality with features like automatic field handling, enhanced model tracking, and comprehensive testing utilities.</p>
+</li>
+</ul>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <p>DRF Toolkit provides a comprehensive set of tools and utilities for Django REST Framework:</p>
 <ul>
-<li><strong>Models</strong>: Enhanced model functionality with diff tracking, soft delete, and more</li>
-<li><strong>Serializers</strong>: Advanced serialization with automatic field handling</li>
-<li><strong>Views</strong>: Extended viewsets with caching, filtering, and nested resources</li>
-<li><strong>Filters</strong>: Powerful filtering capabilities with multiple filter types</li>
-<li><strong>Pagination</strong>: Optimized pagination for better performance</li>
-<li><strong>Caching</strong>: Flexible caching system with custom key generation</li>
-<li><strong>Signals</strong>: Model operation tracking and signal management</li>
-<li><strong>Testing</strong>: Comprehensive testing utilities for API endpoints</li>
+<li><a href="models/index.html"><strong>Models</strong></a>: Enhanced model functionality with diff tracking, soft delete, and more</li>
+<li><a href="serializers.html"><strong>Serializers</strong></a>: Advanced serialization with automatic field handling</li>
+<li><a href="views.html"><strong>Views</strong></a>: Extended viewsets with caching, filtering, and nested resources</li>
+<li><a href="filters.html"><strong>Filters</strong></a>: Powerful filtering capabilities with multiple filter types</li>
+<li><a href="pagination.html"><strong>Pagination</strong></a>: Optimized pagination for better performance</li>
+<li><a href="caching.html"><strong>Caching</strong></a>: Flexible caching system with custom key generation</li>
+<li><a href="signals.html"><strong>Signals</strong></a>: Model operation tracking and signal management</li>
+<li><a href="testing.html"><strong>Testing</strong></a>: Comprehensive testing utilities for API endpoints</li>
 </ul>
+<p>Additional features include:
+- <a href="fields.html"><strong>Fields</strong></a>: Custom model and serializer fields
+- <a href="storage.html"><strong>Storage</strong></a>: Enhanced file storage capabilities</p>
 <p>Check out our detailed documentation sections to learn more about each feature.</p>
 
 
