@@ -8,6 +8,8 @@
 
 A comprehensive toolkit that extends Django REST Framework with enhanced functionality and common patterns.
 
+📚 **[Full Documentation](https://drf-kit.flamingo.codes)**
+
 ## Quick Start
 
 ### Requirements
@@ -20,6 +22,8 @@ A comprehensive toolkit that extends Django REST Framework with enhanced functio
 ```bash
 pip install drf-toolkit
 ```
+
+For detailed usage instructions and examples, please visit our [Quick Start Guide](https://drf-kit.flamingo.codes/quick_start/).
 
 ## Features
 
@@ -34,74 +38,29 @@ DRF Toolkit provides a comprehensive set of tools and utilities for Django REST 
 - **Signals**: Model operation tracking and signal management
 - **Testing**: Comprehensive testing utilities for API endpoints
 
-## Documentation
+## Development
 
-For detailed documentation, please visit our [documentation site](docs/). Here you'll find:
+### Setup
 
-- Detailed guides for each feature
-- API reference
-- Best practices
-- Examples and tutorials
-- Development setup
-- Contributing guidelines
-
-## Development Setup
-
-To set up the development environment:
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/flamingo-run/drf-toolkit.git
-cd drf-toolkit
+# Install dependencies
+make dependencies
+
+# Run tests
+make test
+
+# Format code
+make style
+
+# Serve documentation locally
+make docs-serve
 ```
 
-2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install development dependencies:
-```bash
-pip install -e ".[dev]"
-```
-
-4. Install pre-commit hooks:
-```bash
-pre-commit install
-```
-
-5. Run tests:
-```bash
-pytest
-```
-
-### Code Quality
-
-We use several tools to maintain code quality:
-
-- **Black**: For code formatting
-- **isort**: For import sorting
-- **flake8**: For code style checking
-- **mypy**: For type checking
-- **pre-commit**: For running checks before commits
-
-To run all quality checks:
-```bash
-tox
-```
+For more development commands, check the Makefile.
 
 ## Contributing
 
-Contributions are welcome! Here's how you can help:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please make sure to update tests as appropriate and follow the existing coding style.
+We welcome contributions! Please check our [Contributing Guide](https://drf-kit.flamingo.codes/contributing/) for guidelines.
 
 ## License
 
