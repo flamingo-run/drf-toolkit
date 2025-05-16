@@ -1,6 +1,7 @@
 ![Github CI](https://github.com/flamingo-run/drf-toolkit/workflows/Github%20CI/badge.svg)
-[![Maintainability](https://api.codeclimate.com/v1/badges/146215786039817ac8bc/maintainability)](https://codeclimate.com/github/flamingo-run/drf-toolkit/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/146215786039817ac8bc/test_coverage)](https://codeclimate.com/github/flamingo-run/drf-toolkit/test_coverage)
+[![Maintainability](https://qlty.sh/badges/ba428e6a-df9e-450c-b395-d14295b36813/maintainability.svg)](https://qlty.sh/gh/flamingo-run/projects/drf-toolkit)
+[![Code Coverage](https://qlty.sh/badges/ba428e6a-df9e-450c-b395-d14295b36813/test_coverage.svg)](https://qlty.sh/gh/flamingo-run/projects/drf-toolkit)
+
 [![python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 
