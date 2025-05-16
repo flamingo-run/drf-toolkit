@@ -11,11 +11,11 @@ permissions:
   contents: write
   pages: write
   id-token: write
- 
+
 jobs:
   build_mkdocs:
     runs-on: ubuntu-latest
- 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,10 +23,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.12
-      - run: pip install mkdocs-material
-      - run: mkdocs gh-deploy --force
- 
+          python-version: 3.13
+      - run: pip install uv
+      - run: uv sync --group docs
+      - run: uv run mkdocs gh-deploy --force
+
   deploy_mkdocs:
     needs: build_mkdocs
     environment:
