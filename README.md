@@ -1,10 +1,12 @@
+![PyPI - Downloads](https://img.shields.io/pypi/dm/drf-toolkit)
+
 ![Github CI](https://github.com/flamingo-run/drf-toolkit/workflows/Github%20CI/badge.svg)
 [![Maintainability](https://qlty.sh/badges/ba428e6a-df9e-450c-b395-d14295b36813/maintainability.svg)](https://qlty.sh/gh/flamingo-run/projects/drf-toolkit)
 [![Code Coverage](https://qlty.sh/badges/ba428e6a-df9e-450c-b395-d14295b36813/test_coverage.svg)](https://qlty.sh/gh/flamingo-run/projects/drf-toolkit)
 
 [![python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-
+[![python](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3130/)
 # Django REST Framework Toolkit
 
 A comprehensive toolkit that extends Django REST Framework with enhanced functionality and common patterns.
