@@ -276,10 +276,7 @@ class BaseApiTest(APITransactionTestCase):
 
             if isinstance(expected_item, set):
                 if not isinstance(received_item, list | set):
-                    msg = (
-                        f"Received `{received_item}`, "
-                        f"but expected to have `{', '.join(sorted(expected_item))}` items"
-                    )
+                    msg = f"Received `{received_item}`, but expected to have `{', '.join(sorted(expected_item))}` items"
                     return {"__eq__": msg}
                 try:
                     self.assertEqual(expected_item, set(received_item))

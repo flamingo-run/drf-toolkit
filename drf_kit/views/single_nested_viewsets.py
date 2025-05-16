@@ -35,7 +35,7 @@ class SingleNestedViewMixin(NestedViewMixin):
     def create(self, request, **kwargs):
         instance = self.get_object()
         if instance:
-            error = {"error": "Already exists and only one is allowed." " Use PUT to override existing relationship."}
+            error = {"error": "Already exists and only one is allowed. Use PUT to override existing relationship."}
             return Response(status=status.HTTP_409_CONFLICT, data=error)
 
         return super().create(request, **kwargs)

@@ -37,7 +37,7 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["RUF", "I", "PL", "F", "COM", "UP", "DJ", "T10", "T20", "DTZ", "SIM", "TID", "PTH", "ERA", "TRY"]
-ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
+ignore = ["COM812", "PLR2004", "PLR0911", "PLR0913", "PLR0915", "PLW1508", "DJ001", "DJ001", "DJ008", "TRY003", "PLR0912", "RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
