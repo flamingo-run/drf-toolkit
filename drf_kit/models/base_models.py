@@ -30,11 +30,11 @@ class BaseModel(ModelDiffMixin, BoundedFileMixin, models.Model):
             models.Index(fields=["updated_at"]),
         ]
 
+    def __repr__(self):
+        return f"<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>"
+
     def admin_edit_url(self):
         return reverse(
             f"admin:{self._meta.app_label}_{self._meta.model_name}_change",
             args=[self.pk],
         )
-
-    def __repr__(self):
-        return f"<{self._meta.app_label}.{self.__class__.__name__} {self.pk}>"
