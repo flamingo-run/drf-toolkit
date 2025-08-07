@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Model
 from rest_framework import status, viewsets
@@ -208,7 +209,7 @@ class CachedModelViewSet(CacheResponseMixin, ModelViewSet):
 # and they are good to go.
 class CachedSearchableMixin(SearchMixin, CacheResponseMixin):
     @search_action
-    @cache_response(key_func=body_cache_key_constructor)
+    @cache_response(key_func=getattr(settings, "DEFAULT_BODY_CACHE_KEY_FUNC", None) or body_cache_key_constructor)
     def search(self, request, *args, **kwargs):
         return super().search(request, *args, **kwargs)
 
