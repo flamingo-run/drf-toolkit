@@ -1,6 +1,6 @@
 [project]
 name = "drf-kit"
-version = "1.47.0"
+version = "1.48.0"
 description = "DRF Toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
