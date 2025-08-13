@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Model
 from rest_framework import status, viewsets
@@ -11,8 +10,9 @@ from rest_framework.settings import api_settings
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from drf_kit import exceptions, filters
-from drf_kit.cache import body_cache_key_constructor, cache_response
+from drf_kit.cache import cache_response
 from drf_kit.exceptions import ConflictException, DuplicatedRecord, ExclusionDuplicatedRecord
+from drf_kit.settings import toolkit_api_settings
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +209,7 @@ class CachedModelViewSet(CacheResponseMixin, ModelViewSet):
 # and they are good to go.
 class CachedSearchableMixin(SearchMixin, CacheResponseMixin):
     @search_action
-    @cache_response(key_func=getattr(settings, "DEFAULT_BODY_CACHE_KEY_FUNC", None) or body_cache_key_constructor)
+    @cache_response(key_func=toolkit_api_settings.DEFAULT_BODY_CACHE_KEY_FUNC)
     def search(self, request, *args, **kwargs):
         return super().search(request, *args, **kwargs)
 
